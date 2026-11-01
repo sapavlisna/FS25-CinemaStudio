@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+    <texts>
+        <text name="input_CINE_RECORD" text="Cinema Studio: record vehicle drive (start / stop)"/>
+        <text name="cine_rec_noVehicle" text="Cinema Studio: recording works only inside a vehicle"/>
+        <text name="cine_rec_started" text="Cinema Studio: recording the drive (%s)"/>
+        <text name="cine_rec_tooShort" text="Cinema Studio: the vehicle barely moved, recording discarded"/>
+        <text name="cine_rec_done" text="Cinema Studio: recording %s (%.0f s) is waiting, open the editor"/>
+        <text name="cine_rec_status" text="RECORDING %d:%02d"/>
+        <text name="cine_msg_recImported" text="Recording added: %s, %.0f s, %d route points, %d actions"/>
+        <text name="input_CINE_OPEN" text="Cinema Studio: open camera editor"/>
+        <text name="input_CINE_UPDOWN" text="Cinema Studio: fly down / up"/>
+        <text name="input_CINE_KEY_ADD" text="Cinema Studio: K-frame into the block under the playhead"/>
+        <text name="input_CINE_KEY_BACKSPACE" text="Cinema Studio: delete selected and leave the gap (the camera holds in it)"/>
+        <text name="input_CINE_KEY_DELETE" text="Cinema Studio: delete selected and close the gap"/>
+        <text name="input_CINE_KEY_PREV" text="Cinema Studio: previous K-frame or block edge"/>
+        <text name="input_CINE_KEY_NEXT" text="Cinema Studio: next K-frame or block edge"/>
+        <text name="input_CINE_KEY_RAISE" text="Cinema Studio: row up (with Ctrl raise K-frame)"/>
+        <text name="input_CINE_KEY_LOWER" text="Cinema Studio: row down (with Ctrl lower K-frame)"/>
+        <text name="input_CINE_PLAY" text="Cinema Studio: play / pause"/>
+        <text name="input_CINE_PLAY_START" text="Cinema Studio: play from start"/>
+        <text name="input_CINE_HOME" text="Cinema Studio: go to start"/>
+        <text name="input_CINE_END" text="Cinema Studio: go to end"/>
+        <text name="input_CINE_CLEAN" text="Cinema Studio: clean view"/>
+        <text name="input_CINE_HELP" text="Cinema Studio: help"/>
+        <text name="input_CINE_UNDO" text="Cinema Studio: undo"/>
+        <text name="input_CINE_REDO" text="Cinema Studio: redo"/>
+        <text name="input_CINE_SAVE" text="Cinema Studio: save shot"/>
+        <text name="input_CINE_PICK" text="Cinema Studio: pick object"/>
+        <text name="input_CINE_TOPDOWN" text="Cinema Studio: top-down view"/>
+        <text name="input_CINE_RESET_ACTORS" text="Cinema Studio: vehicles back to start"/>
+        <text name="input_CINE_CYCLE_TARGET" text="Cinema Studio: draw camera path / vehicle route"/>
+        <text name="input_CINE_CURVES" text="Cinema Studio: channels panel (value curves)"/>
+        <text name="input_CINE_SHOT_NEW" text="Cinema Studio: new shot"/>
+        <text name="input_CINE_SHOT_PREV" text="Cinema Studio: previous shot"/>
+        <text name="input_CINE_SHOT_NEXT" text="Cinema Studio: next shot"/>
+        <text name="input_CINE_LETTERBOX" text="Cinema Studio: letterbox"/>
+        <text name="input_CINE_GRID" text="Cinema Studio: rule of thirds grid"/>
+        <text name="input_CINE_CURSOR" text="Cinema Studio: mouse look / cursor"/>
+        <text name="input_CINE_LENS_1" text="Cinema Studio: 14 mm lens"/>
+        <text name="input_CINE_LENS_2" text="Cinema Studio: 24 mm lens"/>
+        <text name="input_CINE_LENS_3" text="Cinema Studio: 35 mm lens"/>
+        <text name="input_CINE_LENS_4" text="Cinema Studio: 50 mm lens"/>
+        <text name="input_CINE_LENS_5" text="Cinema Studio: 85 mm lens"/>
+        <text name="input_CINE_LENS_6" text="Cinema Studio: 135 mm lens"/>
+        <text name="input_CINE_LENS_7" text="Cinema Studio: 200 mm lens"/>
+        <text name="input_CINE_LENS_8" text="Cinema Studio: 400 mm lens"/>
+
+        <text name="cine_shotName" text="Shot %d"/>
+        <text name="cine_status" text="%s   |   %.0f mm   |   fly %.1f m/s"/>
+        <text name="cine_status_help" text="F1 help   Esc close"/>
+        <text name="cine_status_topdown" text="Top-down: %s   |   new point height %.0f m (Ctrl + Shift + wheel)   |   Tab switches"/>
+        <text name="cine_status_track" text="Mode %s: %s"/>
+        <text name="cine_status_lookAt" text="Aiming at: %s"/>
+        <text name="cine_status_missing" text="vehicle not found"/>
+
+        <text name="cine_msg_keyAdded" text="K-frame added"/>
+        <text name="cine_msg_keyOverwritten" text="K-frame overwritten"/>
+        <text name="cine_msg_flySpeed" text="Flight speed %.1f m/s"/>
+        <text name="cine_msg_focal" text="Lens %.0f mm"/>
+        <text name="cine_msg_saved" text="Shot saved"/>
+        <text name="cine_msg_saveFailed" text="Could not save the shot"/>
+        <text name="cine_msg_onlyShot" text="There is only one shot (N creates another)"/>
+        <text name="cine_msg_shotDeleted" text="Shot removed from the list (the file stays in modSettings)"/>
+        <text name="cine_msg_pick" text="Click an object (Esc cancels)"/>
+        <text name="cine_msg_targetMissing" text="The tracked vehicle is not in this game"/>
+        <text name="cine_msg_planHeight" text="New points %.0f m above ground"/>
+        <text name="cine_msg_notDrivable" text="This vehicle cannot drive by itself (pick the tractor)"/>
+        <text name="cine_msg_actorAdded" text="%s: click the route on the ground, start position is remembered"/>
+        <text name="cine_msg_actorNoStart" text="The vehicle has no remembered start"/>
+        <text name="cine_msg_actorMissing" text="A vehicle of this shot is not in this game"/>
+        <text name="cine_msg_actorNotServer" text="Only the game host can drive vehicles"/>
+        <text name="cine_msg_actorOccupied" text="You are sitting in the vehicle - get out so it can drive"/>
+        <text name="cine_msg_actorAi" text="A helper drives the vehicle - stop it first"/>
+        <text name="cine_msg_actorsReset" text="Vehicles are back at start"/>
+        <text name="cine_msg_startRemembered" text="Start remembered"/>
+        <text name="cine_target_camera" text="drawing the camera path"/>
+        <text name="cine_target_actor" text="drawing route: %s"/>
+
+        <text name="cine_mode_orbit" text="Orbit"/>
+        <text name="cine_mode_dronie" text="Dronie (back and up)"/>
+        <text name="cine_mode_rocket" text="Rocket (straight up)"/>
+        <text name="cine_mode_helix" text="Helix (spiral)"/>
+        <text name="cine_mode_approach" text="Approach"/>
+        <text name="cine_mode_follow" text="Follow"/>
+        <text name="cine_follow_behind" text="From behind"/>
+        <text name="cine_follow_left" text="From the left"/>
+        <text name="cine_follow_right" text="From the right"/>
+        <text name="cine_follow_front" text="From the front"/>
+        <text name="cine_follow_camera" text="From where the camera is now"/>
+        <text name="cine_param_relAngle" text="Camera angle to driving direction (degrees)"/>
+        <text name="cine_menu_follow" text="Follow - choose a side"/>
+        <text name="cine_msg_lookOn" text="Mouse look (F brings the cursor back)"/>
+        <text name="cine_msg_lookOff" text="Cursor (F returns to mouse look)"/>
+        <text name="cine_msg_startPoint" text="The first point is the vehicle position - Remember start moves it"/>
+        <text name="cine_msg_pickPoint" text="Click a route point (right click on a point deletes it)"/>
+        <text name="cine_mode_spotlight" text="Track from a point (camera stays)"/>
+        <text name="cine_mode_pass" text="Pass-by (camera by the road)"/>
+        <text name="cine_mode_parallel" text="Parallel tracking"/>
+        <text name="cine_mode_topdown" text="Straight down"/>
+        <text name="cine_mode_mount" text="Mount on vehicle (here)"/>
+        <text name="cine_mode_pov" text="Character view"/>
+        <text name="cine_mode_pair" text="Two targets"/>
+        <text name="cine_param_relAngle2" text="Angle at block end (degrees)"/>
+        <text name="cine_param_lag" text="Damping (s, 0 = rigid)"/>
+        <text name="cine_param_passAt" text="Pass at (s from start)"/>
+        <text name="cine_param_angle0" text="Camera side (world degrees)"/>
+        <text name="cine_param_elev" text="Elevation (degrees)"/>
+        <text name="cine_param_margin" text="Margin around targets (m)"/>
+        <text name="cine_pov_eyes" text="eyes"/>
+        <text name="cine_pov_shoulderL" text="over left shoulder"/>
+        <text name="cine_pov_shoulderR" text="over right shoulder"/>
+        <text name="cine_vehicleCam" text="Camera %d"/>
+        <text name="cine_vehicleCam_inside" text="cab"/>
+        <text name="cine_menu_vehicleCams" text="Vehicle camera"/>
+        <text name="cine_menu_pair" text="Two targets with…"/>
+        <text name="cine_menu_povCamera" text="Character camera"/>
+        <text name="cine_menu_povVariant" text="View: %s"/>
+        <text name="cine_menu_topRotateOn" text="Rotates with target: yes"/>
+        <text name="cine_menu_topRotateOff" text="Rotates with target: no (north up)"/>
+        <text name="cine_menu_blockShake" text="Block shake: %s"/>
+        <text name="cine_shake_shot" text="as shot"/>
+        <text name="cine_msg_noVehicleCameras" text="The vehicle has no cameras of its own"/>
+        <text name="cine_msg_pairNone" text="No second target – add another vehicle or character to the shot"/>
+        <text name="cine_add_g_onboard" text="The camera rides on the vehicle"/>
+        <text name="cine_add_g_stand" text="The camera stands by the road"/>
+        <text name="cine_add_pass" text="Pass-by"/>
+        <text name="cine_add_pass_d" text="low by the road, the target drives past"/>
+        <text name="cine_add_parallel" text="Parallel"/>
+        <text name="cine_add_parallel_d" text="rides beside the target, does not turn with it"/>
+        <text name="cine_add_topdown" text="Straight down"/>
+        <text name="cine_add_topdown_d" text="looks straight down over the target"/>
+        <text name="cine_add_pair" text="Two targets"/>
+        <text name="cine_add_pair_d" text="keeps two objects in frame"/>
+        <text name="cine_add_mount" text="Mount"/>
+        <text name="cine_add_mount_d" text="on the vehicle where the camera is"/>
+        <text name="cine_add_vehicleCam" text="Vehicle camera"/>
+        <text name="cine_add_vehicleCam_d" text="cab or exterior camera"/>
+        <text name="cine_menu_blockTarget" text="Target: %s"/>
+        <text name="cine_msg_blockTarget" text="The block now follows: %s"/>
+        <text name="cine_msg_needVehicle" text="This works only on a vehicle"/>
+        <text name="cine_menu_shiftClear" text="Clear block camera offset (back to the mode)"/>
+        <text name="cine_target_drone" text="%s – drone %d"/>
+        <text name="cine_mode_static" text="Static camera (stays and holds the framing)"/>
+        <text name="cine_mode_boomerang" text="Boomerang"/>
+        <text name="cine_param_radius" text="Radius"/>
+        <text name="cine_param_radius2" text="End radius"/>
+        <text name="cine_param_height" text="Height"/>
+        <text name="cine_param_height2" text="End height"/>
+        <text name="cine_param_dist" text="Distance"/>
+        <text name="cine_param_dist2" text="End distance"/>
+        <text name="cine_param_laps" text="Laps"/>
+        <text name="cine_param_side" text="Side offset"/>
+        <text name="cine_param_easeIn" text="Smooth start (s)"/>
+        <text name="cine_param_easeOut" text="Smooth end (s)"/>
+        <text name="cine_row_camera" text="Camera"/>
+        <text name="cine_param_duration" text="Duration (s)"/>
+
+        <text name="cine_menu_keyTitle" text="K-frame %d (%.1f s)"/>
+        <text name="cine_menu_keyFocal" text="K-frame focal length = %.0f mm"/>
+        <text name="cine_menu_constant" text="Constant speed for the whole shot"/>
+        <text name="cine_menu_deleteKey" text="Delete K-frame"/>
+        <text name="cine_menu_preroll" text="Pre-roll before motion: %.0f s"/>
+        <text name="cine_menu_shake" text="Handheld shake: %s"/>
+        <text name="cine_menu_trackOff" text="Delete block"/>
+        <text name="cine_menu_trackRestart" text="Restart the mode from the camera position"/>
+        <text name="cine_menu_dirCw" text="Direction: clockwise"/>
+        <text name="cine_menu_dirCcw" text="Direction: counterclockwise"/>
+        <text name="cine_menu_playAll" text="Play all shots in a row"/>
+        <text name="cine_menu_playFromHere" text="Play this shot and all following"/>
+        <text name="cine_menu_bounds" text="Shot end"/>
+        <text name="cine_menu_endHere" text="Shot end at playhead (%.1f s)"/>
+        <text name="cine_menu_endClear" text="Remove shot end (%.1f s)"/>
+        <text name="cine_label_end" text="end"/>
+        <text name="cine_menu_shotNew" text="New shot"/>
+        <text name="cine_menu_shotNext" text="Next / previous shot"/>
+        <text name="cine_menu_shotDelete" text="Remove shot from the list"/>
+        <text name="cine_menu_speedUp" text="Route speed (step %d km/h): %.0f km/h"/>
+        <text name="cine_menu_delayUp" text="Start delay: %.1f s"/>
+        <text name="cine_menu_drawRoute" text="Draw route (top-down view)"/>
+        <text name="cine_menu_routeUndo" text="Remove the last route point"/>
+        <text name="cine_menu_routeClear" text="Clear the whole route"/>
+        <text name="cine_menu_rememberStart" text="Remember start where it stands now"/>
+        <text name="cine_menu_fill" text="Fill levels (fuel, water, load…)"/>
+        <text name="cine_menu_fillTitle" text="Fill levels – %s"/>
+        <text name="cine_menu_fillLevel" text="%s %d: %s %.0f %%"/>
+        <text name="cine_menu_fillType" text="   type: %s"/>
+        <text name="cine_msg_noFillUnits" text="The vehicle has nothing to fill"/>
+        <text name="cine_menu_rememberState" text="Update vehicle state (tanks, box, dirt…), keep the position"/>
+        <text name="cine_msg_stateRemembered" text="The vehicle state was saved with the start – reset and playback now restore it"/>
+        <text name="cine_menu_resetActor" text="Back to start"/>
+        <text name="cine_menu_removeActor" text="Remove vehicle from the shot"/>
+        <text name="cine_menu_lookAt" text="Aim the camera at the object (from the playhead time)"/>
+        <text name="cine_menu_keyUp" text="K-frame height (1 m steps)"/>
+        <text name="cine_menu_turnLeft" text="Turn left / right (5° steps)"/>
+        <text name="cine_menu_lookUp" text="Look up / down (5° steps)"/>
+        <text name="cine_menu_focusFree" text="Stop aiming from the current time"/>
+        <text name="cine_menu_focusClear" text="Delete all points of interest"/>
+        <text name="cine_menu_pointTitle" text="Route point %d - %s"/>
+        <text name="cine_menu_pointFaster" text="This point only (step %d km/h): %.0f km/h"/>
+        <text name="cine_menu_pointDefault" text="This point only: speed same as the route"/>
+        <text name="cine_menu_fromFaster" text="From this point on (step %d km/h): %.0f km/h"/>
+        <text name="cine_menu_fromDefault" text="From this point on: speed same as the route"/>
+        <text name="cine_menu_pointDelete" text="Delete point"/>
+        <text name="cine_menu_focusTitle" text="Point of interest from %.1f s - %s"/>
+        <text name="cine_menu_blendUp" text="Transition to target: %.1f s"/>
+        <text name="cine_menu_focusHigher" text="Target height: %.1f m"/>
+        <text name="cine_menu_focusFreeHere" text="Free look from this point (follow the K-frames)"/>
+        <text name="cine_menu_focusDelete" text="Delete point of interest"/>
+        <text name="cine_menu_focusList" text="Target from the timeline list"/>
+        <text name="cine_menu_framing" text="Target position in frame (%.2f / %.2f)"/>
+        <text name="cine_menu_frameRight" text="Target right / left (%.2f / %.2f)"/>
+        <text name="cine_menu_frameUp" text="Target up / down (%.2f / %.2f)"/>
+        <text name="cine_frame_center" text="Centre"/>
+        <text name="cine_frame_left" text="Left third"/>
+        <text name="cine_frame_right" text="Right third"/>
+        <text name="cine_frame_top" text="Top third"/>
+        <text name="cine_frame_bottom" text="Bottom third"/>
+        <text name="cine_menu_focusRowTitle" text="Point of interest from %.1f s"/>
+        <text name="cine_menu_focusPick" text="Pick in the scene"/>
+        <text name="cine_menu_focusAddFree" text="Free view from here"/>
+        <text name="cine_menu_focusRowHide" text="Hide empty row"/>
+        <text name="cine_msg_focusRow" text="Point of interest row: right-click the row to add a point (target from the list or the scene)."/>
+        <text name="cine_menu_focusChange" text="Change target - pick in the scene"/>
+        <text name="cine_menu_focusFrom" text="From the playhead (%.1f s) another target - pick in the scene"/>
+        <text name="cine_menu_focusSplit" text="Split at the playhead (%.1f s)"/>
+        <text name="cine_menu_focusCut" text="Cut at the playhead (%.1f s) - free view after"/>
+        <text name="cine_msg_pickFocus" text="Click the vehicle the camera should aim at."/>
+        <text name="cine_msg_focusSplitNot" text="The playhead must be inside the point of interest section (not at its edge)."/>
+        <text name="cine_msg_focusCut" text="Aiming cut, free view from here."/>
+        <text name="cine_focus_label" text="focus"/>
+        <text name="cine_focus_free" text="free"/>
+        <text name="cine_msg_focusSet" text="From %.1f s the camera aims at: %s"/>
+        <text name="cine_msg_focusFree" text="From %.1f s the camera in a flight looks along its K-frames"/>
+        <text name="cine_msg_pointHere" text="There is already a route point at this time (or it is off the route)"/>
+        <text name="cine_menu_addActor" text="Add vehicle with a route"/>
+        <text name="cine_menu_clearKeys" text="Delete all camera blocks"/>
+        <text name="cine_msg_segmentSet" text="Block %s from %.1f s to %.1f s (right button on the block = settings)"/>
+        <text name="cine_msg_segmentBusy" text="There is another mode at this time; move the playhead or shorten the mode"/>
+        <text name="cine_msg_actorAddedStatic" text="%s: the vehicle does not drive, it is only used for actions"/>
+        <text name="cine_msg_actionAdded" text="Action &quot;%s&quot; at %.1f s from the vehicle start"/>
+        <text name="cine_menu_vehicleAction" text="Add vehicle action..."/>
+        <text name="cine_menu_pointAction" text="Action at this point..."/>
+        <text name="cine_menu_spanTitle" text="Leg %d → %d"/>
+        <text name="cine_menu_spanDuration" text="Leg length: %.1f s"/>
+        <text name="cine_menu_spanStart" text="Leg start: %.1f s"/>
+        <text name="cine_menu_spanSplit" text="Split here"/>
+        <text name="cine_menu_spanCamera" text="Camera for this leg"/>
+        <text name="cine_menu_spanFocus" text="Focus point for this leg"/>
+        <text name="cine_menu_spanDelete" text="Delete leg (point at its end)"/>
+        <text name="cine_menu_spanWhole" text="Select the whole drive"/>
+        <text name="cine_menu_spanActor" text="Actor"/>
+        <text name="cine_menu_waitTitle" text="Pause at point %d"/>
+        <text name="cine_menu_waitLength" text="Pause: %.1f s"/>
+        <text name="cine_menu_waitDelete" text="Delete pause"/>
+        <text name="cine_menu_stopTitle" text="Stop"/>
+        <text name="cine_menu_stopLength" text="Stop: %.1f s"/>
+        <text name="cine_menu_stopDelete" text="Delete stop"/>
+        <text name="cine_msg_spanCurve" text="The leg speed is driven by the speed curve (panel V)"/>
+        <text name="cine_msg_spanExit" text="The leg starts with leaving a vehicle: move the Get out action"/>
+        <text name="cine_msg_spanStart" text="Leg %d starts at %.1f s"/>
+        <text name="cine_msg_spanLength" text="Leg %d takes %.1f s"/>
+        <text name="cine_msg_spanSplitOutside" text="The playhead is not inside the selected leg"/>
+        <text name="cine_menu_pointWaitUp" text="Pause at point: %.0f s"/>
+        <text name="cine_msg_pauseLength" text="Pause at point %d: %.1f s"/>
+        <text name="cine_menu_pointReverse" text="Leg to this point: reverse (rear first)"/>
+        <text name="cine_gait_slow" text="slow walk"/>
+        <text name="cine_menu_gait" text="To point %d: %s"/>
+        <text name="cine_gait_walk" text="walk"/>
+        <text name="cine_gait_run" text="run"/>
+        <text name="cine_msg_gaitSpan" text="Span %d-%d: %s"/>
+        <text name="cine_menu_pointForward" text="Leg to this point: drive forward (now reversing)"/>
+        <text name="cine_msg_cannotReverse" text="A vehicle with a towed trailer or wheeled implement cannot reverse along a route"/>
+        <text name="cine_label_kmh" text="%.0f km/h"/>
+        <text name="cine_label_revKmh" text="reverse %.0f km/h"/>
+        <text name="cine_menu_actionAtTitle" text="Vehicle action at %.1f s"/>
+        <text name="cine_menu_actionEditTitle" text="Action: %s"/>
+        <text name="cine_menu_actionLater" text="Time %.1f s (step %.1f s)"/>
+        <text name="cine_menu_actionDelete" text="Delete action"/>
+        <text name="cine_act_wholeSet" text="Whole combination"/>
+        <text name="cine_act_none" text="This vehicle cannot do anything"/>
+        <text name="cine_act_group_lights" text="Lights and indicators..."/>
+        <text name="cine_act_lights_1" text="Lights on"/>
+        <text name="cine_act_lights_0" text="Lights off"/>
+        <text name="cine_act_lights_2" text="Flash lights"/>
+        <text name="cine_act_workLights_1" text="Work lights on"/>
+        <text name="cine_act_workLights_0" text="Work lights off"/>
+        <text name="cine_act_workLights_2" text="Flash work lights"/>
+        <text name="cine_act_highBeam_1" text="High beam on"/>
+        <text name="cine_act_highBeam_0" text="High beam off"/>
+        <text name="cine_act_highBeam_2" text="Flash high beam"/>
+        <text name="cine_act_beacon_1" text="Beacon on"/>
+        <text name="cine_act_beacon_0" text="Beacon off"/>
+        <text name="cine_act_turn_0" text="Indicators off"/>
+        <text name="cine_act_turn_1" text="Left indicator"/>
+        <text name="cine_act_turn_2" text="Right indicator"/>
+        <text name="cine_act_turn_3" text="Hazard lights"/>
+        <text name="cine_act_motor_1" text="Start engine"/>
+        <text name="cine_act_courseplay_1" text="Start Courseplay"/>
+        <text name="cine_act_courseplay_0" text="Stop Courseplay"/>
+        <text name="cine_act_motor_0" text="Stop engine"/>
+        <text name="cine_act_fold_1" text="Unfold"/>
+        <text name="cine_act_fold_0" text="Fold"/>
+        <text name="cine_act_lower_1" text="Lower implement"/>
+        <text name="cine_act_lower_0" text="Raise implement"/>
+        <text name="cine_act_turnOn_1" text="Turn implement on (sowing, spraying...)"/>
+        <text name="cine_act_turnOn_0" text="Turn implement off"/>
+        <text name="cine_act_tip_1" text="Raise tipper"/>
+        <text name="cine_act_tip_0" text="Lower tipper"/>
+        <text name="cine_act_discharge_1" text="Unload to the ground"/>
+        <text name="cine_act_discharge_0" text="Stop unloading"/>
+        <text name="cine_act_pipe_1" text="Extend unloading pipe"/>
+        <text name="cine_act_pipe_0" text="Retract unloading pipe"/>
+        <text name="cine_act_honk_1" text="Honk"/>
+        <text name="cine_act_droneStart_1" text="Drone: start mission"/>
+        <text name="cine_act_droneHome_1" text="Drone: return home"/>
+        <text name="cine_act_droneGenerator_1" text="Drone: generator on"/>
+        <text name="cine_act_droneGenerator_0" text="Drone: generator off"/>
+        <text name="cine_status_camSpeed" text="Camera %.1f m/s (%.0f km/h)"/>
+        <text name="cine_status_actorSpeed" text="%s: %.0f km/h"/>
+        <text name="input_CINE_DOCK" text="Cinema Studio: side panel (left / right / off)"/>
+        <text name="cine_msg_dock_left" text="Side panel on the left (to click: cursor with F or Alt)"/>
+        <text name="cine_msg_dock_right" text="Side panel on the right (to click: cursor with F or Alt)"/>
+        <text name="cine_menu_dock_off" text="Side panel: off (click: pin left)"/>
+        <text name="cine_menu_dock_left" text="Side panel: left (click: move right)"/>
+        <text name="cine_menu_dock_right" text="Side panel: right (click: turn off)"/>
+        <text name="cine_menu_spotHere" text="Camera here (at the view position)"/>
+        <text name="cine_menu_spotUp" text="Camera height"/>
+        <text name="cine_menu_markAdd" text="K-frame here (%.1f s)"/>
+        <text name="cine_menu_markClear" text="Delete K-frames in the mode"/>
+        <text name="cine_menu_markTitle" text="K-frame in the mode – %.1f s"/>
+        <text name="cine_menu_markZoomUp" text="Zoom: %d mm"/>
+        <text name="cine_menu_markFaster" text="Speed: ×%.2f"/>
+        <text name="cine_menu_markDelete" text="Delete K-frame"/>
+        <text name="cine_msg_markAdded" text="K-frame in the mode at %.1f s: drag it along the block, Shift + wheel over it changes zoom, Ctrl + wheel the speed"/>
+        <text name="cine_msg_markExists" text="There already is a K-frame here"/>
+        <text name="cine_msg_markSpeed" text="K-frame speed ×%.2f"/>
+        <text name="cine_msg_markNoSpeed" text="This mode does not move along a path, its K-frames change zoom only"/>
+        <text name="cine_hk_mark" text="K in a mode"/>
+        <text name="cine_hd_mark" text="A K-frame inside a mode (orbit, helix, follow…) only carries zoom and motion speed, the mode sets the camera position; drag its marker along the block, Shift + wheel over it changes zoom, Ctrl + wheel the speed, Delete removes it"/>
+        <text name="cine_ch_zoom" text="Zoom (focal length)"/>
+        <text name="cine_ch_camSpeed" text="Camera speed"/>
+        <text name="cine_ch_aimX" text="Point of interest: frame position horizontal"/>
+        <text name="cine_ch_aimY" text="Point of interest: frame position vertical"/>
+        <text name="cine_ch_speed" text="Vehicle speed"/>
+        <text name="cine_ch_mode_linear" text="Lines to the next point"/>
+        <text name="cine_ch_mode_step" text="Steps (holds until the next point)"/>
+        <text name="cine_ch_mode_smooth" text="Curve to the next point"/>
+        <text name="cine_ch_valueUp" text="Value +   (%.1f %s)"/>
+        <text name="cine_ch_valueDown" text="Value -   (%.1f %s)"/>
+        <text name="cine_ch_pointDelete" text="Delete point"/>
+        <text name="cine_ch_pointTitle" text="%s - point at %.1f s"/>
+        <text name="cine_ch_pointAdd" text="Add point here (%.1f s)"/>
+        <text name="cine_ch_clear" text="Remove the channel curve"/>
+        <text name="cine_ch_clearSpeed" text="Remove the curve (back to route point speeds)"/>
+        <text name="cine_ch_empty" text="Click into the graph to create the first point. The current course is kept."/>
+        <text name="cine_ch_hint" text="click = new point, drag = time and value, right click = point mode, Delete = remove"/>
+        <text name="cine_menu_env" text="Scene environment: %s"/>
+        <text name="cine_menu_envTitle" text="Scene environment"/>
+        <text name="cine_env_unchanged" text="unchanged"/>
+        <text name="cine_menu_envHourUp" text="Time: %s (hour steps)"/>
+        <text name="cine_menu_envHourUpFine" text="Time: %s (15 min steps)"/>
+        <text name="cine_menu_envHourClear" text="Time: unchanged"/>
+        <text name="cine_menu_envSeason" text="Season: %s"/>
+        <text name="cine_menu_envSeasonClear" text="Season: unchanged"/>
+        <text name="cine_menu_envWeather" text="Weather: %s"/>
+        <text name="cine_menu_envWeatherTitle" text="Weather"/>
+        <text name="cine_menu_envWeatherClear" text="Weather: unchanged"/>
+        <text name="cine_menu_envClear" text="Clear environment settings"/>
+        <text name="cine_season_spring" text="Spring"/>
+        <text name="cine_season_summer" text="Summer"/>
+        <text name="cine_season_autumn" text="Autumn"/>
+        <text name="cine_season_winter" text="Winter"/>
+        <text name="cine_weather_SUN" text="Sunny"/>
+        <text name="cine_weather_CLOUDY" text="Cloudy"/>
+        <text name="cine_weather_RAIN" text="Rain"/>
+        <text name="cine_weather_SNOW" text="Snow"/>
+        <text name="cine_weather_HAIL" text="Hail"/>
+        <text name="cine_weather_FOG" text="Fog"/>
+        <text name="cine_status_env" text="Environment: %s"/>
+        <text name="cine_msg_nothingToDelete" text="Nothing to delete"/>
+        <text name="input_CINE_SNAP" text="Cinema Studio: timeline snapping (on / off)"/>
+        <text name="input_CINE_EDIT_MODE" text="Cinema Studio: edit mode (overwrite / insert)"/>
+        <text name="input_CINE_SPLIT" text="Cinema Studio: split the block at the playhead"/>
+        <text name="cine_msg_snapOn" text="Snapping on (hold Shift while dragging to turn it off)"/>
+        <text name="cine_msg_snapOff" text="Snapping off"/>
+        <text name="cine_msg_editMode_insert" text="Edit mode: insert (following blocks move aside)"/>
+        <text name="cine_msg_editMode_overwrite" text="Edit mode: overwrite (overlapped blocks are trimmed)"/>
+        <text name="cine_msg_nothingToCopy" text="Nothing to copy"/>
+        <text name="cine_msg_duplicated" text="Selection duplicated after itself"/>
+        <text name="cine_msg_split" text="Block split at the playhead"/>
+        <text name="cine_msg_splitNot" text="This mode can only be split where its progress does not matter (follow, look from a point, static camera)"/>
+        <text name="cine_msg_splitTooShort" text="The playhead is too close to the block edge (each part needs at least 1 s)"/>
+        <text name="cine_msg_replaceNeedsTarget" text="This block has no vehicle to aim the new mode at"/>
+        <text name="cine_msg_replaced" text="Block mode: %s"/>
+        <text name="cine_menu_blockSplit" text="Split block at the playhead"/>
+        <text name="cine_menu_blockReplace" text="Change block mode"/>
+        <text name="cine_menu_blockDuplicate" text="Duplicate selection after itself"/>
+        <text name="cine_menu_blockRipple" text="Cut out and close the gap"/>
+        <text name="cine_status_edit" text="Snapping: %s   Editing: %s"/>
+        <text name="cine_status_on" text="on"/>
+        <text name="cine_status_off" text="off"/>
+        <text name="cine_status_mode_overwrite" text="overwrite"/>
+        <text name="cine_status_mode_insert" text="insert"/>
+        <text name="cine_hs_edit" text="Editing clips on the timeline (the same rules for everything)"/>
+        <text name="cine_hk_sel" text="click, Shift + click, drag on empty space"/>
+        <text name="cine_hd_sel" text="select, add to / remove from the selection, rectangle selection; a click on empty space clears it"/>
+        <text name="cine_hk_move" text="drag the body"/>
+        <text name="cine_hd_move" text="moves the whole selection (blocks with their K-frames, focus points, actions, vehicle drives); an overlapped block is trimmed or pushed according to O"/>
+        <text name="cine_hk_trim" text="drag a block edge"/>
+        <text name="cine_hd_trim" text="trims the block from either side (grab the edge above or below the K-frames), the other end stays; a shortened flight keeps its motion and gets a K-frame at the edge"/>
+        <text name="cine_hk_copy" text="Ctrl + drag"/>
+        <text name="cine_hd_copy" text="copies the selection to a new place"/>
+        <text name="cine_hk_snap" text="J, Shift while dragging"/>
+        <text name="cine_hd_snap" text="snapping to the edges of things, the playhead and zero; Shift turns it off while dragging"/>
+        <text name="cine_hk_editmode" text="O"/>
+        <text name="cine_hd_editmode" text="edit mode: overwrite (overlapped parts are trimmed) / insert (following ones move aside)"/>
+        <text name="cine_hk_split" text="U"/>
+        <text name="cine_hd_split" text="split the block at the playhead (flight, follow, spotlight, static camera)"/>
+        <text name="cine_hk_ripple" text="Backspace"/>
+        <text name="cine_hd_ripple" text="delete and leave the gap: the camera holds its last pose in it (Delete closes the gap)"/>
+        <text name="cine_menu_pinOff" text="Actions when the run is moved: move with it"/>
+        <text name="cine_menu_pinOn" text="Actions when the run is moved: stay in place"/>
+        <text name="cine_tb_play" text="Play"/>
+        <text name="cine_tb_play_h" text="Play from the playhead, press again to stop (Space)"/>
+        <text name="cine_tb_playStart" text="From start"/>
+        <text name="cine_tb_playStart_h" text="Play from the start of the shot (Enter)"/>
+        <text name="cine_tb_playAll" text="All shots"/>
+        <text name="cine_tb_playAll_h" text="Play all shots in a row from the first to the last"/>
+        <text name="cine_tb_undo" text="Undo"/>
+        <text name="cine_tb_undo_h" text="Undo the last edit (Ctrl + Z)"/>
+        <text name="cine_tb_redo" text="Redo"/>
+        <text name="cine_tb_redo_h" text="Redo the undone edit (Ctrl + Y)"/>
+        <text name="cine_tb_snap" text="Snap"/>
+        <text name="cine_tb_snap_h" text="Snapping while dragging (J); hold Shift while dragging to turn it off"/>
+        <text name="cine_tb_mode_overwrite" text="Overwrite"/>
+        <text name="cine_tb_mode_insert" text="Insert"/>
+        <text name="cine_tb_mode_h" text="Edit mode: overwrite overlapped blocks, or insert and push the following ones aside (O)"/>
+        <text name="cine_tb_split" text="Split"/>
+        <text name="cine_tb_split_h" text="Split the block at the playhead (U)"/>
+        <text name="cine_tb_delete" text="Delete"/>
+        <text name="cine_tb_delete_h" text="Delete selected and close the gap (Delete); Backspace leaves the gap and the camera holds in it"/>
+        <text name="cine_tb_action" text="+ Action"/>
+        <text name="cine_tb_action_h" text="Add a camera at the playhead: orbit, follow, static camera…"/>
+        <text name="cine_tb_addCamera" text="+ Camera"/>
+        <text name="cine_tb_actionPerson_h" text="Add a character action at the playhead: get in, get out, carry an item…"/>
+        <text name="cine_tb_actionObj_h" text="Add an object action at the playhead: gate, lights, production, hose…"/>
+        <text name="cine_tb_more" text="More"/>
+        <text name="cine_tb_more_h" text="Clipboard, side panel and step history"/>
+        <text name="cine_tb_info" text="Status"/>
+        <text name="cine_tb_info_h" text="Editor status: blocks, focal length, flight speed, what you control, speeds at the playhead"/>
+        <text name="cine_hint_expandAll" text="click: expand all rows (vehicle actions, props, objects, points of interest)"/>
+        <text name="cine_hint_collapseAll" text="click: collapse all rows (camera and main rows stay)"/>
+        <text name="input_CINE_KEY_PASS" text="Cinema Studio: pass through the K-frame (smooth / stop / corner)"/>
+        <text name="cine_msg_pass" text="Pass through the K-frame: %s"/>
+        <text name="cine_msg_passNoKey" text="Select a flight K-frame or put the playhead on one"/>
+        <text name="cine_pass_auto" text="Smooth"/>
+        <text name="cine_pass_auto_d" text="curve through the points, no speed jump"/>
+        <text name="cine_pass_stop" text="Stop"/>
+        <text name="cine_pass_stop_d" text="slows down, stops, starts again"/>
+        <text name="cine_pass_corner" text="Corner"/>
+        <text name="cine_pass_corner_d" text="straight into the point and out of it"/>
+        <text name="cine_pass_custom" text="Custom shape"/>
+        <text name="cine_menu_keyEase" text="Ease in and out: %s"/>
+        <text name="cine_ease_short" text="short"/>
+        <text name="cine_ease_medium" text="medium"/>
+        <text name="cine_ease_long" text="long"/>
+        <text name="cine_menu_keyCurveAuto" text="Automatic path at the K-frame (remove handles)"/>
+        <text name="cine_span_title" text="Span %d - %d"/>
+        <text name="cine_span_straight" text="Straight line"/>
+        <text name="cine_span_curve" text="Curved"/>
+        <text name="cine_span_stops" text="Point to point (stop at both ends)"/>
+        <text name="cine_span_constant" text="Constant speed"/>
+        <text name="cine_menu_profile" text="Flight speed profile"/>
+        <text name="cine_profile_uniform" text="Uniform - inner K-frames rotation only (times follow speed)"/>
+        <text name="cine_profile_constant" text="Constant speed - recompute K-frame times"/>
+        <text name="cine_menu_keyFree" text="Rotation only - speed and time set by neighbouring K-frames"/>
+        <text name="cine_msg_keyFree" text="Rotation-only K-frame: its time and speed come from the neighbouring K-frames. Give it its own time again in its menu."/>
+        <text name="cine_curve_keyFreeLabel" text="%.1f m/s · rotation only"/>
+        <text name="cine_profile_easeInOut" text="Slow start and slow end (moves K-frame times)"/>
+        <text name="cine_profile_accelerate" text="Start from standstill, then steady speed (moves K-frame times)"/>
+        <text name="cine_profile_decelerate" text="Steady speed, then stop (moves K-frame times)"/>
+        <text name="cine_profile_ramp_in" text="Ramp up: %.1f s"/>
+        <text name="cine_profile_ramp_out" text="Ramp down: %.1f s"/>
+        <text name="cine_curve_hump" text="speed bump - try Flight speed profile"/>
+        <text name="cine_hint_curveHandle" text="drag sideways: how long the ease in / out takes | Shift both sides | right button default"/>
+        <text name="cine_curve_keyLabel" text="%.1f m/s · ease in %d %% · ease out %d %%"/>
+        <text name="cine_status_pass" text="pass: %s"/>
+        <text name="cine_hk_pass" text="Y"/>
+        <text name="cine_hd_pass" text="cycle how the camera passes the selected K-frame: smooth, stop, corner (straight)"/>
+        <text name="cine_hk_free" text="K-frame menu"/>
+        <text name="cine_hd_free" text="Rotation only: the K-frame has no time or speed of its own, the camera passes it smoothly. Whole flight: block menu, Flight speed profile, Uniform"/>
+        <text name="cine_hk_easeHandle" text="K-frame handles (V)"/>
+        <text name="cine_hd_easeHandle" text="on the speed curve drag sideways for the length of the ease in and out; Shift both sides"/>
+        <text name="cine_hk_pathHandle" text="path handles (M)"/>
+        <text name="cine_hd_pathHandle" text="from above, the selected K-frame's handles bend the path; Ctrl makes a corner, right button restores the curve"/>
+        <text name="cine_top_prev_h" text="Previous shot · PgUp"/>
+        <text name="cine_top_shot_h" text="Shot and its position · click opens the shot menu"/>
+        <text name="cine_top_next_h" text="Next shot · PgDn"/>
+        <text name="cine_top_new_h" text="New empty shot · N"/>
+        <text name="cine_top_reset" text="Vehicles to start"/>
+        <text name="cine_top_reset_h" text="Return vehicles to start and the playhead to the beginning · R"/>
+        <text name="cine_top_vehAt" text="Vehicles to time"/>
+        <text name="cine_top_vehAt_h" text="Place vehicles where they will be at the playhead time · B"/>
+        <text name="cine_top_follow" text="Vehicles follow"/>
+        <text name="cine_top_follow_h" text="Vehicles follow the playhead: they stand where they will be at that time (off = only a marker on the route)"/>
+        <text name="cine_msg_followOn" text="Vehicles follow the playhead."/>
+        <text name="cine_msg_followOff" text="Vehicles stay put, only a marker on the route."/>
+        <text name="cine_top_topdown" text="Top view"/>
+        <text name="cine_top_topdown_h" text="Top-down view for planning the camera path and vehicle routes · M"/>
+        <text name="cine_top_pick" text="Pick object"/>
+        <text name="cine_top_pick_h" text="Pick an object in the scene: actions around it, aim at it, add a vehicle · T"/>
+        <text name="cine_top_cross" text="Center"/>
+        <text name="cine_top_cross_h" text="Crosshair in the middle of the view; with a person or vehicle selected it shows where a right-click route point lands (while looking around with F)"/>
+        <text name="cine_top_clean" text="Clean view"/>
+        <text name="cine_top_clean_h" text="Hide the editor and show a clean picture; H or Esc brings it back · H"/>
+        <text name="cine_top_env" text="Environment"/>
+        <text name="cine_top_env_h" text="Time of day, season and weather applied on playback"/>
+        <text name="cine_top_camera" text="Camera %d/%d"/>
+        <text name="cine_top_camera_h" text="Shot cameras: switch, new, delete · C switches"/>
+        <text name="cine_top_time" text="%.1f s / %.1f s"/>
+        <text name="cine_top_time_h" text="Playhead time / shot length"/>
+        <text name="cine_top_save" text="Save"/>
+        <text name="cine_top_save_h" text="Save the shot · Ctrl + S (also saved continuously)"/>
+        <text name="cine_top_help_h" text="All keys and what they do · F1"/>
+        <text name="cine_top_close_h" text="Close the editor · Esc"/>
+        <text name="cine_tb_zoomOut_h" text="Zoom the timeline out · Alt + wheel"/>
+        <text name="cine_tb_zoomIn_h" text="Zoom the timeline in · Alt + wheel"/>
+        <text name="cine_tb_all" text="All"/>
+        <text name="cine_tb_at" text="at %.1f s"/>
+        <text name="cine_tb_key" text="+ K-frame"/>
+        <text name="cine_tb_key_h" text="K-frame at the playhead: position and zoom in a Flight, zoom in a mode, extends the Flight in a gap · K"/>
+        <text name="cine_tb_again_h" text="Last added action, again at the playhead"/>
+        <text name="cine_tb_actionVeh_h" text="Add a vehicle action at the playhead: lights, beacon, tools…"/>
+        <text name="cine_add_title" text="Add at %.1f s"/>
+        <text name="cine_add_target" text="Target: %s"/>
+        <text name="cine_add_noTarget" text="pick in the scene"/>
+        <text name="cine_add_targetTitle" text="Action target"/>
+        <text name="cine_add_pickTarget" text="Pick in the scene… (T)"/>
+        <text name="cine_add_foot" text="Esc closes · a new action squeezes into the gap after the playhead"/>
+        <text name="cine_add_g_auto" text="The camera moves around the target by itself"/>
+        <text name="cine_add_g_keys" text="The camera follows your K-frames"/>
+        <text name="cine_add_g_still" text="The camera stands still"/>
+        <text name="cine_add_orbit" text="Orbit"/>
+        <text name="cine_add_orbit_d" text="circles around the target"/>
+        <text name="cine_add_follow" text="Follow"/>
+        <text name="cine_add_follow_d" text="drives behind, beside or in front of the target"/>
+        <text name="cine_add_dronie" text="Dronie"/>
+        <text name="cine_add_dronie_d" text="flies away and up, looking back"/>
+        <text name="cine_add_rocket" text="Rocket"/>
+        <text name="cine_add_rocket_d" text="rises straight above the target"/>
+        <text name="cine_add_helix" text="Helix"/>
+        <text name="cine_add_helix_d" text="spirals out and up"/>
+        <text name="cine_add_approach" text="Approach"/>
+        <text name="cine_add_approach_d" text="flies in to the target from afar"/>
+        <text name="cine_add_boomerang" text="Boomerang"/>
+        <text name="cine_add_boomerang_d" text="an oval around the target and back"/>
+        <text name="cine_add_flight" text="Flight"/>
+        <text name="cine_add_flight_d" text="free path, rotation from the K-frames"/>
+        <text name="cine_add_spotlight" text="Track from a point"/>
+        <text name="cine_add_spotlight_d" text="follows the K-frames and aims at the target"/>
+        <text name="cine_add_static" text="Static camera"/>
+        <text name="cine_add_static_d" text="where the free camera is, no target"/>
+        <text name="cine_add_lookAt" text="Aim at target"/>
+        <text name="cine_add_lookAt_d" text="the Flight aims at the target from the playhead"/>
+        <text name="cine_msg_pickTarget" text="Click the object that becomes the action target (Esc cancels)"/>
+        <text name="cine_help_close" text="F1, Esc or a click closes"/>
+        <text name="cine_menu_more" text="More"/>
+        <text name="cine_menu_modeParams" text="Mode settings"/>
+        <text name="cine_menu_shotSettings" text="Shot settings"/>
+        <text name="cine_menu_shots" text="Shots"/>
+        <text name="cine_menu_historyOn" text="Step history: on"/>
+        <text name="cine_menu_historyOff" text="Step history: off"/>
+        <text name="cine_tb_zoomAll_h" text="Show the whole shot"/>
+        <text name="cine_tb_curves" text="Curves"/>
+        <text name="cine_tb_curves_h" text="Curve panel: zoom, speed and axes (V)"/>
+        <text name="cine_tb_big" text="Bigger"/>
+        <text name="cine_tb_big_h" text="Bigger timeline: three times more room for actor rows (again = back)"/>
+        <text name="cine_msg_rowsBig" text="Timeline enlarged: more actor rows at once."/>
+        <text name="cine_msg_rowsSmall" text="Timeline small again."/>
+        <text name="cine_tb_advance_off" text="After K: stay"/>
+        <text name="cine_tb_advance_on" text="After K: +%s s"/>
+        <text name="cine_tb_advance_h" text="What K does: playhead stays, or jumps one step ahead and the flight extends to it (click = toggle)"/>
+        <text name="cine_tb_advanceStep_h" text="How many seconds to jump after K: presets or enter your own"/>
+        <text name="cine_adv_title" text="Advance after K"/>
+        <text name="cine_adv_on" text="Advance after K"/>
+        <text name="cine_adv_step" text="By %s s"/>
+        <text name="cine_adv_custom" text="Enter value…"/>
+        <text name="cine_adv_prompt" text="Seconds to jump after K (0.1–60)"/>
+        <text name="cine_msg_advanceOn" text="After K the playhead jumps %s s ahead and the flight extends."/>
+        <text name="cine_msg_advanceOff" text="After K the playhead stays put."/>
+        <text name="cine_msg_advanceBad" text="The step must be a number of seconds, e.g. 2 or 1.5."/>
+        <text name="cine_lane_gate" text="Gate"/>
+        <text name="cine_lane_lamp" text="Building lights"/>
+        <text name="cine_lane_production" text="Production"/>
+        <text name="cine_act_gate_1" text="Open"/>
+        <text name="cine_act_gate_0" text="Close"/>
+        <text name="cine_act_lamp_1" text="Lights on"/>
+        <text name="cine_act_lamp_0" text="Lights off"/>
+        <text name="cine_act_production_1" text="Start production"/>
+        <text name="cine_act_production_0" text="Stop production"/>
+        <text name="cine_objects_label" text="Objects (%d)"/>
+        <text name="cine_objects_title" text="Objects in the world"/>
+        <text name="cine_objects_hint" text="right click on a row: action at playhead; drag a marker in time"/>
+        <text name="cine_objects_empty" text="no objects: add gates, buildings and machines with T or right click"/>
+        <text name="cine_objects_pick" text="Add object with T…"/>
+        <text name="cine_object_noActions" text="no actions: right click = add action at playhead"/>
+        <text name="cine_object_missing" text="object missing in the world"/>
+        <text name="cine_object_actionHere" text="Action at playhead (%.1f s)"/>
+        <text name="cine_object_lookAt" text="Point camera at object"/>
+        <text name="cine_object_delete" text="Remove object"/>
+        <text name="cine_object_toPlayhead" text="Move to playhead (%.1f s)"/>
+        <text name="cine_object_add" text="Add to Objects"/>
+        <text name="cine_object_addAction" text="Add with action at playhead (%.1f s)"/>
+        <text name="cine_actor_addObject" text="World object (gate, building, machine)…"/>
+        <text name="cine_menu_addObject" text="To Objects (machine actions without driving)"/>
+        <text name="cine_msg_pickObject" text="Click a gate, a building with lights or production, or a machine."/>
+        <text name="cine_msg_noObject" text="No gate, building or machine here."/>
+        <text name="cine_msg_objectAlready" text="That object is already on the timeline."/>
+        <text name="cine_msg_objectAdded" text="Object %s is on the timeline; right click its row to add an action."/>
+        <text name="cine_msg_objectAction" text="Action %s at %.1f s."/>
+        <text name="cine_hint_objects" text="click the arrow: collapse / expand, right click: group menu, drag the name: move"/>
+        <text name="cine_hint_object" text="right click: action at playhead, point camera, remove"/>
+        <text name="cine_hint_objAction" text="drag: move in time (Shift fine), right click: duration, move, delete"/>
+        <text name="cine_lane_hose" text="Hose"/>
+        <text name="cine_act_hose_1" text="Connect hose"/>
+        <text name="cine_act_hose_0" text="Disconnect hose"/>
+        <text name="cine_hose_in" text="inlet"/>
+        <text name="cine_hose_out" text="outlet"/>
+        <text name="cine_hose_n" text="hose %d"/>
+        <text name="cine_hose_pond" text="pond"/>
+        <text name="cine_hose_connectFirst" text="connect it in the game first, the action remembers the connection"/>
+        <text name="cine_hint_rowDrag" text="drag the name up or down: moves the row"/>
+        <text name="cine_hist_title" text="History (%d)"/>
+        <text name="cine_hist_empty" text="No steps yet"/>
+        <text name="cine_hist_origin" text="Original state"/>
+        <text name="cine_hist_more" text="%s (+%d)"/>
+        <text name="cine_hist_agoNow" text="just now"/>
+        <text name="cine_hist_agoMin" text="%d min ago"/>
+        <text name="cine_hist_agoHour" text="%d h ago"/>
+        <text name="cine_hist_agoDay" text="%d d ago"/>
+        <text name="cine_hist_current" text="now"/>
+        <text name="cine_hist_keyAdded" text="K-frame added"/>
+        <text name="cine_hist_keyRemoved" text="K-frame deleted"/>
+        <text name="cine_hist_keys" text="K-frames edited"/>
+        <text name="cine_hist_blockAdded" text="Block added"/>
+        <text name="cine_hist_blockRemoved" text="Block deleted"/>
+        <text name="cine_hist_blocks" text="Blocks edited"/>
+        <text name="cine_hist_focusAdded" text="Focus point added"/>
+        <text name="cine_hist_focusRemoved" text="Focus point deleted"/>
+        <text name="cine_hist_focus" text="Focus points edited"/>
+        <text name="cine_hist_curves" text="Curves edited"/>
+        <text name="cine_hist_camera" text="Camera edited"/>
+        <text name="cine_hist_cameras" text="Cameras changed"/>
+        <text name="cine_hist_actorAdded" text="Vehicle added"/>
+        <text name="cine_hist_actorRemoved" text="Vehicle removed"/>
+        <text name="cine_hist_actors" text="Vehicles edited"/>
+        <text name="cine_hist_env" text="Scene environment changed"/>
+        <text name="cine_hist_settings" text="Shot settings changed"/>
+        <text name="cine_msg_historyRestored" text="Shot returned to state: %s"/>
+        <text name="cine_hint_key" text="click selects | drag moves within the block | Ctrl + wheel speed | Shift + wheel zoom | right button menu"/>
+        <text name="cine_hint_block" text="click select (again: piece between K-frames) | drag move (O overwrite / insert) | U split | right button settings"/>
+        <text name="cine_hint_mark" text="click select | drag along the block | Shift + wheel zoom | Ctrl + wheel speed"/>
+        <text name="cine_hint_focus" text="click select | drag in time | right button menu"/>
+        <text name="cine_hint_action" text="click select | drag move (Ctrl copy) | the handle at the end changes the length"/>
+        <text name="cine_hint_drive" text="click select | drag moves the vehicle run with its actions (vehicle menu: actions stay in place)"/>
+        <text name="cine_hint_routePoint" text="click selects the point | right button point menu"/>
+        <text name="cine_hint_empty" text="click clears the selection | drag selects a rectangle | Shift adds"/>
+        <text name="cine_hint_ruler" text="click and drag move the playhead (snaps to edges and K-frames, not with Shift) | middle button pans the timeline"/>
+        <text name="cine_hint_playheadMode" text="click toggles whether only the ruler moves the playhead, or clicking and dragging blocks and K-frames too"/>
+        <text name="cine_ph_ruler" text="Ruler"/>
+        <text name="cine_ph_anywhere" text="Anywhere"/>
+        <text name="cine_hint_collapse" text="collapse / expand the actions of the vehicle"/>
+        <text name="cine_hint_compact" text="collapse / expand all: action lanes of every vehicle and the focus row (camera and vehicles stay)"/>
+        <text name="cine_hint_rowScroll" text="vehicle rows that do not fit: drag here or use the wheel over the rows to scroll"/>
+        <text name="cine_hint_eye" text="show / hide the route"/>
+        <text name="input_CINE_COPY" text="Cinema Studio: copy the selected things on the timeline"/>
+        <text name="input_CINE_PASTE" text="Cinema Studio: paste the copied things at the playhead"/>
+        <text name="cine_msg_copied" text="Copied: %d"/>
+        <text name="cine_msg_pasted" text="Pasted: %d"/>
+        <text name="cine_msg_clipboardEmpty" text="The clipboard is empty (select things on the timeline and copy them)"/>
+        <text name="cine_msg_nothingToPaste" text="Nowhere to paste (actions need a vehicle)"/>
+        <text name="cine_menu_copy" text="Copy selection"/>
+        <text name="cine_menu_paste" text="Paste at the playhead (%d items)"/>
+        <text name="cine_tb_copy_h" text="Copy the selected things (,); works between shots too"/>
+        <text name="cine_tb_paste_h" text="Paste the copied things at the playhead (.); actions into the selected vehicle"/>
+        <text name="cine_hk_part" text="click a selected block"/>
+        <text name="cine_hd_part" text="switches between the whole block and the piece between K-frames under the cursor (flight, follow, spotlight, static camera); a piece can be moved, copied, deleted or taken out as its own block, Shift adds neighbouring pieces"/>
+        <text name="cine_hk_history" text="History button"/>
+        <text name="cine_hd_history" text="list of steps; click a step to return the shot to its state (undoable), the wheel scrolls; steps are kept for a week, also after restarting the game"/>
+        <text name="cine_hk_clip" text=", and ."/>
+        <text name="cine_hd_clip" text="copy the selected things and paste them at the playhead (also into another shot)"/>
+        <text name="cine_msg_dock_off" text="Side panel off"/>
+        <text name="cine_msg_playOccupied" text="Playback not started: you are sitting in %s - get out, the vehicle is meant to drive by itself"/>
+        <text name="cine_msg_playBlocked" text="Playback not started - %s: %s"/>
+        <text name="cine_param_focal2" text="Zoom at the end (mm)"/>
+        <text name="cine_menu_autoZoomOn" text="Auto zoom: on (the vehicle keeps its size)"/>
+        <text name="cine_menu_autoZoomOff" text="Auto zoom: off (click to turn on)"/>
+        <text name="cine_menu_routeSpanFaster" text="Route span %d > %d (step %d km/h): %.0f km/h"/>
+        <text name="cine_menu_laneFor" text="%s for %.0f s"/>
+        <text name="cine_menu_laneTitle" text="%s from %.1f s"/>
+        <text name="cine_menu_actionLonger" text="Length: %.1f s"/>
+        <text name="cine_menu_detailOn" text="Vehicle detail (all action lanes)"/>
+        <text name="cine_menu_detailOff" text="Vehicle detail: back to all vehicles"/>
+        <text name="cine_menu_resetHere" text="Vehicles to their position at the playhead"/>
+        <text name="cine_msg_actorsResetHere" text="Vehicles placed where they are at %.1f s."/>
+        <text name="cine_msg_detailOn" text="Vehicle detail %s (X brings all vehicles back)"/>
+        <text name="cine_msg_detailOff" text="Back to all vehicles."/>
+        <text name="cine_msg_detailNone" text="Detail needs at least one vehicle on the timeline."/>
+        <text name="input_CINE_RESET_HERE" text="Cinema Studio: vehicles to the playhead position"/>
+        <text name="input_CINE_DETAIL" text="Cinema Studio: vehicle detail (action lanes)"/>
+        <text name="cine_lane_lights" text="Lights"/>
+        <text name="cine_lane_workLights" text="Work lights"/>
+        <text name="cine_lane_highBeam" text="High beam"/>
+        <text name="cine_lane_beacon" text="Beacon"/>
+        <text name="cine_lane_turn" text="Indicators"/>
+        <text name="cine_lane_courseplay" text="Courseplay"/>
+        <text name="cine_lane_motor" text="Engine"/>
+        <text name="cine_lane_fold" text="Folding"/>
+        <text name="cine_lane_lower" text="Tool down"/>
+        <text name="cine_lane_turnOn" text="Tool on"/>
+        <text name="cine_lane_tip" text="Tipping"/>
+        <text name="cine_lane_discharge" text="Unloading"/>
+        <text name="cine_lane_pipe" text="Pipe"/>
+        <text name="cine_lane_honk" text="Horn"/>
+        <text name="cine_act_seat_1" text="Get in"/>
+        <text name="cine_act_seat_0" text="Get out"/>
+        <text name="cine_act_door_1" text="Open"/>
+        <text name="cine_act_door_0" text="Close"/>
+        <text name="cine_lane_seat" text="Get in/out"/>
+        <text name="cine_lane_door" text="Doors and animations"/>
+        <text name="cine_act_carry_1" text="Carry an object"/>
+        <text name="cine_act_carry_0" text="Put the object down"/>
+        <text name="cine_lane_carry" text="Carrying"/>
+        <text name="cine_msg_pickCarry" text="Click the object the person picks up (pallet, canister, map crate…)"/>
+        <text name="cine_msg_noCarry" text="Nothing here can be picked up"/>
+        <text name="cine_ch_carryX" text="Object: left / right"/>
+        <text name="cine_ch_carryY" text="Object: height"/>
+        <text name="cine_ch_carryZ" text="Object: forward / back"/>
+        <text name="cine_ch_carryRx" text="Object: tilt forward"/>
+        <text name="cine_ch_carryRz" text="Object: tilt sideways"/>
+        <text name="cine_ch_carryRy" text="Object: turn"/>
+        <text name="cine_menu_personAction" text="Add character action..."/>
+        <text name="cine_lane_droneStart" text="Drone: start"/>
+        <text name="cine_lane_droneHome" text="Drone: return"/>
+        <text name="cine_lane_droneGenerator" text="Drone: station"/>
+        <text name="cine_param_focal" text="Focal length at the start (mm)"/>
+        <text name="cine_menu_bankOff" text="Banking into turns: off (click to turn on)"/>
+        <text name="cine_menu_bankOn" text="Banking into turns: %d° (click to change)"/>
+        <text name="cine_msg_playTimelineOn" text="Timeline during playback: shown"/>
+        <text name="cine_msg_playTimelineOff" text="Timeline during playback: hidden"/>
+        <text name="input_CINE_PLAY_TIMELINE" text="Cinema Studio: timeline during playback (show / hide)"/>
+        <text name="cine_hs_move" text="Movement and view"/>
+        <text name="cine_hk_fly" text="W A S D"/>
+        <text name="cine_hd_fly" text="fly"/>
+        <text name="cine_hk_vert" text="Q / E"/>
+        <text name="cine_hd_vert" text="down / up"/>
+        <text name="cine_hk_look" text="mouse"/>
+        <text name="cine_hd_look" text="look around; F or Alt turns the cursor on"/>
+        <text name="cine_hk_speed" text="wheel"/>
+        <text name="cine_hd_speed" text="fly speed (Shift faster)"/>
+        <text name="cine_hk_lens" text="Shift + wheel"/>
+        <text name="cine_hd_lens" text="camera zoom: the block under the cursor, else the focal length at the playhead; 1–8 lenses 14–400 mm"/>
+        <text name="cine_hs_keys" text="K-frames and timeline"/>
+        <text name="cine_hk_key" text="K / right click"/>
+        <text name="cine_hd_key" text="K-frame into the block under the playhead, never splits it: in a flight the camera pose and focal length, in other blocks after flying away or turning the whole block camera (position, direction, focal length), otherwise a focal K-frame; in a gap it extends the previous flight or starts a new one"/>
+        <text name="cine_hk_prevnext" text="← →"/>
+        <text name="cine_hd_prevnext" text="playhead one whole second back / forward"/>
+        <text name="cine_hk_raise" text="↑ ↓  /  Ctrl + ↑ ↓"/>
+        <text name="cine_hd_raise" text="controlled row up / down (also while flying); with Ctrl raise / lower the selected K-frame or standing camera (Shift coarse)"/>
+        <text name="cine_hk_scrub" text="click and drag on the timeline"/>
+        <text name="cine_hd_scrub" text="move in time; dragging a K-frame moves it in time within its block"/>
+        <text name="cine_hk_step" text="Shift + ← →"/>
+        <text name="cine_hd_step" text="previous / next K-frame, block start or end on the controlled row"/>
+        <text name="cine_hk_delete" text="Delete"/>
+        <text name="cine_hd_delete" text="delete the selection (blocks, K-frames, actions, focus points); after a block the gap closes and what follows moves forward"/>
+        <text name="cine_hk_ends" text="Home / End"/>
+        <text name="cine_hd_ends" text="start / end of the shot"/>
+        <text name="cine_hk_play" text="Space"/>
+        <text name="cine_hd_play" text="play / pause; Enter from the start with pre-roll"/>
+        <text name="cine_hk_playtl" text="I"/>
+        <text name="cine_hd_playtl" text="during playback shows / hides the timeline"/>
+        <text name="cine_hk_curves" text="V"/>
+        <text name="cine_hd_curves" text="channels panel: list of ranged values on the left (zoom, vehicle speed from 0 to the machine maximum, arm axes), eye = show the curve; graph of the selected channel on the right: click = new point, drag = time and value, right click on a point = lines / steps / curve, Delete removes; route point marks on top"/>
+        <text name="cine_hs_blocks" text="Timeline blocks (wheel over a block)"/>
+        <text name="cine_hk_bwheel" text="Ctrl + wheel"/>
+        <text name="cine_hd_bwheel" text="Ctrl + wheel: speed of the K-frame or length of the block under the cursor (a flight speeds up as a whole), for a vehicle the route section; otherwise under the playhead of the active row"/>
+        <text name="cine_hk_bspeed" text="Alt + wheel"/>
+        <text name="cine_hd_bspeed" text="zoom the timeline in / out around the cursor (without a cursor around the playhead)"/>
+        <text name="cine_hk_bmenu" text="right click on a block"/>
+        <text name="cine_hd_bmenu" text="menu: focal, speed, parameters, remove"/>
+        <text name="cine_hk_bease" text="middle button + drag"/>
+        <text name="cine_hd_bease" text="ease in (left half) / ease out (right half)"/>
+        <text name="cine_hk_blen" text="dragging a block edge"/>
+        <text name="cine_hd_blen" text="block length; a flight keeps its motion (shortening adds a K-frame at the edge)"/>
+        <text name="cine_hs_vehicles" text="Vehicles and objects"/>
+        <text name="cine_hk_pick" text="T"/>
+        <text name="cine_hd_pick" text="pick an object: mode from the playhead, aim at it, vehicle with a route"/>
+        <text name="cine_hk_topdown" text="M"/>
+        <text name="cine_hd_topdown" text="top view: click adds a path point, drag sets the direction"/>
+        <text name="cine_hk_tab" text="Tab"/>
+        <text name="cine_hd_tab" text="switch camera / vehicle route"/>
+        <text name="cine_hk_route" text="route line from above"/>
+        <text name="cine_hd_route" text="click adds, drag moves, right click or Delete removes"/>
+        <text name="cine_hk_colour" text="square next to a row"/>
+        <text name="cine_hd_colour" text="path colour"/>
+        <text name="cine_hk_actions" text="right click on a vehicle row"/>
+        <text name="cine_hd_actions" text="vehicle actions: lights, engine, tools…"/>
+        <text name="cine_hk_detail" text="X"/>
+        <text name="cine_hd_detail" text="vehicle detail: all action lanes"/>
+        <text name="cine_hk_home" text="B / R"/>
+        <text name="cine_hd_home" text="vehicles to the playhead position / to start"/>
+        <text name="cine_hk_dock" text="P"/>
+        <text name="cine_hd_dock" text="side panel (left / right / off)"/>
+        <text name="cine_hk_cursor" text="Alt or F"/>
+        <text name="cine_hd_cursor" text="turns the cursor on and off"/>
+        <text name="cine_hs_shot" text="Shot and view"/>
+        <text name="cine_hk_shot" text="N"/>
+        <text name="cine_hd_shot" text="new shot"/>
+        <text name="cine_hk_shots" text="PgUp / PgDn"/>
+        <text name="cine_hd_shots" text="previous / next shot"/>
+        <text name="cine_hk_clean" text="H"/>
+        <text name="cine_hd_clean" text="clean preview without controls"/>
+        <text name="cine_hk_frame" text="L / G"/>
+        <text name="cine_hd_frame" text="letterbox / thirds grid"/>
+        <text name="cine_hk_undo" text="Ctrl + Z / Ctrl + Y"/>
+        <text name="cine_hd_undo" text="undo / redo"/>
+        <text name="cine_hk_save" text="Ctrl + S"/>
+        <text name="cine_hd_save" text="save (also saved automatically on close)"/>
+        <text name="cine_hk_close" text="Esc"/>
+        <text name="cine_hd_close" text="stop, close menu, picking or the editor"/>
+        <text name="cine_msg_segmentSqueezed" text="The block fits the gap before the next block (shortened)."/>
+        <text name="cine_msg_segmentOverwrote" text="The block overwrote the start of the next block."/>
+        <text name="cine_menu_dropHere" text="Restart in place (1 m above ground, then falls)"/>
+        <text name="cine_menu_teleport" text="Move elsewhere (with cargo; wheel rotates)"/>
+        <text name="cine_msg_pickTeleport" text="Click where to put the things. Wheel rotates (Shift fine), right button or Esc cancels."/>
+        <text name="cine_box_tb" text="Box (%d)"/>
+        <text name="cine_box_tb_h" text="Box for things in the world: vehicles, sets, pallets and bales move elsewhere with their cargo, keeping their layout"/>
+        <text name="cine_box_pick" text="Add to the box - click in the scene (again = take out)"/>
+        <text name="cine_box_place" text="Unpack here - click a place (%d)"/>
+        <text name="cine_box_clear" text="Empty the box (things stay where they are)"/>
+        <text name="cine_box_vehicleIn" text="Into the box"/>
+        <text name="cine_box_vehicleOut" text="Out of the box"/>
+        <text name="cine_msg_boxPick" text="Click the vehicles and bales to move. Esc or T ends picking."/>
+        <text name="cine_msg_boxIn" text="In the box: %s (things: %d)"/>
+        <text name="cine_msg_boxOut" text="Out of the box: %s (things: %d)"/>
+        <text name="cine_msg_boxEmpty" text="The box is empty or its things are not in the world."/>
+        <text name="cine_msg_boxPlaced" text="Moved: %d. They will drop to the ground."/>
+        <text name="cine_msg_dropped" text="Vehicle moved and dropping."/>
+        <text name="cine_hk_drop" text="T → vehicle: restart / move"/>
+        <text name="cine_hd_drop" text="moves the vehicle or the set to a clicked place or restarts it in place; physics then lets it drop"/>
+        <text name="cine_hk_lanes" text="arrows on the selected vehicle"/>
+        <text name="cine_hd_lanes" text="jump between route points, action and drive starts and ends (like camera K-frames)"/>
+        <text name="cine_hk_camline" text="top view: click on the camera path line"/>
+        <text name="cine_hd_camline" text="inserts a K-frame right on the flight path (the motion stays the same)"/>
+        <text name="cine_menu_speedStep" text="Speed step: %d km/h"/>
+        <text name="cine_msg_speedStep" text="Speed step: %d km/h"/>
+        <text name="input_CINE_SPEED_UP" text="Cinema Studio: block speed at the playhead + (faster)"/>
+        <text name="input_CINE_SPEED_DOWN" text="Cinema Studio: block speed at the playhead − (slower)"/>
+        <text name="cine_hk_blockspeed" text="+ / −  block speed at the playhead"/>
+        <text name="cine_hd_blockspeed" text="speeds up or slows down the block under the playhead (a flight with its K-frames, a mode by its length); step by the speed step"/>
+        <text name="cine_msg_noBlockAtPlayhead" text="There is no camera block under the playhead."/>
+        <text name="cine_hk_eye" text="eye next to a row"/>
+        <text name="cine_hd_eye" text="shows or hides the camera or vehicle route in the world and in the top view (crossed out = hidden); a hidden route can not be grabbed or clicked into"/>
+        <text name="cine_msg_routeSpeed" text="Route span %d > %d: %.0f km/h"/>
+        <text name="input_CINE_CAMERA_NEXT" text="Cinema Studio: next camera of the shot"/>
+        <text name="cine_row_cameraN" text="Camera %d/%d"/>
+        <text name="cine_menu_camera" text="Cameras of the shot: %d of %d"/>
+        <text name="cine_menu_cameraTitle" text="Cameras of the shot"/>
+        <text name="cine_menu_cameraSwitch" text="Switch to camera %d"/>
+        <text name="cine_menu_cameraCurrent" text="> Camera %d (selected)"/>
+        <text name="cine_menu_cameraNew" text="New camera (vehicles stay)"/>
+        <text name="cine_menu_cameraDelete" text="Delete the selected camera"/>
+        <text name="cine_msg_camera" text="Camera %d of %d"/>
+        <text name="cine_msg_onlyCamera" text="The shot has only one camera."/>
+        <text name="cine_hk_camera" text="C / camera row name"/>
+        <text name="cine_hd_camera" text="switches to the shot's next camera (each has its own blocks and focus points; vehicles are shared); right button on the row name offers switching, a new camera and deleting one; shots are saved with the savegame"/>
+        <text name="cine_menu_addAction" text="Add a camera action from the playhead time"/>
+        <text name="cine_msg_pickForAction" text="Click the object the camera should work around (Esc cancels)"/>
+        <text name="cine_status_active" text="Controlling: %s (Tab switches)"/>
+        <text name="input_CINE_UPDOWN_1" text="Cinema Studio: fly down"/>
+        <text name="input_CINE_UPDOWN_2" text="Cinema Studio: fly up"/>
+        <text name="cine_menu_driver" text="Driver: %s"/>
+        <text name="cine_driver_none" text="none"/>
+        <text name="cine_msg_noDriverSeat" text="This vehicle has no driver seat"/>
+        <text name="cine_menu_editActor" text="Edit the vehicle route"/>
+        <text name="cine_shake_0" text="off"/>
+        <text name="cine_shake_1" text="subtle"/>
+        <text name="cine_shake_2" text="medium"/>
+        <text name="cine_shake_3" text="strong"/>
+        <text name="cine_curve_empty" text="Speed curve: the camera has no block yet (K creates a flight)"/>
+
+        <text name="cine_help_title" text="Controls"/>
+        <text name="cine_status_keyOf" text="K-frame %d / %d"/>
+        <text name="cine_status_blocks" text="blocks %d"/>
+        <text name="cine_status_keySpeed" text="K-frame %.1f m/s"/>
+        <text name="cine_status_hold" text="camera holds (gap between blocks)"/>
+        <text name="cine_msg_needBlock" text="Playback needs at least one block (K creates a flight)"/>
+        <text name="cine_msg_noRoom" text="A new block does not fit here (the next one starts right after)"/>
+        <text name="cine_msg_modePosition" text="The mode sets the camera position in this block – to change the block camera, fly to the spot and press K"/>
+        <text name="cine_msg_staticMoved" text="The block camera now matches your camera: position, direction and focal length"/>
+        <text name="cine_msg_blockFocal" text="Focal length at the block edge: %.0f mm"/>
+        <text name="cine_msg_blockLength" text="Block length: %.1f s"/>
+        <text name="cine_msg_keySpeed" text="Camera speed at the K-frame: %.1f m/s"/>
+        <text name="cine_mode_flight" text="Flight"/>
+        <text name="cine_menu_keyFaster" text="Speed at the K-frame: %.1f m/s"/>
+        <text name="cine_menu_keyAuto" text="K-frame speed from its neighbours (automatic)"/>
+        <text name="cine_menu_blockFaster" text="Block speed (length %.1f s)"/>
+        <text name="cine_menu_flightAverage" text="Constant speed in the block (average %.1f m/s)"/>
+        <text name="cine_menu_smoothOn" text="Blend from the previous block: yes (click: cut)"/>
+        <text name="cine_menu_smoothOff" text="Blend from the previous block: no, cut (click: blend)"/>
+        <text name="cine_menu_smoothLonger" text="Smooth blend: %.1f s"/>
+        <text name="cine_hint_edge" text="drag trims the block (the other end stays) | right button block settings"/>
+        <text name="cine_hint_curveKey" text="drag up and down: camera speed at the K-frame | handles sideways: ease in and out | right button K-frame menu"/>
+        <text name="cine_ch_hintSpeed" text="points = flight K-frames: up and down speed, the selected one's handles sideways ease length | red = jerk | right button menu"/>
+        <text name="cine_person_me" text="Me (player)"/>
+        <text name="cine_msg_personAdded" text="Character added where you stand now. Click the walking route from above."/>
+        <text name="cine_menu_faceLeft" text="Turn left / right by 45° (now %+.0f°)"/>
+        <text name="cine_menu_faceWalk" text="Remove facing (follow the path)"/>
+        <text name="cine_msg_exitPoint" text="The exit point belongs to the get-out action on the timeline (Get in/out lane) and stays at the vehicle. Once the get-out is deleted, it can be deleted together with its whole route part."/>
+        <text name="cine_menu_exitManual" text="Allow moving the exit point by hand"/>
+        <text name="cine_menu_exitAuto" text="Exit point back to the vehicle (automatic)"/>
+        <text name="cine_msg_exitManual" text="The exit point can now be dragged and no longer snaps to the vehicle. The character gets out at the door and walks to it."/>
+        <text name="cine_menu_faceSet" text="Set facing at this point"/>
+        <text name="cine_msg_faceSet" text="Character facing: drag the arrow tip at the point (top view, M)"/>
+        <text name="cine_msg_faceAzimuth" text="Point %d: the character faces azimuth %.0f° (Shift = no snapping)"/>
+        <text name="cine_msg_speedPastEnd" text="Speed has no effect after arriving at the end of the route. Add the point before the final zero."/>
+        <text name="cine_ch_trimSpeed" text="Trim curve to the end of the drive (%d points past the end)"/>
+        <text name="cine_ch_stopHere" text="Stop here (%.1f s, stand %.0f s)"/>
+        <text name="cine_msg_stopStanding" text="The vehicle almost stands here, nothing to stop"/>
+        <text name="cine_msg_stopLength" text="Standing %.1f s, the rest of the drive moved"/>
+        <text name="cine_ch_routeEnd" text="end of route %.1f s - the curve does nothing past it"/>
+        <text name="cine_msg_speedEndsFixed" text="The start and end of the speed curve are fixed (start and arrival at the end of the route)."/>
+        <text name="cine_actor_addButton" text="+ Add to scene"/>
+        <text name="cine_actor_addTitle" text="Add to scene"/>
+        <text name="cine_actor_addVehicle" text="Vehicle (pick in the scene)"/>
+        <text name="cine_actor_addMe" text="Person (me - the player)"/>
+        <text name="cine_actor_addFocusRow" text="Point of interest row"/>
+        <text name="cine_actor_addProps" text="Prop placed on reset"/>
+        <text name="cine_props_label" text="Props (%d)"/>
+        <text name="cine_props_title" text="Props"/>
+        <text name="cine_props_hint" text="reset (R, Play) puts them back where they were remembered"/>
+        <text name="cine_props_empty" text="right-click to add a vehicle, implement, pallet, bale or heap"/>
+        <text name="cine_props_expand" text="Expand the list"/>
+        <text name="cine_props_collapse" text="Collapse the list"/>
+        <text name="cine_props_hide" text="Hide empty group"/>
+        <text name="cine_prop_addVehicle" text="Vehicle, implement or pallet - pick in the scene"/>
+        <text name="cine_prop_addBale" text="Bale - pick in the scene"/>
+        <text name="cine_prop_addHeap" text="Heap (manure, hay, straw...) - click it"/>
+        <text name="cine_prop_resetAll" text="Put all in place now"/>
+        <text name="cine_prop_title" text="Prop: %s"/>
+        <text name="cine_prop_recapture" text="Remember how it is now (position, height, amount)"/>
+        <text name="cine_prop_placeNow" text="Put in place now"/>
+        <text name="cine_prop_up" text="Height (0.25 m steps): %.2f"/>
+        <text name="cine_prop_radiusUp" text="Heap radius: %.0f m"/>
+        <text name="cine_prop_delete" text="Remove from the list"/>
+        <text name="cine_prop_kind_vehicle" text="vehicle"/>
+        <text name="cine_prop_kind_bale" text="bale"/>
+        <text name="cine_prop_kind_heap" text="heap"/>
+        <text name="cine_prop_bale" text="Bale - %s"/>
+        <text name="cine_prop_heap" text="Heap - %s (%.1f m3)"/>
+        <text name="cine_prop_statusOk" text="place %s"/>
+        <text name="cine_prop_statusMissing" text="missing in the scene (place %s)"/>
+        <text name="cine_prop_statusRespawn" text="missing - reset creates it again (%s)"/>
+        <text name="cine_prop_statusHeap" text="reset clears it within %.0f m and tips it again"/>
+        <text name="cine_msg_pickProp_vehicle" text="Click a vehicle, implement or pallet."/>
+        <text name="cine_msg_pickProp_bale" text="Click a bale."/>
+        <text name="cine_msg_pickProp_heap" text="Click a heap."/>
+        <text name="cine_msg_noBale" text="There is no bale under the cursor."/>
+        <text name="cine_msg_noHeap" text="There is no heap under the cursor."/>
+        <text name="cine_prop_addField" text="Field - click into it (state is taken where you click)"/>
+        <text name="cine_prop_kind_field" text="field"/>
+        <text name="cine_msg_pickProp_field" text="Click into the field where it has the state you want to restore."/>
+        <text name="cine_msg_noField" text="There is no field under the cursor."/>
+        <text name="cine_field_name" text="Field %d"/>
+        <text name="cine_field_noFruit" text="no crop"/>
+        <text name="cine_field_ready" text="ready"/>
+        <text name="cine_field_cut" text="harvested"/>
+        <text name="cine_field_withered" text="withered"/>
+        <text name="cine_field_growing" text="growing (%d)"/>
+        <text name="cine_field_resetOff" text="(field reset off)"/>
+        <text name="cine_field_resetOnItem" text="Restore fields on reset: on (click to turn off)"/>
+        <text name="cine_field_resetOffItem" text="Restore fields on reset: off (click to turn on)"/>
+        <text name="cine_field_warnTitle" text="Warning: restoring fields changes your game"/>
+        <text name="cine_field_warn1" text="Reset (R, playing from start) sets the fields in the shot to their remembered state."/>
+        <text name="cine_field_warn2" text="It is a real game change: harvest, plowing and fertilizing are overwritten and saved with the savegame."/>
+        <text name="cine_field_warn3" text="Better film in a separate savegame or save a copy first."/>
+        <text name="cine_field_warnYes" text="Turn on - I understand"/>
+        <text name="cine_field_warnNo" text="Cancel"/>
+        <text name="cine_msg_fieldsOn" text="Restoring fields on reset is on."/>
+        <text name="cine_msg_fieldsOff" text="Restoring fields on reset is off: fields stay as they are."/>
+        <text name="cine_field_applyNow" text="Set the field now"/>
+        <text name="cine_field_fruit" text="Crop: %s"/>
+        <text name="cine_field_growth" text="Growth: %s (%d)"/>
+        <text name="cine_field_ground" text="Ground: %s"/>
+        <text name="cine_field_sprayType" text="Fertilizer type: %s"/>
+        <text name="cine_field_sprayLevel" text="Fertilized: %d / %d"/>
+        <text name="cine_field_lime" text="Lime: %d / %d"/>
+        <text name="cine_field_plow" text="Plowed: %d / %d"/>
+        <text name="cine_field_roller" text="Rolled: %d / %d"/>
+        <text name="cine_field_stubble" text="Stubble shredded: %d / %d"/>
+        <text name="cine_field_weed" text="Weeds: %d / %d"/>
+        <text name="cine_field_stone" text="Stones: %d / %d"/>
+        <text name="cine_field_clearOn" text="Clear windrows and straw: yes"/>
+        <text name="cine_field_clearOff" text="Clear windrows and straw: no"/>
+        <text name="cine_field_windrows" text="Windrows of straw, grass or hay…"/>
+        <text name="cine_field_windrowTitle" text="Windrows – %s"/>
+        <text name="cine_field_windrowNone" text="none"/>
+        <text name="cine_field_windrowType" text="Windrows: %s"/>
+        <text name="cine_field_windrowAmount" text="Amount: %d l per metre"/>
+        <text name="cine_field_windrowFromCp" text="%d segments from the Courseplay course"/>
+        <text name="cine_field_windrowCount" text="%d parallel windrows"/>
+        <text name="cine_field_windrowLoadCp" text="Take windrows from a Courseplay course (loaded in a vehicle)"/>
+        <text name="cine_field_windrowSpacing" text="Parallel every: %d m"/>
+        <text name="cine_field_windrowStatus" text="windrows %d"/>
+        <text name="cine_msg_windrowCp" text="Windrows from the Courseplay course: %d segments (%s)."/>
+        <text name="cine_msg_windrowNoCp" text="No vehicle has a Courseplay course loaded for this field: windrows are parallel."/>
+        <text name="cine_status_fieldsWait" text="Preparing fields…"/>
+        <text name="cine_ground_NONE" text="untreated"/>
+        <text name="cine_ground_STUBBLE_TILLAGE" text="stubble tilled"/>
+        <text name="cine_ground_CULTIVATED" text="cultivated"/>
+        <text name="cine_ground_SEEDBED" text="seedbed"/>
+        <text name="cine_ground_PLOWED" text="plowed"/>
+        <text name="cine_ground_ROLLED_SEEDBED" text="rolled seedbed"/>
+        <text name="cine_ground_RIDGE" text="ridges"/>
+        <text name="cine_ground_SOWN" text="sown"/>
+        <text name="cine_ground_DIRECT_SOWN" text="direct sown"/>
+        <text name="cine_ground_PLANTED" text="planted"/>
+        <text name="cine_ground_RIDGE_SOWN" text="sown in ridges"/>
+        <text name="cine_ground_ROLLER_LINES" text="roller lines"/>
+        <text name="cine_ground_HARVEST_READY" text="ready to harvest"/>
+        <text name="cine_ground_HARVEST_READY_OTHER" text="ready to harvest"/>
+        <text name="cine_ground_GRASS" text="grass"/>
+        <text name="cine_ground_GRASS_CUT" text="cut grass"/>
+        <text name="cine_spray_NONE" text="none"/>
+        <text name="cine_spray_FERTILIZER" text="fertilizer"/>
+        <text name="cine_spray_LIME" text="lime"/>
+        <text name="cine_spray_MANURE" text="manure"/>
+        <text name="cine_spray_LIQUID_MANURE" text="slurry"/>
+        <text name="cine_msg_propAlready" text="This object is already in the list."/>
+        <text name="cine_msg_propAdded" text="Object %s: reset puts it here."/>
+        <text name="cine_msg_propRecaptured" text="%s: remembered as it is now."/>
+        <text name="cine_msg_propPlaced" text="%s is in place."/>
+        <text name="cine_msg_propMissing" text="An object is missing in the scene."/>
+        <text name="cine_msg_propsReset" text="Objects are in place."/>
+        <text name="cine_hint_props" text="arrow collapses the list | drag the name: moves the group | right-click: add an object"/>
+        <text name="cine_hint_prop" text="right-click: remember position, height, place now, remove"/>
+        <text name="cine_actor_addHelper" text="Helper (AI character)"/>
+        <text name="cine_hint_addActor" text="add a vehicle, yourself or a helper to the timeline"/>
+        <text name="cine_msg_pickActor" text="Click the vehicle that should be an actor."/>
+        <text name="cine_msg_helperAdded" text="%s added. Click from above where they should stand, then click the walking route."/>
+        <text name="cine_msg_helperPlaced" text="Helper moved to the new spot. Further clicks draw the walking route."/>
+        <text name="cine_msg_routePointAdded" text="Route point %d added (right click in the scene; select the Camera row for camera keys)"/>
+        <text name="cine_menu_rename" text="Rename"/>
+        <text name="cine_rename_prompt" text="Timeline row name (empty = default)"/>
+        <text name="cine_menu_helperLook" text="Look: %s"/>
+        <text name="cine_menu_wardrobe" text="Dress in the game wardrobe"/>
+        <text name="cine_msg_noWardrobe" text="The game wardrobe cannot be opened here."/>
+        <text name="cine_look_reset" text="Original look"/>
+        <text name="cine_person_self" text="Me"/>
+        <text name="cine_lane_attach" text="Hitching"/>
+        <text name="cine_act_attach_1" text="Hitch"/>
+        <text name="cine_act_attach_0" text="Detach"/>
+        <text name="cine_act_attachNone" text="No trailer nearby"/>
+        <text name="cine_lane_toolboxDoor" text="Canister cabinet"/>
+        <text name="cine_act_toolboxDoor_1" text="Open canister cabinet"/>
+        <text name="cine_act_toolboxDoor_0" text="Close canister cabinet"/>
+        <text name="cine_lane_pump" text="Pump"/>
+        <text name="cine_act_pump_1" text="Start pump"/>
+        <text name="cine_act_pump_0" text="Stop pump"/>
+        <text name="cine_lane_canisters" text="Canisters in trailer"/>
+        <text name="cine_act_canisters_1" text="Fill the box"/>
+        <text name="cine_act_canisters_0" text="Empty the box"/>
+        <text name="cine_act_canisters_full" text="Full box: %s"/>
+    </texts>
+</l10n>

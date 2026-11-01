@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<modDesc descVersion="104">
+    <author>sapavlisna</author>
+    <version>0.5.0.0</version>
+    <title>
+        <en>Cinema Studio (Beta)</en>
+        <cz>Cinema Studio (Beta)</cz>
+    </title>
+    <description>
+        <en><![CDATA[Camera editor for cinematic shots without HUD: plan the camera, the vehicles and the scene, then play the shot again and again.
+
+- Free flying camera with keyframes on a timeline, smooth or sharp transitions, speed curves and a lens from 14 to 400 mm.
+- 17 camera modes: Flight, Orbit, Dronie, Rocket, Helix, Approach, Follow, Follow from a point, Drive-by, Parallel, Top-down, Two targets, Boomerang, Static, Mounted on a vehicle, Vehicle camera and Character view - also around a moving vehicle.
+- Vehicles and characters as actors: clicked or recorded routes, speed per segment, reversing, pauses, getting in and out.
+- Actions at exact times: lights, beacon, engine, folding, lowering, turning on tools, tipping, pipe, gates, building lights, production.
+- Every playback from the start restores the scene: vehicles, fill levels, pallets, bales, heaps, time of day, season, weather and optionally fields (crop, growth, soil, windrows of straw or grass).
+- Several shots and several cameras per shot, letterbox, rule of thirds, handheld shake, undo history.
+
+Open the editor: Alt + C. Record a drive while sitting in a vehicle: Alt + V. Press F1 in the editor for all shortcuts (all rebindable in controls).
+A guide with examples is in the folder manual of the mod (unzip it to read).
+Optional: with Courseplay or Spray Drone installed, the editor offers their actions too.
+Single player only.]]></en>
+        <cz><![CDATA[Editor kamery pro filmové záběry bez HUD: naplánuješ kameru, vozidla i scénu a záběr pak přehráváš pořád dokola.
+
+- Volně létající kamera s K-framy na časové ose, plynulé nebo ostré přechody, křivky rychlosti a ohnisko 14–400 mm.
+- 17 režimů kamery: Let, Orbit, Dronie, Rocket, Helix, Přiblížení, Sledování, Sledování z bodu, Průjezd, Souběžná jízda, Kolmo shora, Dva cíle, Bumerang, Statická kamera, Připevnění na vozidlo, Kamera vozidla a Pohled postavy – i kolem jedoucího vozidla.
+- Vozidla a postavy jako herci: naklikané nebo nahrané trasy, rychlost po úsecích, couvání, pauzy, nastupování a vystupování.
+- Akce v přesném čase: světla, maják, motor, rozložení, spuštění a zapnutí nářadí, sklápění, výsypka, brány, světla budov, výroba.
+- Každé přehrání od začátku vrátí scénu: vozidla, naplnění, palety, balíky, hromady, čas, roční období, počasí a volitelně i pole (plodinu, růst, půdu, řádky slámy nebo trávy).
+- Víc záběrů a víc kamer v záběru, širokoúhlé pruhy, mřížka třetin, třes z ruky, historie úprav.
+
+Otevření editoru: Alt + C. Nahrání jízdy ve vozidle: Alt + V. V editoru F1 ukáže všechny zkratky (všechny jdou přenastavit v ovládání).
+Průvodce s ukázkami je ve složce manual v módu (zip je potřeba rozbalit).
+Volitelně: s nainstalovaným Courseplay nebo Spray Drone nabídne editor i jejich akce.
+Jen pro hru jednoho hráče.]]></cz>
+    </description>
+    <iconFilename>icon_cinemaStudio.dds</iconFilename>
+    <multiplayer supported="false"/>
+
+    <extraSourceFiles>
+        <sourceFile filename="scripts/CinemaMath.lua"/>
+        <sourceFile filename="scripts/CinemaPath.lua"/>
+        <sourceFile filename="scripts/CinemaShot.lua"/>
+        <sourceFile filename="scripts/CinemaModes.lua"/>
+        <sourceFile filename="scripts/CinemaRoute.lua"/>
+        <sourceFile filename="scripts/CinemaChannels.lua"/>
+        <sourceFile filename="scripts/CinemaCamera.lua"/>
+        <sourceFile filename="scripts/CinemaWorld.lua"/>
+        <sourceFile filename="scripts/CinemaEnvironment.lua"/>
+        <sourceFile filename="scripts/CinemaActions.lua"/>
+        <sourceFile filename="scripts/CinemaPerson.lua"/>
+        <sourceFile filename="scripts/CinemaProps.lua"/>
+        <sourceFile filename="scripts/CinemaObjects.lua"/>
+        <sourceFile filename="scripts/CinemaBox.lua"/>
+        <sourceFile filename="scripts/CinemaRecording.lua"/>
+        <sourceFile filename="scripts/CinemaRecorder.lua"/>
+        <sourceFile filename="scripts/CinemaHistory.lua"/>
+        <sourceFile filename="scripts/CinemaStorage.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorScreen.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorTools.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorMenu.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorDraw.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorChannels.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorSelection.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorToolbar.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorAddPanel.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorTimeline.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorSpans.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorHistory.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorProps.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorObjects.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorBox.lua"/>
+        <sourceFile filename="scripts/CinemaApi.lua"/>
+        <sourceFile filename="scripts/CinemaStudio.lua"/>    </extraSourceFiles>
+
+    <l10n filenamePrefix="translations/translation"/>
+
+    <actions>
+        <action name="CINE_OPEN" category="ONFOOT VEHICLE"/>
+        <action name="CINE_RECORD" category="ONFOOT VEHICLE"/>
+        <action name="CINE_UPDOWN" category="SYSTEM" axisType="FULL"/>
+        <action name="CINE_KEY_ADD" category="SYSTEM"/>
+        <action name="CINE_KEY_DELETE" category="SYSTEM"/>
+        <action name="CINE_KEY_BACKSPACE" category="SYSTEM"/>
+        <action name="CINE_KEY_PREV" category="SYSTEM"/>
+        <action name="CINE_KEY_NEXT" category="SYSTEM"/>
+        <action name="CINE_KEY_RAISE" category="SYSTEM"/>
+        <action name="CINE_KEY_LOWER" category="SYSTEM"/>
+        <action name="CINE_PLAY" category="SYSTEM"/>
+        <action name="CINE_PLAY_START" category="SYSTEM"/>
+        <action name="CINE_HOME" category="SYSTEM"/>
+        <action name="CINE_END" category="SYSTEM"/>
+        <action name="CINE_CLEAN" category="SYSTEM"/>
+        <action name="CINE_HELP" category="SYSTEM"/>
+        <action name="CINE_UNDO" category="SYSTEM"/>
+        <action name="CINE_REDO" category="SYSTEM"/>
+        <action name="CINE_SAVE" category="SYSTEM"/>
+        <action name="CINE_PICK" category="SYSTEM"/>
+        <action name="CINE_TOPDOWN" category="SYSTEM"/>
+        <action name="CINE_RESET_ACTORS" category="SYSTEM"/>
+        <action name="CINE_RESET_HERE" category="SYSTEM"/>
+        <action name="CINE_DETAIL" category="SYSTEM"/>
+        <action name="CINE_PLAY_TIMELINE" category="SYSTEM"/>
+        <action name="CINE_CAMERA_NEXT" category="SYSTEM"/>
+        <action name="CINE_SPEED_UP" category="SYSTEM"/>
+        <action name="CINE_SPEED_DOWN" category="SYSTEM"/>
+        <action name="CINE_CYCLE_TARGET" category="SYSTEM"/>
+        <action name="CINE_CURVES" category="SYSTEM"/>
+        <action name="CINE_SHOT_NEW" category="SYSTEM"/>
+        <action name="CINE_SHOT_PREV" category="SYSTEM"/>
+        <action name="CINE_SHOT_NEXT" category="SYSTEM"/>
+        <action name="CINE_LETTERBOX" category="SYSTEM"/>
+        <action name="CINE_GRID" category="SYSTEM"/>
+        <action name="CINE_CURSOR" category="SYSTEM"/>
+        <action name="CINE_DOCK" category="SYSTEM"/>
+        <action name="CINE_SNAP" category="SYSTEM"/>
+        <action name="CINE_EDIT_MODE" category="SYSTEM"/>
+        <action name="CINE_SPLIT" category="SYSTEM"/>
+        <action name="CINE_KEY_PASS" category="SYSTEM"/>
+        <action name="CINE_COPY" category="SYSTEM"/>
+        <action name="CINE_PASTE" category="SYSTEM"/>
+        <action name="CINE_LENS_1" category="SYSTEM"/>
+        <action name="CINE_LENS_2" category="SYSTEM"/>
+        <action name="CINE_LENS_3" category="SYSTEM"/>
+        <action name="CINE_LENS_4" category="SYSTEM"/>
+        <action name="CINE_LENS_5" category="SYSTEM"/>
+        <action name="CINE_LENS_6" category="SYSTEM"/>
+        <action name="CINE_LENS_7" category="SYSTEM"/>
+        <action name="CINE_LENS_8" category="SYSTEM"/>
+    </actions>
+
+    <inputBinding>
+        <actionBinding action="CINE_OPEN">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_c"/>
+        </actionBinding>
+        <actionBinding action="CINE_RECORD">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_v"/>
+        </actionBinding>
+        <actionBinding action="CINE_UPDOWN">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_e" axisComponent="+" inputComponent="+" index="1"/>
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_q" axisComponent="-" inputComponent="+" index="1"/>
+        </actionBinding>
+        <actionBinding action="CINE_KEY_ADD">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_k"/>
+        </actionBinding>
+        <actionBinding action="CINE_KEY_DELETE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_delete"/>
+        </actionBinding>
+        <actionBinding action="CINE_KEY_BACKSPACE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_backspace"/>
+        </actionBinding>
+        <actionBinding action="CINE_KEY_PREV">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_left"/>
+        </actionBinding>
+        <actionBinding action="CINE_KEY_NEXT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_right"/>
+        </actionBinding>
+        <actionBinding action="CINE_KEY_RAISE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_up"/>
+        </actionBinding>
+        <actionBinding action="CINE_KEY_LOWER">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_down"/>
+        </actionBinding>
+        <actionBinding action="CINE_PLAY">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_space"/>
+        </actionBinding>
+        <actionBinding action="CINE_PLAY_START">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_return"/>
+        </actionBinding>
+        <actionBinding action="CINE_HOME">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_home"/>
+        </actionBinding>
+        <actionBinding action="CINE_END">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_end"/>
+        </actionBinding>
+        <actionBinding action="CINE_CLEAN">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_h"/>
+        </actionBinding>
+        <actionBinding action="CINE_HELP">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_f1"/>
+        </actionBinding>
+        <actionBinding action="CINE_UNDO">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_z"/>
+        </actionBinding>
+        <actionBinding action="CINE_REDO">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_y"/>
+        </actionBinding>
+        <actionBinding action="CINE_SAVE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_s"/>
+        </actionBinding>
+        <actionBinding action="CINE_PICK">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_t"/>
+        </actionBinding>
+        <actionBinding action="CINE_TOPDOWN">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_m"/>
+        </actionBinding>
+        <actionBinding action="CINE_RESET_HERE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_b"/>
+        </actionBinding>
+        <actionBinding action="CINE_DETAIL">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_x"/>
+        </actionBinding>
+        <actionBinding action="CINE_PLAY_TIMELINE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_i"/>
+        </actionBinding>
+        <actionBinding action="CINE_CAMERA_NEXT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_c"/>
+        </actionBinding>
+        <actionBinding action="CINE_SPEED_UP">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_equals"/>
+        </actionBinding>
+        <actionBinding action="CINE_SPEED_DOWN">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_minus"/>
+        </actionBinding>
+        <actionBinding action="CINE_RESET_ACTORS">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_r"/>
+        </actionBinding>
+        <actionBinding action="CINE_CYCLE_TARGET">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_tab"/>
+        </actionBinding>
+        <actionBinding action="CINE_CURVES">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_v"/>
+        </actionBinding>
+        <actionBinding action="CINE_SHOT_NEW">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_n"/>
+        </actionBinding>
+        <actionBinding action="CINE_SHOT_PREV">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_pageup"/>
+        </actionBinding>
+        <actionBinding action="CINE_SHOT_NEXT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_pagedown"/>
+        </actionBinding>
+        <actionBinding action="CINE_LETTERBOX">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_l"/>
+        </actionBinding>
+        <actionBinding action="CINE_GRID">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_g"/>
+        </actionBinding>
+        <actionBinding action="CINE_CURSOR">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_f"/>
+        </actionBinding>
+        <actionBinding action="CINE_DOCK">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_p"/>
+        </actionBinding>
+        <actionBinding action="CINE_SNAP">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_j"/>
+        </actionBinding>
+        <actionBinding action="CINE_EDIT_MODE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_o"/>
+        </actionBinding>
+        <actionBinding action="CINE_SPLIT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_u"/>
+        </actionBinding>
+        <actionBinding action="CINE_KEY_PASS">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_y"/>
+        </actionBinding>
+        <actionBinding action="CINE_COPY">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_comma"/>
+        </actionBinding>
+        <actionBinding action="CINE_PASTE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_period"/>
+        </actionBinding>
+        <actionBinding action="CINE_LENS_1">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_1"/>
+        </actionBinding>
+        <actionBinding action="CINE_LENS_2">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_2"/>
+        </actionBinding>
+        <actionBinding action="CINE_LENS_3">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_3"/>
+        </actionBinding>
+        <actionBinding action="CINE_LENS_4">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_4"/>
+        </actionBinding>
+        <actionBinding action="CINE_LENS_5">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_5"/>
+        </actionBinding>
+        <actionBinding action="CINE_LENS_6">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_6"/>
+        </actionBinding>
+        <actionBinding action="CINE_LENS_7">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_7"/>
+        </actionBinding>
+        <actionBinding action="CINE_LENS_8">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_8"/>
+        </actionBinding>
+    </inputBinding>
+</modDesc>

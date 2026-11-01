@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+
+<html lang="cs">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title data-t="t001">Cinema Studio – průvodce</title>
+<style>
+:root {
+  --bg: #101214;
+  --panel: #171a1d;
+  --panel2: #1e2226;
+  --line: #2c3137;
+  --text: #e6e8ea;
+  --muted: #9aa3ab;
+  --accent: #f2b33d;
+  --accent2: #6cc4d8;
+  --green: #8fc04a;
+  --red: #e0675a;
+  --violet: #b48ce0;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.6 "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+a { color: var(--accent2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); max-width: 1240px; margin: 0 auto; }
+nav.toc {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  padding: 28px 18px; border-right: 1px solid var(--line); font-size: 14px;
+}
+nav.toc .brand { font-weight: 700; letter-spacing: .04em; color: var(--accent); margin-bottom: 18px; font-size: 15px; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+nav.toc li { margin: 2px 0; }
+nav.toc li a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--muted); }
+nav.toc li a:hover { background: var(--panel2); color: var(--text); text-decoration: none; }
+nav.toc li.sub a { padding-left: 24px; font-size: 13px; }
+main { padding: 0 40px 80px; min-width: 0; }
+section { padding-top: 48px; }
+h1 { font-size: 40px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -.01em; }
+h2 { font-size: 27px; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 19px; margin: 28px 0 8px; }
+h4 { font-size: 16px; margin: 0 0 6px; }
+p { margin: 0 0 12px; }
+.lead { font-size: 18px; color: var(--muted); max-width: 760px; }
+.hero { padding-top: 40px; }
+.hero svg { width: 100%; height: auto; display: block; margin: 26px 0 10px; border-radius: var(--radius); border: 1px solid var(--line); }
+kbd {
+  display: inline-block; min-width: 1.6em; padding: 0 .45em; margin: 0 1px;
+  font: 600 13px/1.6 Consolas, monospace; text-align: center; color: var(--text);
+  background: var(--panel2); border: 1px solid #3a4047; border-bottom-width: 2px; border-radius: 5px;
+}
+.menu { color: var(--accent); font-weight: 600; }
+.menu::before { content: "„"; color: var(--muted); font-weight: 400; }
+.menu::after { content: "“"; color: var(--muted); font-weight: 400; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin: 16px 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+.card svg { width: 100%; height: 92px; display: block; margin-bottom: 10px; }
+.card p { color: var(--muted); font-size: 14.5px; margin: 0 0 6px; }
+.card .use { font-size: 13.5px; color: var(--text); }
+.card .use b { color: var(--green); font-weight: 600; }
+.tag { display: inline-block; font-size: 11.5px; padding: 1px 8px; border-radius: 99px; margin-left: 6px; vertical-align: 2px; border: 1px solid var(--line); color: var(--muted); }
+.tag.auto { color: var(--accent2); border-color: #2f5d68; }
+.tag.keys { color: var(--accent); border-color: #6a5320; }
+.tag.still { color: var(--violet); border-color: #4f3d66; }
+.tag.on { color: var(--green); border-color: #44602a; }
+.steps { counter-reset: step; list-style: none; padding: 0; margin: 14px 0; }
+.steps > li { counter-increment: step; position: relative; padding: 4px 0 14px 50px; }
+.steps > li::before {
+  content: counter(step); position: absolute; left: 0; top: 2px; width: 34px; height: 34px;
+  border-radius: 50%; background: var(--panel2); border: 1px solid var(--accent); color: var(--accent);
+  display: grid; place-items: center; font-weight: 700;
+}
+.steps > li b.t { display: block; font-size: 16.5px; margin-bottom: 2px; }
+.steps > li p { color: var(--muted); margin: 0; }
+.note { background: var(--panel); border-left: 3px solid var(--accent2); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; margin: 16px 0; color: var(--muted); }
+.note b { color: var(--text); }
+.note.warn { border-left-color: var(--accent); }
+figure { margin: 20px 0; }
+figure svg { width: 100%; height: auto; display: block; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 10px 0 18px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+td:first-child { white-space: nowrap; width: 1%; }
+.tablewrap { overflow-x: auto; }
+.acts { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin: 16px 0; }
+.acts .card ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 14.5px; }
+.acts .card li { margin: 2px 0; }
+.acts .card li b { color: var(--text); font-weight: 600; }
+.recipe { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; margin: 18px 0; }
+.recipe h3 { margin-top: 0; }
+.recipe .cast { font-size: 14px; color: var(--muted); margin-bottom: 10px; }
+.recipe .cast b { color: var(--text); }
+.recipe ol { margin: 0; padding-left: 20px; }
+.recipe ol li { margin: 5px 0; }
+.recipe .why { margin-top: 12px; font-size: 14px; color: var(--muted); }
+.recipe .why::before { content: "Proč to funguje: "; color: var(--green); font-weight: 600; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.lang { display: flex; gap: 6px; margin: -6px 0 16px; }
+.lang button { font: 600 12px/1 "Segoe UI", system-ui, sans-serif; padding: 5px 10px; border-radius: 6px; cursor: pointer;
+  color: var(--muted); background: var(--panel2); border: 1px solid var(--line); }
+.lang button[aria-pressed="true"] { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 16px; }
+  nav.toc ol { columns: 2; }
+  nav.toc li.sub { display: none; }
+  main { padding: 0 16px 60px; }
+  h1 { font-size: 30px; }
+  .two { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+<div class="brand" data-t="t002">CINEMA STUDIO</div>
+<div class="lang" role="group" aria-label="Jazyk / Language"><button data-lang="cz" type="button">CZ</button><button data-lang="en" type="button">EN</button></div>
+<ol>
+<li data-t="t003"><a href="#uvod">Co to je</a></li>
+<li data-t="t004"><a href="#obrazovka">Editor na první pohled</a></li>
+<li data-t="t005"><a href="#prvni">První záběr krok za krokem</a></li>
+<li data-t="t006"><a href="#herci">Herci: vozidla a postavy</a></li>
+<li class="sub" data-t="t007"><a href="#vozidla">Vozidla a trasy</a></li>
+<li class="sub" data-t="t008"><a href="#stav">Stav, nádrže, náklad</a></li>
+<li class="sub" data-t="t009"><a href="#postavy">Postavy</a></li>
+<li class="sub" data-t="t010"><a href="#predmety">Předměty, pole, objekty</a></li>
+<li data-t="t011"><a href="#kamery">Kamery</a></li>
+<li class="sub" data-t="t012"><a href="#rezimy">Všechny režimy</a></li>
+<li class="sub" data-t="t013"><a href="#zamereni">Míření a body zájmu</a></li>
+<li data-t="t014"><a href="#akce">Akce na časové ose</a></li>
+<li data-t="t015"><a href="#osa">Časová osa a plynulost</a></li>
+<li data-t="t016"><a href="#scena">Scéna, záběry, kamery</a></li>
+<li data-t="t017"><a href="#recepty">Recepty a inspirace</a></li>
+<li data-t="t362"><a href="#rozsireni">Rozšíření z jiných módů</a></li>
+<li data-t="t018"><a href="#klavesy">Všechny klávesy</a></li>
+</ol>
+</nav>
+<main>
+<section class="hero" id="uvod">
+<h1 data-t="t019">Cinema Studio</h1>
+<p class="lead" data-t="t020">Filmové záběry ve Farming Simulatoru 25 bez HUD a bez třesoucí se ruky. Kamera létá po tvých bodech nebo sama krouží kolem stroje. Vozidla jezdí po naklikaných trasách, rozsvěcují světla a rozkládají nářadí přesně ve chvíli, kterou určíš. Každé přehrání začne znovu od stejného začátku.</p>
+<svg aria-label="Kamera obletuje traktor na poli" data-t-aria="a362" role="img" viewbox="0 0 1000 300">
+<defs>
+<lineargradient id="sky" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1b2a3a"></stop><stop offset="1" stop-color="#3b3a33"></stop></lineargradient>
+<lineargradient id="field" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3a4a24"></stop><stop offset="1" stop-color="#1f2a14"></stop></lineargradient>
+</defs>
+<rect fill="url(#sky)" height="300" width="1000"></rect>
+<circle cx="820" cy="80" fill="#f2b33d" opacity=".85" r="34"></circle>
+<path d="M0 185 Q250 160 500 175 T1000 168 V300 H0Z" fill="url(#field)"></path>
+<g opacity=".8" stroke="#2c3a1a" stroke-width="2">
+<path d="M0 220 Q500 196 1000 208"></path><path d="M0 250 Q500 222 1000 236"></path><path d="M0 282 Q500 250 1000 266"></path>
+</g>
+<path d="M90 270 C 260 240, 380 215, 470 212" fill="none" stroke="#8fc04a" stroke-dasharray="2 9" stroke-linecap="round" stroke-width="3"></path>
+<g transform="translate(470,196)">
+<rect fill="#c0392b" height="18" rx="3" width="46" x="-30" y="-10"></rect>
+<rect fill="#a83226" fill-opacity=".9" height="22" rx="2" stroke="#6cc4d8" stroke-width="1.5" width="22" x="-2" y="-30"></rect>
+<circle cx="-20" cy="10" fill="#222" r="10"></circle><circle cx="12" cy="12" fill="#222" r="13"></circle>
+<circle cx="-20" cy="10" fill="#f2b33d" r="4"></circle><circle cx="12" cy="12" fill="#f2b33d" r="5"></circle>
+</g>
+<ellipse cx="470" cy="200" fill="none" rx="230" ry="62" stroke="#6cc4d8" stroke-dasharray="10 8" stroke-width="2.5"></ellipse>
+<g fill="#6cc4d8"><circle cx="240" cy="200" r="7"></circle><circle cx="470" cy="138" r="7"></circle><circle cx="700" cy="200" r="7"></circle><circle cx="470" cy="262" r="7"></circle></g>
+<g transform="translate(700,200)">
+<rect fill="#e6e8ea" height="26" rx="4" width="40" x="-6" y="-38"></rect>
+<path d="M34 -31 l14 -7 v26 l-14 -7z" fill="#e6e8ea"></path>
+<path d="M-6 -25 L-200 2" opacity=".5" stroke="#e6e8ea" stroke-dasharray="4 4" stroke-width="1"></path>
+</g>
+<text data-t="t021" fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="15" opacity=".8" x="34" y="44">Orbit kolem jedoucího traktoru</text>
+<text data-t="t022" fill="#9aa3ab" font-family="Segoe UI, sans-serif" font-size="13" x="34" y="66">trasa vozidla (zeleně) · dráha kamery (modře)</text>
+</svg>
+<div class="grid">
+<div class="card"><h4 data-t="t023">Kamera jako dron</h4><p data-t="t024">Orbit, Dronie, Rocket, Helix, Sledování, Průjezd a dalších deset režimů. Počítají se živě kolem cíle, takže drží i jedoucí stroj.</p></div>
+<div class="card"><h4 data-t="t025">Vozidla jako herci</h4><p data-t="t026">Naklikaná trasa, rychlost po úsecích, couvání, pauzy. K tomu akce v přesném čase: světla, maják, motor, rozložení, setí, sklápění, výsypka.</p></div>
+<div class="card"><h4 data-t="t027">Rychlost jako ve střižně</h4><p data-t="t028">Plynulý rozjezd a dojezd, zastavení v bodě, křivky rychlosti a zoomu. Ohnisko 14–400 mm, které se může měnit i během záběru.</p></div>
+<div class="card"><h4 data-t="t029">Vždy stejný začátek</h4><p data-t="t030">Play od začátku vrátí vozidla, náklad, palety i balíky na start a nastaví čas, roční období a počasí. Záběr můžeš točit pořád dokola.</p></div>
+</div>
+<p data-t="t031">Editor otevřeš klávesami <kbd>Alt</kbd>+<kbd>C</kbd>, pěšky i ve vozidle. <kbd>F1</kbd> v editoru ukáže všechny zkratky. Všechny jdou přenastavit v ovládání hry. Záběry se ukládají k savegame.</p>
+</section>
+<section id="obrazovka">
+<h2 data-t="t032">Editor na první pohled</h2>
+<p data-t="t033">Po otevření zmizí HUD a ovládáš volnou kameru. Nahoře je lišta záběru, dole časová osa, vedle volitelně boční panel (<kbd>P</kbd>).</p>
+<figure>
+<svg aria-label="Rozložení editoru" data-t-aria="a363" role="img" viewbox="0 0 1000 470">
+<rect fill="#14171a" height="470" width="1000" x="0" y="0"></rect>
+<rect fill="#1e2226" height="34" rx="6" stroke="#2c3137" width="980" x="10" y="10"></rect>
+<g fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="12.5">
+<text data-t="t034" x="22" y="32">‹ Záběr 1 ›  +   <tspan fill="#8fc04a">▶ Přehrát</tspan> · Od začátku · Všechny záběry</text>
+<text data-t="t035" fill="#9aa3ab" x="330" y="32">Vozidla na start · Vozidla do času · Shora · Vybrat objekt · Prostředí</text>
+<text data-t="t036" text-anchor="end" x="978" y="32">Kamera 1/2 · 12.4 s / 30.0 s · Uložit ✕</text>
+</g>
+<rect fill="#26323a" height="236" rx="6" width="980" x="10" y="52"></rect>
+<path d="M10 210 Q300 180 500 196 T990 188 V288 H10Z" fill="#33421f"></path>
+<path d="M120 270 C 300 240, 420 220, 520 216" fill="none" stroke="#8fc04a" stroke-dasharray="2 8" stroke-linecap="round" stroke-width="3"></path>
+<g fill="#8fc04a"><circle cx="120" cy="270" r="5"></circle><circle cx="300" cy="240" r="5"></circle><circle cx="520" cy="216" r="5"></circle></g>
+<path d="M180 120 C 330 90, 520 100, 760 150" fill="none" stroke="#6cc4d8" stroke-width="2.5"></path>
+<g fill="#6cc4d8"><rect height="12" transform="rotate(45 180 120)" width="12" x="174" y="114"></rect><rect height="12" transform="rotate(45 430 98)" width="12" x="424" y="92"></rect><rect height="12" transform="rotate(45 760 150)" width="12" x="754" y="144"></rect></g>
+<g fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="12" opacity=".9">
+<text data-t="t037" x="560" y="210">trasa vozidla a jeho body</text>
+<text data-t="t038" x="610" y="118">dráha kamery a K-framy</text>
+</g>
+<rect fill="#1e2226" height="28" rx="6" stroke="#2c3137" width="980" x="10" y="296"></rect>
+<text data-t="t039" fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="12.5" x="22" y="315">Zpět · Znovu   Magnet · Přepsat · Rozdělit · Smazat   − + Vše · Křivky · Větší · Více · Stav</text>
+<text data-t="t040" fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="12.5" text-anchor="end" x="978" y="315">Po K: stát   <tspan fill="#f2b33d" font-weight="600">+ KAMERA / + AKCE</tspan></text>
+<rect fill="#1a1d20" height="130" rx="6" stroke="#2c3137" width="980" x="10" y="330"></rect>
+<g fill="#9aa3ab" font-family="Consolas, monospace" font-size="11">
+<text x="130" y="346">0s</text><text x="330" y="346">5s</text><text x="530" y="346">10s</text><text x="730" y="346">15s</text><text x="930" y="346">20s</text>
+</g>
+<g fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="12.5">
+<text data-t="t041" x="20" y="372">Kamera</text><text data-t="t042" x="20" y="400">Bod zájmu</text><text data-t="t043" x="20" y="428">Traktor</text><text data-t="t044" fill="#9aa3ab" font-size="11.5" x="34" y="450">Světla</text>
+</g>
+<rect fill="#3b5f6a" height="22" rx="4" width="300" x="130" y="358"></rect><text data-t="t045" fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="12" x="140" y="373">Let</text>
+<g fill="#f2b33d"><rect height="10" transform="rotate(45 191 368)" width="10" x="186" y="363"></rect><rect height="10" transform="rotate(45 301 368)" width="10" x="296" y="363"></rect><rect height="10" transform="rotate(45 425 368)" width="10" x="420" y="363"></rect></g>
+<rect fill="#4a3f6a" height="22" rx="4" width="360" x="434" y="358"></rect><text data-t="t046" fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="12" x="444" y="373">Orbit · Traktor</text>
+<rect fill="#5a4a2a" height="22" rx="4" width="180" x="798" y="358"></rect><text data-t="t047" fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="12" x="808" y="373">Statická kamera</text>
+<rect fill="#2d4a2a" height="20" rx="4" width="300" x="330" y="388"></rect><text data-t="t048" fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="11.5" x="340" y="402">zájem: Traktor</text>
+<rect fill="#355a22" height="20" rx="4" width="640" x="180" y="416"></rect><text data-t="t049" fill="#e6e8ea" font-family="Segoe UI, sans-serif" font-size="11.5" x="190" y="430">jízda 50 km/h</text>
+<rect fill="#8a7a2a" height="12" rx="3" width="260" x="380" y="442"></rect>
+<line stroke="#e0675a" stroke-width="2" x1="560" x2="560" y1="336" y2="460"></line><path d="M553 336 h14 l-7 9z" fill="#e0675a"></path>
+<text data-t="t050" fill="#e0675a" font-family="Segoe UI, sans-serif" font-size="11.5" x="572" y="456">ukazatel</text>
+</svg>
+<figcaption data-t="t051">Nahoře lišta záběru s přehráváním, uprostřed živý náhled s trasami, dole lišta úprav a časová osa. Tlačítko vpravo na liště osy se řídí vybraným řádkem: na kameře ukazuje <b>+ Kamera</b> (přidá blok kamery), na vozidle, postavě nebo objektu <b>+ Akce</b> (přidá akci na ukazatel). Kamera má řádek bloků (Let s K-framy, Orbit, Statická kamera), pod ní je bod zájmu a každé vozidlo s jízdou a lajnami akcí.</figcaption>
+</figure>
+<div class="two">
+<div>
+<h3 data-t="t052">Dva druhy ovládání</h3>
+<p data-t="t053"><b>Let:</b> <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, <kbd>Q</kbd>/<kbd>E</kbd> dolů a nahoru, myš rozhlíží, kolečko mění rychlost letu.</p>
+<p data-t="t054"><b>Kurzor:</b> <kbd>F</kbd> nebo <kbd>Alt</kbd> zapne kurzor. Pak klikáš do osy, menu a scény. Pravé tlačítko kdekoli otevře nabídku toho, na co ukazuješ.</p>
+</div>
+<div>
+<h3 data-t="t055">Pravé tlačítko je všechno</h3>
+<p data-t="t056">Blok, K-frame, řádek vozidla, bod trasy, akce, objekt: každý má vlastní menu s tím, co jde změnit. Hodnoty s šipkami (rychlost, výška, délka, procenta) se mění kolečkem nebo klikem vlevo a vpravo.</p>
+</div>
+</div>
+</section>
+<section id="prvni">
+<h2 data-t="t057">První záběr krok za krokem</h2>
+<p data-t="t058">Typická cesta od prázdné scény k hotovému záběru: traktor s nářadím přijede na pole, rozloží se a začne pracovat, kamera ho přitom obletí.</p>
+<ol class="steps">
+<li data-t="t059"><b class="t">Kup stroje a dostaň je na místo</b>
+<p>V obchodě hry kup traktor a nářadí. Pak otevři editor (<kbd>Alt</kbd>+<kbd>C</kbd>), stiskni <kbd>T</kbd> a klikni na vozidlo. V menu zvol <span class="menu">Přenést jinam (i s nákladem; kolečko natáčí)</span> a klikni do terénu, kam ho chceš. Souprava se přenese celá i se zapřaženým nářadím. Víc věcí najednou (vozidla, palety, balíky) přeneseš <b>Krabicí</b>: naklikej je do ní a vybal na novém místě ve stejném rozestavení.</p></li>
+<li data-t="t060"><b class="t">Udělej z vozidla herce</b>
+<p><kbd>T</kbd> → vozidlo → <span class="menu">Přidat vozidlo s trasou</span>. Na ose vznikne jeho řádek a místo, kde stojí, se zapamatuje jako start. Když ho později posuneš, použij <span class="menu">Zapamatovat start tady, kde stojí</span>.</p></li>
+<li data-t="t061"><b class="t">Nastav, s čím startuje</b>
+<p>Pravé tlačítko na řádku vozidla → <span class="menu">Naplnění (nafta, voda, náklad…)</span>. Každou nádrž nastavíš po 10 % a u nákladu vybereš druh. Když jsi stroj mezitím ve hře dotankoval, stačí <span class="menu">Aktualizovat stav vozidla</span>: uloží se nádrže, bedna i špína a poloha startu zůstane.</p></li>
+<li data-t="t062"><b class="t">Naklikej trasu shora</b>
+<p><kbd>M</kbd> přepne na pohled shora, <kbd>Tab</kbd> přepíná, jestli kreslíš dráhu kamery, nebo trasu vozidla. Klik vloží bod, tažení ho posune, pravé tlačítko otevře menu bodu: rychlost jen pro tento bod nebo od něj dál, pauza, couvání.</p></li>
+<li data-t="t063"><b class="t">Přidej akce</b>
+<p>Klikni na řádek vozidla a vpravo na liště osy na <b>+ Akce</b>: akce se přidá na ukazatel. Nebo pravé tlačítko na bodu trasy → <span class="menu">Akce v tomto bodě…</span>. Například na začátku Motor nastartovat a Světla zapnout, u pole Rozložit, Nářadí spustit dolů a Nářadí zapnout.</p></li>
+<li data-t="t064"><b class="t">Postav kameru</b>
+<p>Klikni na řádek Kamera, postav ukazatel na začátek a vpravo na liště osy klikni na <b>+ Kamera</b>. Vyber režim, třeba <b>Sledování</b>, cíl Traktor a stranu zezadu. Za něj přidej <b>Orbit</b>. Režimy se počítají živě kolem stroje, takže sedí, i když fyzika pojede trochu jinak.</p></li>
+<li data-t="t065"><b class="t">Dolaď a přehraj</b>
+<p><kbd>Enter</kbd> přehraje od začátku s předstihem: vozidla se vrátí na start a obraz je čistý. <kbd>Mezerník</kbd> přehraje od ukazatele. <kbd>L</kbd> přidá širokoúhlé pruhy, <kbd>G</kbd> mřížku třetin. Video nahráváš svým obvyklým nástrojem (OBS, ShadowPlay) a stříháš ve střihovém programu.</p></li>
+</ol>
+<div class="note" data-t="t066"><b>Tip:</b> jízdu si nemusíš klikat. Ve hře (ne v editoru) sedni do vozidla, stiskni <kbd>Alt</kbd>+<kbd>V</kbd> a projeď ji sám. Druhým stiskem nahrávání ukončíš, pak otevři editor (<kbd>Alt</kbd>+<kbd>C</kbd>): nahraná trasa v něm čeká i s rychlostmi, couváním a akcemi.</div>
+</section>
+<section id="herci">
+<h2 data-t="t067">Herci: vozidla a postavy</h2>
+<p data-t="t068">Všechno, co se ve scéně hýbe nebo má být po resetu na svém místě, přidáš tlačítkem <b>+ Přidat do scény</b> na ose: vozidlo, sebe, pomocníka (AI postavu), řádek bodu zájmu nebo předměty.</p>
+<h3 data-t="t069" id="vozidla">Vozidla a trasy</h3>
+<div class="two">
+<div>
+<ul>
+<li data-t="t070"><b>Rychlost</b> pro celou trasu, jen pro jeden bod nebo od bodu dál (krok rychlosti si nastavíš). Rychlost 0 km/h v bodě znamená zastavit.</li>
+<li data-t="t071"><b>Pauza v bodě</b> a <b>stání</b>: vozidlo počká a pak pokračuje.</li>
+<li data-t="t072"><b>Couvání</b>: úsek k bodu jede zádí napřed.</li>
+<li data-t="t073"><b>Zpoždění rozjezdu</b>: blok jízdy na ose stačí odtáhnout v čase.</li>
+<li data-t="t074"><b>Křivka rychlosti</b> v panelu <kbd>V</kbd>: plynulé zrychlení od 0 do maxima stroje.</li>
+</ul>
+</div>
+<div>
+<ul>
+<li data-t="t075"><b>Akce jdou s jízdou.</b> Když změníš rychlost nebo trasu, akce se posunou s místem, kde vozidlo je. Jinak se dá nastavit <span class="menu">Akce při posunu jízdy: zůstanou na místě</span>.</li>
+<li data-t="t076"><b>Řidič</b>: v menu vozidla určíš, kdo sedí za volantem.</li>
+<li data-t="t077"><kbd>R</kbd> vrátí vozidla na start, <kbd>B</kbd> je postaví tam, kde budou v čase ukazatele.</li>
+<li data-t="t078"><b>Courseplay</b>: když je nainstalovaný, akce ho umí spustit a zastavit.</li>
+</ul>
+</div>
+</div>
+<h3 data-t="t079" id="stav">Stav, nádrže, náklad</h3>
+<p data-t="t080">Start vozidla si pamatuje nejen polohu, ale i stav: rozložení, nádrže, náklad a špínu. Při každém <kbd>R</kbd> a <kbd>Enter</kbd> se obnoví.</p>
+<figure>
+<svg aria-label="Menu naplnění po 10 procentech" data-t-aria="a364" role="img" viewbox="0 0 1000 170">
+<g font-family="Segoe UI, sans-serif" font-size="14">
+<rect fill="#1e2226" height="140" rx="8" stroke="#2c3137" width="440" x="20" y="16"></rect>
+<text data-t="t081" fill="#f2b33d" font-weight="600" x="36" y="42">Naplnění – Traktor</text>
+<text data-t="t082" fill="#e6e8ea" x="36" y="72">‹  Traktor 1: Nafta 80 %  ›</text>
+<text data-t="t083" fill="#e6e8ea" x="36" y="98">‹  Traktor 2: AdBlue 50 %  ›</text>
+<text data-t="t084" fill="#e6e8ea" x="36" y="124">‹  Návěs 1: Pšenice 30 %  ›</text>
+<text data-t="t085" fill="#9aa3ab" x="36" y="146">      druh: ‹ Pšenice ›</text>
+<g transform="translate(520,30)">
+<text data-t="t086" fill="#9aa3ab" x="0" y="12">Nafta</text><rect fill="#2c3137" height="16" rx="4" width="380" x="70" y="0"></rect><rect fill="#8fc04a" height="16" rx="4" width="304" x="70" y="0"></rect>
+<text data-t="t087" fill="#9aa3ab" x="0" y="52">AdBlue</text><rect fill="#2c3137" height="16" rx="4" width="380" x="70" y="40"></rect><rect fill="#6cc4d8" height="16" rx="4" width="190" x="70" y="40"></rect>
+<text data-t="t088" fill="#9aa3ab" x="0" y="92">Pšenice</text><rect fill="#2c3137" height="16" rx="4" width="380" x="70" y="80"></rect><rect fill="#f2b33d" height="16" rx="4" width="114" x="70" y="80"></rect>
+<g stroke="#14171a" stroke-width="2"><path d="M108 0v96M146 0v96M184 0v96M222 0v96M260 0v96M298 0v96M336 0v96M374 0v96M412 0v96"></path></g>
+</g>
+</g>
+</svg>
+<figcaption data-t="t089">Každá nádrž a ložný prostor po 10 %. U nákladu se dá přepnout druh mezi tím, co do něj jde dát.</figcaption>
+</figure>
+<h3 data-t="t090" id="postavy">Postavy</h3>
+<p data-t="t091">Do scény můžeš přidat <b>sebe</b> (hráče) a <b>pomocníka</b>, tedy AI postavu s vlastním vzhledem. Toho můžeš obléct v šatníku hry. Postava chodí po trase stejně jako vozidlo. U každého bodu se volí pomalá chůze, chůze nebo běh, jde natočit a umí akce:</p>
+<ul>
+<li data-t="t092"><b>Nastoupit / Vystoupit</b> do vozidla. Bod výstupu se dopočítá sám, nebo ho posuneš ručně.</li>
+<li data-t="t093"><b>Nést předmět / Položit</b>. Polohu a náklon neseného předmětu doladíš v křivkách.</li>
+<li data-t="t094">Postava jde vybrat i jako <b>cíl kamery</b> (<kbd>T</kbd> na ni), třeba pro Pohled postavy přes rameno.</li>
+</ul>
+<h3 data-t="t095" id="predmety">Předměty, pole a objekty</h3>
+<div class="two">
+<div class="card"><h4 data-t="t096">Předměty</h4><p data-t="t097">Palety, balíky, nářadí a hromady (hnůj, seno, sláma), které má reset postavit zpátky. Balík, který se při záběru odvezl nebo rozbalil, reset vyrobí znovu. Hromadu v okruhu smaže a nasype znovu.</p></div>
+<div class="card"><h4 data-t="t098">Pole</h4><p data-t="t099">Pole přidáš mezi Předměty kliknutím do něj. Zapamatuje se stav v místě kliknutí: plodina, růst, druh půdy, hnojení, vápno, orba, válcování, plevel a kameny. Všechno jde v menu pole změnit. Reset pak pole vrátí, takže kombajn může sklízet zralé obilí při každém přehrání znovu. Přehrávání počká, než se pole nastaví.</p><p data-t="t100">Posekané pole může mít <b>řádky slámy, trávy nebo sena</b>: buď podle kurzu Courseplay, který má některý stroj pro to pole načtený, nebo rovnoběžně po zvoleném rozestupu. Lis nebo samosběrný vůz je pak sbírá při každém přehrání znovu.</p></div>
+<div class="card"><h4 data-t="t101">Objekty ve světě</h4><p data-t="t102">Věci, které nejezdí, ale něco dělají: <b>brány</b> (otevřít, zavřít), <b>světla budov</b>, <b>výroba</b> (spustit, zastavit), <b>hadice</b> (s módem Spray Drone), stroje bez jízdy. Přidáš je přes <kbd>T</kbd> → <span class="menu">Do Objektů</span>.</p></div>
+</div>
+<div class="note warn" data-t="t103"><b>Vracení polí mění hru.</b> Je vypnuté, dokud ho v menu skupiny Předměty nezapneš a nepotvrdíš upozornění. Reset pak pole opravdu přepíše a změna se uloží se savegame. Natáčej proto raději ve vlastní hře na natáčení. Stopy kol a kolejové řádky se nevracejí.</div>
+</section>
+<section id="kamery">
+<h2 data-t="t104">Kamery</h2>
+<p data-t="t105">Řádek kamery se skládá z <b>bloků</b>. Každý blok je jeden režim na určitou dobu: Let po tvých K-framech, Orbit kolem traktoru, statický záběr… Bloky jdou za sebou, a když mezi nimi zůstane mezera, kamera v ní stojí. Mezi bloky může být střih, nebo plynulé navázání (<span class="menu">Navázat plynule na předchozí blok</span>).</p>
+<div class="note" data-t="t106"><b>Každý blok jde přestavět kamerou.</b> Doleť volnou kamerou tam, odkud se chceš dívat, a stiskni <kbd>K</kbd>. V Letu a Sledování z bodu vznikne K-frame s pózou a ohniskem. Ve Statické a Připevněné kameře se celý blok přesune na nové místo. V režimech kolem cíle (orbit, sledování…) se uloží posun kamery vůči režimu a ohnisko. Posun vrátí <span class="menu">Zrušit posun kamery bloku</span>.</div>
+<h3 data-t="t107" id="rezimy">Všechny režimy</h3>
+<p data-t="t108"><span class="tag auto">sám kolem cíle</span> <span class="tag keys">po K-framech</span> <span class="tag still">stojí</span> <span class="tag on">jede na vozidle</span></p>
+<div class="grid">
+<div class="card">
+<svg viewbox="0 0 200 92"><path d="M20 70 C 60 20, 120 80, 180 25" fill="none" stroke="#6cc4d8" stroke-width="2.5"></path><g fill="#f2b33d"><rect height="10" transform="rotate(45 20 70)" width="10" x="15" y="65"></rect><rect height="10" transform="rotate(45 90 52)" width="10" x="85" y="47"></rect><rect height="10" transform="rotate(45 180 25)" width="10" x="175" y="20"></rect></g></svg>
+<h4 data-t="t109">Let <span class="tag keys">K-framy</span></h4>
+<p data-t="t110">Volná jízda kamery po tvých K-framech. Poloha, natočení i ohnisko se mezi nimi plynule mění.</p>
+<div class="use" data-t="t111"><b>Na co:</b> úvodní přelet krajinou, průlet dvorem, cokoli s přesnou dráhou.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><ellipse cx="100" cy="50" fill="none" rx="78" ry="30" stroke="#6cc4d8" stroke-dasharray="7 5" stroke-width="2.5"></ellipse><rect fill="#c0392b" height="14" rx="3" width="24" x="88" y="42"></rect><path d="M176 44 l6 9 -10 1z" fill="#6cc4d8"></path></svg>
+<h4 data-t="t112">Orbit <span class="tag auto">sám</span></h4>
+<p data-t="t113">Krouží kolem cíle. Nastavíš poloměr a výšku na začátku i na konci, počet kol a směr.</p>
+<div class="use" data-t="t114"><b>Na co:</b> představení stroje, práce na poli, klasika každého traileru.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="#c0392b" height="14" rx="3" width="24" x="30" y="66"></rect><path d="M60 64 L170 14" stroke="#6cc4d8" stroke-width="2.5"></path><path d="M170 14 l-12 1 5 9z" fill="#6cc4d8"></path><path d="M150 26 L60 70" opacity=".6" stroke="#e6e8ea" stroke-dasharray="3 4" stroke-width="1"></path></svg>
+<h4 data-t="t115">Dronie <span class="tag auto">sám</span></h4>
+<p data-t="t116">Odlétá šikmo vzhůru a dívá se zpět na cíl. Krajina se postupně otevírá.</p>
+<div class="use" data-t="t117"><b>Na co:</b> konec videa, odhalení velikosti pole nebo farmy.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="#c0392b" height="14" rx="3" width="24" x="88" y="70"></rect><path d="M100 64 V14" stroke="#6cc4d8" stroke-width="2.5"></path><path d="M100 8 l-6 10 h12z" fill="#6cc4d8"></path></svg>
+<h4 data-t="t118">Rocket <span class="tag auto">sám</span></h4>
+<p data-t="t119">Stoupá kolmo nad cílem a dívá se dolů.</p>
+<div class="use" data-t="t120"><b>Na co:</b> odhalení vzoru na poli, přechod mezi scénami.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><path d="M100 70 C 125 70, 125 58, 100 58 C 65 58, 65 44, 100 44 C 150 44, 150 28, 100 28 C 40 28, 40 12, 110 10" fill="none" stroke="#6cc4d8" stroke-width="2.5"></path><rect fill="#c0392b" height="12" rx="3" width="20" x="90" y="74"></rect></svg>
+<h4 data-t="t121">Helix <span class="tag auto">sám</span></h4>
+<p data-t="t122">Spirála ven a nahoru kolem cíle. Je to orbit a dronie v jednom.</p>
+<div class="use" data-t="t123"><b>Na co:</b> efektní závěr, opuštění scény.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="#c0392b" height="14" rx="3" width="24" x="150" y="60"></rect><path d="M20 18 C 70 22, 110 44, 140 60" fill="none" stroke="#6cc4d8" stroke-width="2.5"></path><path d="M144 63 l-12 -2 6 -8z" fill="#6cc4d8"></path></svg>
+<h4 data-t="t124">Přiblížení <span class="tag auto">sám</span></h4>
+<p data-t="t125">Přilétá z dálky k cíli s pomalým dojezdem.</p>
+<div class="use" data-t="t126"><b>Na co:</b> první setkání se strojem, nájezd na detail.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="#c0392b" height="16" rx="3" width="30" x="110" y="40"></rect><path d="M40 48 H100" stroke="#6cc4d8" stroke-dasharray="6 4" stroke-width="2.5"></path><circle cx="40" cy="48" fill="#6cc4d8" r="7"></circle><path d="M150 48 h30" stroke="#8fc04a" stroke-width="2"></path><path d="M186 48 l-9 -5 v10z" fill="#8fc04a"></path></svg>
+<h4 data-t="t127">Sledování <span class="tag auto">sám</span></h4>
+<p data-t="t128">Jede s cílem zezadu, zboku, zepředu nebo ze strany, kde je teď kamera. Úhel jde měnit během bloku, tlumení zjemní pohyb.</p>
+<div class="use" data-t="t129"><b>Na co:</b> jízda po silnici, práce na poli z boku.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><circle cx="40" cy="70" fill="#6cc4d8" r="8"></circle><path d="M60 40 Q120 20 180 40" fill="none" stroke="#8fc04a" stroke-dasharray="3 5" stroke-width="2"></path><rect fill="#c0392b" height="12" rx="3" width="24" x="108" y="20"></rect><path d="M46 64 L118 32" opacity=".6" stroke="#e6e8ea" stroke-dasharray="3 4" stroke-width="1"></path></svg>
+<h4 data-t="t130">Sledování z bodu <span class="tag keys">K-framy</span></h4>
+<p data-t="t131">Kamera jede po svých K-framech (nebo stojí) a natáčí se za cílem. K-frame si pamatuje i odchylku pohledu od cíle.</p>
+<div class="use" data-t="t132"><b>Na co:</b> kameraman u cesty, který otáčí hlavou.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><path d="M10 40 H190" stroke="#8fc04a" stroke-dasharray="3 5" stroke-width="2"></path><rect fill="#c0392b" height="14" rx="3" width="24" x="88" y="32"></rect><circle cx="100" cy="78" fill="#6cc4d8" r="8"></circle><path d="M100 70 L60 46 M100 70 L140 46" opacity=".6" stroke="#e6e8ea" stroke-dasharray="3 4" stroke-width="1"></path></svg>
+<h4 data-t="t133">Průjezd <span class="tag still">u cesty</span></h4>
+<p data-t="t134">Kamera nízko u cesty, cíl projede kolem v nastaveném čase. Úhel a posun do strany jdou upravit.</p>
+<div class="use" data-t="t135"><b>Na co:</b> traktor se řítí kolem objektivu, nejlépe s dlouhým ohniskem.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><path d="M10 30 H190" stroke="#8fc04a" stroke-dasharray="3 5" stroke-width="2"></path><rect fill="#c0392b" height="14" rx="3" width="24" x="88" y="22"></rect><path d="M10 70 H190" stroke="#6cc4d8" stroke-dasharray="6 4" stroke-width="2.5"></path><circle cx="100" cy="70" fill="#6cc4d8" r="7"></circle></svg>
+<h4 data-t="t136">Souběžná jízda <span class="tag auto">sám</span></h4>
+<p data-t="t137">Jede vedle cíle stejnou rychlostí, ale nezatáčí s ním. Jako auto s kamerou na vedlejší cestě.</p>
+<div class="use" data-t="t138"><b>Na co:</b> kombajn a traktor s návěsem při vykládce za jízdy.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="none" height="72" rx="4" stroke="#6cc4d8" stroke-dasharray="5 4" stroke-width="2" width="60" x="70" y="10"></rect><rect fill="#c0392b" height="16" rx="3" width="24" x="88" y="38"></rect><path d="M100 4 v6" stroke="#6cc4d8" stroke-width="2"></path></svg>
+<h4 data-t="t139">Kolmo shora <span class="tag auto">sám</span></h4>
+<p data-t="t140">Pohled přímo dolů nad cílem. Buď se otáčí s cílem, nebo zůstane sever nahoře.</p>
+<div class="use" data-t="t141"><b>Na co:</b> vzory na poli, obracení na souvrati, „mapový“ záběr.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="#c0392b" height="24" rx="4" width="70" x="60" y="40"></rect><circle cx="76" cy="68" fill="#222" r="9"></circle><circle cx="118" cy="68" fill="#222" r="11"></circle><rect fill="#e6e8ea" height="12" rx="2" width="18" x="126" y="28"></rect><path d="M144 34 h30" opacity=".6" stroke="#e6e8ea" stroke-dasharray="3 4" stroke-width="1"></path></svg>
+<h4 data-t="t142">Připevnit na vozidlo <span class="tag on">na vozidle</span></h4>
+<p data-t="t143">Kamera se přišroubuje k vozidlu přesně tam, kde je teď volná kamera, a jede s ním.</p>
+<div class="use" data-t="t144"><b>Na co:</b> detail kola, záběr z nářadí na půdu, pohled přes kapotu.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="none" height="58" rx="6" stroke="#6cc4d8" stroke-width="2" width="120" x="40" y="18"></rect><path d="M40 60 Q100 40 160 60" fill="none" stroke="#9aa3ab" stroke-width="2"></path><circle cx="100" cy="47" fill="#f2b33d" r="4"></circle></svg>
+<h4 data-t="t145">Kamera vozidla <span class="tag on">na vozidle</span></h4>
+<p data-t="t146">Některá z vlastních kamer stroje: kabina nebo venkovní.</p>
+<div class="use" data-t="t147"><b>Na co:</b> pohled řidiče, rychlý střih do kabiny.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><circle cx="70" cy="34" fill="#e6e8ea" r="12"></circle><path d="M52 84 Q70 50 88 84" fill="#e6e8ea"></path><path d="M84 34 L180 50" stroke="#6cc4d8" stroke-dasharray="4 4" stroke-width="1.5"></path></svg>
+<h4 data-t="t148">Pohled postavy <span class="tag on">na postavě</span></h4>
+<p data-t="t149">Očima postavy, nebo přes levé či pravé rameno.</p>
+<div class="use" data-t="t150"><b>Na co:</b> farmář jde k traktoru, nastupování, práce s hadicí.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="#c0392b" height="14" rx="3" width="24" x="30" y="50"></rect><rect fill="#2f6fa8" height="16" rx="3" width="30" x="140" y="30"></rect><rect fill="none" height="56" rx="4" stroke="#6cc4d8" stroke-dasharray="5 4" stroke-width="2" width="164" x="20" y="20"></rect></svg>
+<h4 data-t="t151">Dva cíle <span class="tag auto">sám</span></h4>
+<p data-t="t152">Drží v záběru dva objekty najednou s nastaveným okrajem. Odjíždějí-li od sebe, kamera se vzdálí.</p>
+<div class="use" data-t="t153"><b>Na co:</b> kombajn a odvozní souprava, dva traktory v souboji.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><path d="M30 46 C 30 10, 170 10, 170 46 C 170 82, 30 82, 30 46" fill="none" stroke="#6cc4d8" stroke-dasharray="7 5" stroke-width="2.5"></path><rect fill="#c0392b" height="14" rx="3" width="24" x="88" y="39"></rect><path d="M170 46 l-5 -10 10 0z" fill="#6cc4d8"></path></svg>
+<h4 data-t="t154">Bumerang <span class="tag auto">sám</span></h4>
+<p data-t="t155">Ovál kolem cíle a zpět. Kamera se vzdálí a zase přiblíží.</p>
+<div class="use" data-t="t156"><b>Na co:</b> hravý záběr stojícího stroje nebo budovy.</div>
+</div>
+<div class="card">
+<svg viewbox="0 0 200 92"><rect fill="#e6e8ea" height="30" rx="5" width="44" x="60" y="20"></rect><path d="M104 28 l20 -10 v34 l-20 -10z" fill="#e6e8ea"></path><path d="M70 50 l-10 34 M94 50 l10 34 M82 50 v34" stroke="#9aa3ab" stroke-width="2"></path></svg>
+<h4 data-t="t157">Statická kamera <span class="tag still">stojí</span></h4>
+<p data-t="t158">Stojí a drží záběr tam, kde byla volná kamera, bez cíle. Klasický stativ.</p>
+<div class="use" data-t="t159"><b>Na co:</b> brána, kterou projíždí stroj; ustavený záběr na farmu.</div>
+</div>
+</div>
+<p data-t="t160">U režimů, které počítají samy, menu bloku nabízí <b>Nastavení režimu</b>: poloměr a výšku na začátku i na konci, vzdálenost, počet kol, posun do strany, plynulý rozjezd a dojezd, ohnisko na začátku a na konci. Najdeš tam i <b>Automatický zoom</b>, se kterým vozidlo drží v obraze stejnou velikost, i když se vzdaluje. Dál <b>Třes bloku</b>, tedy jemný „handheld“, a <b>Cíl ▸</b>: cíl se dá kdykoli vyměnit za jiné vozidlo nebo postavu. Režim bloku jde změnit bez mazání (<span class="menu">Změnit režim bloku</span>).</p>
+<h3 data-t="t161" id="zamereni">Míření a body zájmu</h3>
+<p data-t="t162">Let může jet po své dráze a přitom mířit na objekt. Od času ukazatele se nastaví <span class="menu">Mířit kamerou na objekt</span>. Na ose pak vznikne řádek <b>Bod zájmu</b> s bloky „zájem: Traktor“. U každého bodu zájmu určíš:</p>
+<ul>
+<li data-t="t163"><b>Přechod na cíl</b>: jak dlouho se kamera stáčí z volného pohledu na cíl.</li>
+<li data-t="t164"><b>Výška cíle</b>: míří se na kabinu, ne na kola.</li>
+<li data-t="t165"><b>Místo cíle v obraze</b>: uprostřed, nebo v třetinách (vlevo, vpravo, nahoře, dole). Kompozice podle pravidla třetin.</li>
+<li data-t="t166"><b>Rozdělit, utnout, změnit cíl</b> na ukazateli: v půlce záběru přepneš pozornost z kombajnu na odvozní traktor.</li>
+</ul>
+</section>
+<section id="akce">
+<h2 data-t="t167">Akce na časové ose</h2>
+<p data-t="t168">Akce jsou krátké značky v lajnách pod vozidlem (<kbd>X</kbd> rozbalí detail se všemi lajnami). Táhnout je jde v čase, s <kbd>Ctrl</kbd> se kopírují. Úchyt na konci určuje, jak dlouho akce trvá, třeba blikání nebo houkání. Menu nabízí jen to, co konkrétní stroj opravdu umí. Akce jde dát celé soupravě nebo jen jednomu článku.</p>
+<div class="acts">
+<div class="card"><h4 data-t="t169">Světla a signály</h4><ul>
+<li data-t="t170"><b>Světla</b> zapnout, vypnout, bliknout</li>
+<li data-t="t171"><b>Pracovní světla</b> a <b>dálková</b>, také bliknutí</li>
+<li data-t="t172"><b>Maják</b> zapnout a vypnout</li>
+<li data-t="t173"><b>Blinkry</b> levý, pravý, výstražná světla</li>
+<li data-t="t174"><b>Houkačka</b>: zatroubit</li>
+</ul></div>
+<div class="card"><h4 data-t="t175">Motor a řízení</h4><ul>
+<li data-t="t176"><b>Motor</b> nastartovat a vypnout</li>
+<li data-t="t177"><b>Nástup</b>: postava nastoupí nebo vystoupí</li>
+<li data-t="t178"><b>Zapřažení</b>: zapřáhnout vlek poblíž, odpojit</li>
+<li data-t="t179"><b>Courseplay</b> spustit a zastavit</li>
+</ul></div>
+<div class="card"><h4 data-t="t180">Nářadí</h4><ul>
+<li data-t="t181"><b>Rozložení</b>: rozložit, složit</li>
+<li data-t="t182"><b>Nářadí dolů</b>: spustit, zvednout</li>
+<li data-t="t183"><b>Nářadí zapnuto</b>: setí, postřik, mulčování…</li>
+<li data-t="t184"><b>Dveře a animace</b>: vlastní animace stroje</li>
+</ul></div>
+<div class="card"><h4 data-t="t185">Náklad</h4><ul>
+<li data-t="t186"><b>Korba</b>: zvednout, spustit</li>
+<li data-t="t187"><b>Vysypání</b> na zem a jeho zastavení</li>
+<li data-t="t188"><b>Výsypka</b> kombajnu: vysunout, zasunout</li>
+<li data-t="t189"><b>Nesení</b>: postava nese a položí předmět</li>
+</ul></div>
+<div class="card"><h4 data-t="t190">Objekty ve světě</h4><ul>
+<li data-t="t191"><b>Brána</b> otevřít, zavřít</li>
+<li data-t="t192"><b>Světla budovy</b> rozsvítit, zhasnout</li>
+<li data-t="t193"><b>Výroba</b> spustit, zastavit</li>
+<li data-t="t194"><b>Hadice</b> (Spray Drone) zapojit, odpojit. Nejdřív ji ve hře jednou zapoj, akce si zapojení zapamatuje.</li>
+</ul></div>
+</div>
+<div class="note" data-t="t195"><b>Rychlé přidání:</b> vyber řádek vozidla, postavy nebo objektu, postav ukazatel a klikni vpravo na liště osy na <b>+ Akce</b>. Na řádku kamery je na stejném místě <b>+ Kamera</b> a vedle něj tlačítko s naposledy přidaným režimem, takže stejný blok vložíš znovu jedním klikem.</div>
+</section>
+<section id="osa">
+<h2 data-t="t196">Časová osa a plynulost</h2>
+<p data-t="t197">Všechno na ose se ovládá stejně: klik vybere, tažení přesune, <kbd>Ctrl</kbd>+tažení kopíruje, tažení kraje ořízne, <kbd>Delete</kbd> smaže a zavře mezeru, <kbd>Backspace</kbd> smaže a mezeru nechá. <kbd>O</kbd> přepíná <b>přepsat / vložit</b> (překryté bloky se oříznou, nebo následující odskočí), <kbd>J</kbd> magnet, <kbd>U</kbd> rozdělí blok na ukazateli.</p>
+<h3 data-t="t198">Jak kamera projíždí K-framem</h3>
+<p data-t="t199">Vyber K-frame a stiskni <kbd>Y</kbd>, opakovaný stisk přepíná:</p>
+<figure>
+<svg aria-label="Plynule, Zastavit, Roh" data-t-aria="a365" role="img" viewbox="0 0 1000 190">
+<g font-family="Segoe UI, sans-serif">
+<g transform="translate(30,20)">
+<path d="M10 130 C 90 130, 120 30, 150 30 C 180 30, 210 130, 290 130" fill="none" stroke="#6cc4d8" stroke-width="3"></path>
+<rect fill="#f2b33d" height="12" transform="rotate(45 150 30)" width="12" x="144" y="24"></rect>
+<text data-t="t200" fill="#e6e8ea" font-size="16" font-weight="600" x="10" y="162">Plynule</text>
+<text data-t="t201" fill="#9aa3ab" font-size="13" x="80" y="162">oblouk, rychlost bez skoku</text>
+</g>
+<g transform="translate(360,20)">
+<path d="M10 130 C 90 130, 140 30, 150 30 C 160 30, 210 130, 290 130" fill="none" stroke="#6cc4d8" stroke-width="3"></path>
+<g fill="#6cc4d8"><circle cx="122" cy="62" r="3"></circle><circle cx="137" cy="40" r="3"></circle><circle cx="145" cy="32" r="3"></circle><circle cx="155" cy="32" r="3"></circle><circle cx="163" cy="40" r="3"></circle><circle cx="178" cy="62" r="3"></circle></g>
+<rect fill="#f2b33d" height="12" transform="rotate(45 150 30)" width="12" x="144" y="24"></rect>
+<text data-t="t202" fill="#e6e8ea" font-size="16" font-weight="600" x="10" y="162">Zastavit</text>
+<text data-t="t203" fill="#9aa3ab" font-size="13" x="86" y="162">přibrzdí, zastaví, rozjede se</text>
+</g>
+<g transform="translate(690,20)">
+<path d="M10 130 L150 30 L290 130" fill="none" stroke="#6cc4d8" stroke-width="3"></path>
+<rect fill="#f2b33d" height="12" transform="rotate(45 150 30)" width="12" x="144" y="24"></rect>
+<text data-t="t204" fill="#e6e8ea" font-size="16" font-weight="600" x="10" y="162">Roh</text>
+<text data-t="t205" fill="#9aa3ab" font-size="13" x="52" y="162">rovně do bodu i z něj, ostrý zlom</text>
+</g>
+</g>
+</svg>
+<figcaption data-t="t206">Když se kamera v bodě „trhne“, má K-frame skoro jistě nastavený Roh. Přepni ho na Plynule. Tvar oblouku doladíš táhly dráhy v pohledu shora (<kbd>M</kbd>), s <kbd>Ctrl</kbd> uděláš zlom.</figcaption>
+</figure>
+<h3 data-t="t207">Rychlost kamery</h3>
+<div class="two">
+<div>
+<p data-t="t208">Panel <kbd>V</kbd> ukáže <b>křivku rychlosti</b> Letu. Body jsou K-framy, tažením nahoru a dolů měníš rychlost v bodě. Táhla do stran určují, jak dlouho trvá rozjezd a dojezd. Červený úsek ukazuje škubnutí.</p>
+<p data-t="t209">Menu bloku → <span class="menu">Průběh rychlosti Letu</span> nabízí hotové profily: rovnoměrně, stálá rychlost, pomalý nájezd a dojezd, rozjezd ze stání, dojezd do zastavení.</p>
+<p data-t="t210">K-frame jde nastavit na <b>Jen natočení</b>. Nemá pak vlastní čas ani rychlost, kamera jím jen projede a natočí se.</p>
+</div>
+<figure style="margin:0">
+<svg aria-label="Křivka rychlosti s rozjezdem a dojezdem" data-t-aria="a366" role="img" viewbox="0 0 460 210">
+<g fill="#9aa3ab" font-family="Segoe UI, sans-serif" font-size="12">
+<line stroke="#2c3137" x1="40" x2="440" y1="170" y2="170"></line><line stroke="#2c3137" x1="40" x2="40" y1="20" y2="170"></line>
+<text x="8" y="28">m/s</text><text data-t="t211" x="420" y="190">čas</text>
+<path d="M40 168 C 110 168, 110 60, 180 60 L 300 60 C 360 60, 370 168, 440 168" fill="none" stroke="#6cc4d8" stroke-width="3"></path>
+<path d="M180 60 h-60 M180 60 h60" stroke="#f2b33d" stroke-width="1.5"></path><circle cx="120" cy="60" fill="#f2b33d" r="4"></circle><circle cx="240" cy="60" fill="#f2b33d" r="4"></circle>
+<g fill="#f2b33d"><rect height="12" transform="rotate(45 40 168)" width="12" x="34" y="162"></rect><rect height="12" transform="rotate(45 180 60)" width="12" x="174" y="54"></rect><rect height="12" transform="rotate(45 300 60)" width="12" x="294" y="54"></rect><rect height="12" transform="rotate(45 440 168)" width="12" x="434" y="162"></rect></g>
+<text data-t="t212" x="60" y="140">rozjezd</text><text data-t="t213" x="356" y="140">dojezd</text><text data-t="t214" x="198" y="48">táhla</text>
+</g>
+</svg>
+<figcaption data-t="t215">Rozjezd ze stání, stálá rychlost a dojezd do zastavení.</figcaption>
+</figure>
+</div>
+<h3 data-t="t216">Další kanály v panelu V</h3>
+<p data-t="t217">Kromě rychlosti kamery má panel kanály <b>zoom</b> (ohnisko), <b>rychlost vozidla</b> a <b>místo bodu zájmu v obraze</b>. Pro nesený předmět přidá i jeho polohu a náklon. Klik do grafu vloží bod, tažením měníš čas a hodnotu. Pravé tlačítko na bodu přepíná úsečky, skokově a křivku.</p>
+<h3 data-t="t218">Rychlé úpravy kolečkem</h3>
+<table>
+<tr><td data-t="t219"><kbd>Ctrl</kbd>+kolečko nad K-framem / blokem</td><td data-t="t220">rychlost K-framu, délka bloku (Let se zrychlí celý), u vozidla rychlost úseku trasy</td></tr>
+<tr><td data-t="t221"><kbd>Shift</kbd>+kolečko</td><td data-t="t222">ohnisko: bloku pod kurzorem, jinak kamery na ukazateli</td></tr>
+<tr><td data-t="t223"><kbd>Alt</kbd>+kolečko</td><td data-t="t224">přiblížit a oddálit časovou osu</td></tr>
+<tr><td><kbd>+</kbd> / <kbd>−</kbd></td><td data-t="t225">zrychlit nebo zpomalit blok pod ukazatelem</td></tr>
+<tr><td><kbd>1</kbd>–<kbd>8</kbd></td><td data-t="t226">objektivy 14, 24, 35, 50, 85, 135, 200 a 400 mm</td></tr>
+</table>
+<div class="note" data-t="t227"><b>Historie kroků</b> (tlačítko Více → Historie) ukáže seznam všech úprav. Klik na krok vrátí záběr do jeho stavu, a i tohle jde vrátit. Kroky se pamatují týden, i po restartu hry.</div>
+</section>
+<section id="scena">
+<h2 data-t="t228">Scéna, záběry, kamery</h2>
+<div class="grid">
+<div class="card"><h4 data-t="t229">Prostředí scény</h4><p data-t="t230">Čas po hodině nebo po 15 minutách, roční období a počasí (slunečno, zataženo, déšť, sníh, kroupy, mlha). Nastaví se při každém přehrání, takže západ slunce točíš znovu a znovu.</p></div>
+<div class="card"><h4 data-t="t231">Víc záběrů</h4><p data-t="t232"><kbd>N</kbd> nový záběr, <kbd>PgUp</kbd>/<kbd>PgDn</kbd> přepínání. <b>Všechny záběry</b> je přehraje za sebou jako sestřih. Každý záběr má vlastní konec, předstih a třes z ruky.</p></div>
+<div class="card"><h4 data-t="t233">Víc kamer v záběru</h4><p data-t="t234">Jedna jízda vozidel a k ní několik kamer (<kbd>C</kbd> přepíná). Akce natočíš jednou z více úhlů a ve střihu pak skládáš.</p></div>
+<div class="card"><h4 data-t="t235">Schránka</h4><p data-t="t236"><kbd>,</kbd> zkopíruje vybrané bloky, K-framy a akce, <kbd>.</kbd> je vloží od ukazatele, klidně do jiného záběru.</p></div>
+<div class="card"><h4 data-t="t237">Čistý náhled</h4><p data-t="t238"><kbd>H</kbd> skryje editor bez přehrávání. <kbd>I</kbd> při přehrávání zapne nebo schová osu. <kbd>L</kbd> pruhy 2,39:1, <kbd>G</kbd> mřížka třetin.</p></div>
+</div>
+</section>
+<section id="recepty">
+<h2 data-t="t239">Recepty a inspirace</h2>
+<p data-t="t240">Hotové scénáře, které jde rovnou postavit. Ber je jako odrazový můstek: každý se dá obměnit jiným strojem, světlem nebo ohniskem.</p>
+<div class="recipe">
+<h3 data-t="t241">1. Traktor se řítí kolem kamery</h3>
+<div class="cast" data-t="t242"><b>Obsazení:</b> traktor s trasou po polní cestě · <b>Délka:</b> 8 s</div>
+<ol>
+<li data-t="t243">Traktor jako herec, trasa rovně po cestě, rychlost 40 km/h, Světla a Pracovní světla zapnout hned na začátku.</li>
+<li data-t="t244">Prostředí: čas 20:00, zataženo. Světla vyniknou.</li>
+<li data-t="t245"><b>+ Kamera</b> → <b>Průjezd</b>, cíl traktor. V Nastavení režimu dej průjezd do 5. sekundy.</li>
+<li data-t="t246">Ohnisko <kbd>6</kbd> (135 mm) a <kbd>L</kbd> pro pruhy.</li>
+</ol>
+<div class="why" data-t="t247">dlouhé ohnisko stlačí perspektivu a traktor rychle naroste. Nízká kamera u cesty z něj udělá monstrum.</div>
+</div>
+<div class="recipe">
+<h3 data-t="t248">2. Setí od příjezdu po práci</h3>
+<div class="cast" data-t="t249"><b>Obsazení:</b> traktor + secí stroj · <b>Délka:</b> 30 s</div>
+<ol>
+<li data-t="t250">Trasa z cesty na pole a podél souvratě. Na vjezdu do pole bod s rychlostí 8 km/h.</li>
+<li data-t="t251">Akce v bodě vjezdu: Rozložit, o 3 s později Nářadí spustit dolů a Nářadí zapnout.</li>
+<li data-t="t252">Kamera: <b>Sledování</b> zezadu, než traktor dojede na pole. Pak <b>Orbit</b> s poloměrem 25 → 15 m, výškou 6 → 3 m a plynulým rozjezdem.</li>
+<li data-t="t253">Orbit nastav na <span class="menu">Navázat plynule na předchozí blok</span>, ať je přechod bez střihu.</li>
+<li data-t="t254">Na závěr <b>Dronie</b>: kamera odletí a ukáže celé pole.</li>
+</ol>
+<div class="why" data-t="t255">tři bloky vypráví příběh (příjezd, detail práce, celek) a plynulé navázání ho drží v jednom záběru.</div>
+</div>
+<div class="recipe">
+<h3 data-t="t256">3. Ranní výjezd ze dvora</h3>
+<div class="cast" data-t="t257"><b>Obsazení:</b> pomocník (AI postava) · traktor · brána jako objekt · <b>Délka:</b> 40 s</div>
+<ol>
+<li data-t="t258">Prostředí: 6:00, podzim, mlha.</li>
+<li data-t="t259">Pomocník jde chůzí po trase k traktoru, v posledním bodě akce <b>Nastoupit</b>.</li>
+<li data-t="t260">Traktor: Motor nastartovat 2 s po nástupu, Světla, Maják. Rozjezd odtáhni na ose až za nástup.</li>
+<li data-t="t261">Bránu přidej do Objektů (<kbd>T</kbd>) a dej jí akci Otevřít těsně před průjezdem.</li>
+<li data-t="t262">Kamera: <b>Pohled postavy</b> přes rameno, pak <b>Statická kamera</b> u brány, nakonec <b>Sledování</b> zezadu po silnici.</li>
+</ol>
+<div class="why" data-t="t263">mlha a maják v šeru dělají atmosféru. Střídání pohledu postavy, stativu a jízdy působí jako opravdový film.</div>
+</div>
+<div class="recipe">
+<h3 data-t="t264">4. Vysypání u sila</h3>
+<div class="cast" data-t="t265"><b>Obsazení:</b> traktor se sklápěcím přívěsem · <b>Délka:</b> 20 s</div>
+<ol>
+<li data-t="t266">Přívěs naplň v menu Naplnění, třeba pšenicí na 100 %.</li>
+<li data-t="t267">Trasa ke vsypu: poslední úsek couvá (menu bodu → couvat), v posledním bodě pauza 10 s.</li>
+<li data-t="t268">Akce v posledním bodě: Korba zvednout, po 8 s Korba spustit. Blinkr pravý před odbočkou ke vsypu.</li>
+<li data-t="t269">Kamera: <b>Sledování</b> zepředu při příjezdu, při couvání <b>Kolmo shora</b>, při sypání <b>Statická kamera</b> nízko u vsypu s 85 mm.</li>
+</ol>
+<div class="why" data-t="t270">couvání shora ukazuje, jak přesně souprava najíždí. Nízký detail sypání pak dodá pocit síly a objemu.</div>
+</div>
+<div class="recipe">
+<h3 data-t="t271">5. Vykládka za jízdy</h3>
+<div class="cast" data-t="t272"><b>Obsazení:</b> kombajn · traktor s návěsem · <b>Délka:</b> 20 s</div>
+<ol>
+<li data-t="t273">Obě trasy souběžně podél řádku, stejná rychlost (třeba 6 km/h). Kombajn má Nářadí zapnout a Výsypku vysunout, traktor jede vedle.</li>
+<li data-t="t274">Kombajnu naplň zásobník (menu Naplnění), ať je co sypat.</li>
+<li data-t="t275">Kamera: <b>Souběžná jízda</b> z druhé strany, pak <b>Dva cíle</b> s okrajem 6 m.</li>
+</ol>
+<div class="why" data-t="t276">souběžná jízda drží oba stroje v klidu proti ujíždějícímu pozadí. Dva cíle hlídají, aby se nikdo nevytratil ze záběru.</div>
+</div>
+<div class="recipe">
+<h3 data-t="t277">6. Dolly zoom („Vertigo“)</h3>
+<div class="cast" data-t="t278"><b>Obsazení:</b> stojící stroj nebo budova · <b>Délka:</b> 6 s</div>
+<ol>
+<li data-t="t279"><b>Let</b> se dvěma K-framy: první blízko u stroje s 24 mm (<kbd>2</kbd>), druhý o 30 m dál přímo dozadu se 135 mm (<kbd>6</kbd>).</li>
+<li data-t="t280">Oba K-framy přepni na <b>Plynule</b> a v Průběhu rychlosti vyber stálou rychlost.</li>
+<li data-t="t281">Panel <kbd>V</kbd> → zoom: dolaď křivku tak, aby stroj držel stejnou velikost, a pozadí se přitom „nafukovalo“.</li>
+</ol>
+<div class="why" data-t="t282">pohyb kamery dozadu a zoom dopředu se navzájem vyruší na objektu, ale ne na pozadí. Vzniká známý závratný efekt.</div>
+</div>
+<div class="recipe">
+<h3 data-t="t283">7. Nahraj si jízdu a natoč ji z pěti úhlů</h3>
+<div class="cast" data-t="t284"><b>Obsazení:</b> cokoli, co řídíš · <b>Délka:</b> libovolná</div>
+<ol>
+<li data-t="t285">Ve hře sedni do vozidla, stiskni <kbd>Alt</kbd>+<kbd>V</kbd>, projeď to sám (i couvání a zatáčky), znovu <kbd>Alt</kbd>+<kbd>V</kbd>.</li>
+<li data-t="t286">Otevři editor: nahraná trasa je připravená i s rychlostmi.</li>
+<li data-t="t287">V záběru vytvoř pět kamer (<kbd>C</kbd> → Nová kamera) a v každé jiný režim: Sledování, Průjezd, Kolmo shora, Připevnit na kolo, Orbit.</li>
+<li data-t="t288">Přehraj každou kameru zvlášť a ve střihu poskládej.</li>
+</ol>
+<div class="why" data-t="t289">vozidla jsou pro všechny kamery stejná, takže stroj jede pokaždé stejně a záběry k sobě ve střihu sednou.</div>
+</div>
+<h3 data-t="t290">Drobné triky</h3>
+<ul>
+<li data-t="t291"><b>Ohnisko vypráví:</b> 14–24 mm je dynamika a blízkost, 50 mm přirozený pohled, 135–400 mm stlačená vzdálenost a „dokumentární“ dojem.</li>
+<li data-t="t292"><b>Kamera nemusí mířit na střed:</b> bod zájmu dej do levé třetiny a stroj v obraze „jede do volného prostoru“.</li>
+<li data-t="t293"><b>Jemný třes z ruky</b> u statické kamery působí živěji než dokonalý stativ.</li>
+<li data-t="t294"><b>Náklon do zatáček</b> u Letu dodá pocit dronu.</li>
+<li data-t="t295"><b>Předstih</b> před pohybem dá záznamu čas se rozběhnout. Nastavíš ho v Nastavení záběru.</li>
+<li data-t="t296"><b>B místo Play:</b> při ladění kamery postav vozidla do času ukazatele (<kbd>B</kbd>) a nemusíš přehrávat celý záběr.</li>
+</ul>
+</section>
+<section id="rozsireni">
+<h2 data-t="t363">Rozšíření z jiných módů</h2>
+<p data-t="t364">Cinema Studio nic dalšího nepotřebuje. Když jsou ale nainstalované tyhle módy, nabídne v menu akcí a předmětů navíc:</p>
+<div class="acts">
+<div class="card"><h4 data-t="t365">Courseplay</h4><ul>
+<li data-t="t366"><b>Akce Courseplay</b>: spustí a zastaví práci stroje, který má načtený kurz.</li>
+<li data-t="t367"><b>Řádky na poli</b> podle kurzu, který má některý stroj pro to pole načtený.</li>
+</ul></div>
+<div class="card"><h4 data-t="t368">Spray Drone</h4><ul>
+<li data-t="t369"><b>Drony</b>: spustit misi, návrat domů, zapnout a vypnout centrálu.</li>
+<li data-t="t370"><b>Skříň s kanystry</b> otevřít a zavřít, <b>bedna</b> naplnit nebo vyprázdnit.</li>
+<li data-t="t371"><b>Pumpa</b> zapnout a vypnout, <b>hadice</b> zapojit a odpojit.</li>
+</ul></div>
+</div>
+<div class="note" data-t="t372">Bez těchto módů se položky v menu vůbec neukážou. Jiná verze módu, se kterou rozšíření nepočítá, editor neshodí, jen akce nic neudělá.</div>
+</section>
+<section id="klavesy">
+<h2 data-t="t297">Všechny klávesy</h2>
+<p data-t="t298">Výchozí rozložení. Všechny akce jdou přenastavit v nastavení ovládání hry. Stejný přehled ukáže v editoru <kbd>F1</kbd>.</p>
+<div class="tablewrap">
+<h3 data-t="t299">Mimo editor</h3>
+<table>
+<tr><td><kbd>Alt</kbd>+<kbd>C</kbd></td><td data-t="t300">otevřít editor</td></tr>
+<tr><td><kbd>Alt</kbd>+<kbd>V</kbd></td><td data-t="t301">nahrávat jízdu vozidla, ve kterém sedíš (znovu = ukončit, pak otevřít editor)</td></tr>
+</table>
+<h3 data-t="t302">Pohyb a pohled</h3>
+<table>
+<tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></td><td data-t="t303">let</td></tr>
+<tr><td><kbd>Q</kbd> / <kbd>E</kbd></td><td data-t="t304">dolů / nahoru</td></tr>
+<tr><td data-t="t305">myš</td><td data-t="t306">rozhlížení; <kbd>F</kbd> nebo <kbd>Alt</kbd> zapne kurzor</td></tr>
+<tr><td data-t="t307">kolečko</td><td data-t="t308">rychlost letu (<kbd>Shift</kbd> rychleji)</td></tr>
+<tr><td data-t="t309"><kbd>Shift</kbd>+kolečko</td><td data-t="t310">ohnisko; <kbd>1</kbd>–<kbd>8</kbd> objektivy 14–400 mm</td></tr>
+</table>
+<h3 data-t="t311">K-framy a osa</h3>
+<table>
+<tr><td data-t="t312"><kbd>K</kbd> / pravé tlačítko</td><td data-t="t313">K-frame do bloku pod ukazatelem, v mezeře prodlouží Let nebo založí nový</td></tr>
+<tr><td><kbd>←</kbd> <kbd>→</kbd></td><td data-t="t314">ukazatel o sekundu zpět / dopředu</td></tr>
+<tr><td><kbd>Shift</kbd>+<kbd>←</kbd> <kbd>→</kbd></td><td data-t="t315">předchozí / další K-frame, začátek nebo konec bloku</td></tr>
+<tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td data-t="t316">ovládaný řádek výš / níž; s <kbd>Ctrl</kbd> zvednout / snížit K-frame</td></tr>
+<tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td data-t="t317">začátek / konec záběru</td></tr>
+<tr><td><kbd>Mezerník</kbd></td><td data-t="t318">přehrát / pauza</td></tr>
+<tr><td><kbd>Enter</kbd></td><td data-t="t319">přehrát od začátku s předstihem</td></tr>
+<tr><td><kbd>I</kbd></td><td data-t="t320">časová osa při přehrávání</td></tr>
+<tr><td><kbd>V</kbd></td><td data-t="t321">panel křivek (rychlost, zoom, kanály)</td></tr>
+<tr><td><kbd>Y</kbd></td><td data-t="t322">průjezd K-framem: plynule / zastavit / roh</td></tr>
+<tr><td><kbd>+</kbd> / <kbd>−</kbd></td><td data-t="t323">rychlost bloku pod ukazatelem</td></tr>
+<tr><td><kbd>Delete</kbd></td><td data-t="t324">smazat vybrané a zavřít mezeru</td></tr>
+<tr><td><kbd>Backspace</kbd></td><td data-t="t325">smazat a nechat mezeru (kamera v ní stojí)</td></tr>
+</table>
+<h3 data-t="t326">Úpravy na ose</h3>
+<table>
+<tr><td data-t="t327">klik, <kbd>Shift</kbd>+klik</td><td data-t="t328">vybrat, přidat do výběru; tažení v prázdnu = obdélník</td></tr>
+<tr><td data-t="t329">tažení / <kbd>Ctrl</kbd>+tažení</td><td data-t="t330">přesunout / zkopírovat</td></tr>
+<tr><td data-t="t331">tažení kraje</td><td data-t="t332">oříznout blok</td></tr>
+<tr><td data-t="t333">střední tlačítko + tažení</td><td data-t="t334">rozjezd (levá půlka bloku) / dojezd (pravá)</td></tr>
+<tr><td data-t="t335"><kbd>Ctrl</kbd>+kolečko</td><td data-t="t336">rychlost K-framu, délka bloku, rychlost úseku trasy</td></tr>
+<tr><td data-t="t337"><kbd>Alt</kbd>+kolečko</td><td data-t="t338">přiblížit / oddálit osu</td></tr>
+<tr><td><kbd>O</kbd></td><td data-t="t339">přepsat / vložit</td></tr>
+<tr><td><kbd>J</kbd></td><td data-t="t340">magnet (<kbd>Shift</kbd> při tažení ho vypne)</td></tr>
+<tr><td><kbd>U</kbd></td><td data-t="t341">rozdělit blok na ukazateli</td></tr>
+<tr><td><kbd>,</kbd> / <kbd>.</kbd></td><td data-t="t342">kopírovat / vložit od ukazatele</td></tr>
+</table>
+<h3 data-t="t343">Vozidla a objekty</h3>
+<table>
+<tr><td><kbd>T</kbd></td><td data-t="t344">vybrat objekt ve scéně: vozidlo, postavu, bránu…</td></tr>
+<tr><td><kbd>M</kbd></td><td data-t="t345">pohled shora; klik vloží bod, tažení posune nebo míří</td></tr>
+<tr><td><kbd>Tab</kbd></td><td data-t="t346">kreslíš dráhu kamery / trasu vozidla</td></tr>
+<tr><td><kbd>X</kbd></td><td data-t="t347">detail vozidla se všemi lajnami akcí</td></tr>
+<tr><td><kbd>B</kbd> / <kbd>R</kbd></td><td data-t="t348">vozidla do času ukazatele / na start</td></tr>
+<tr><td><kbd>P</kbd></td><td data-t="t349">boční panel vlevo / vpravo / vypnout</td></tr>
+<tr><td><kbd>F</kbd> / <kbd>Alt</kbd></td><td data-t="t350">kurzor zapnout / vypnout</td></tr>
+</table>
+<h3 data-t="t351">Záběr a zobrazení</h3>
+<table>
+<tr><td><kbd>N</kbd></td><td data-t="t352">nový záběr</td></tr>
+<tr><td><kbd>PgUp</kbd> / <kbd>PgDn</kbd></td><td data-t="t353">předchozí / další záběr</td></tr>
+<tr><td><kbd>C</kbd></td><td data-t="t354">další kamera záběru</td></tr>
+<tr><td><kbd>H</kbd></td><td data-t="t355">čistý náhled</td></tr>
+<tr><td><kbd>L</kbd> / <kbd>G</kbd></td><td data-t="t356">širokoúhlé pruhy / mřížka třetin</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td data-t="t357">zpět / znovu</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td data-t="t358">uložit (ukládá se i samo)</td></tr>
+<tr><td><kbd>F1</kbd></td><td data-t="t359">nápověda</td></tr>
+<tr><td><kbd>Esc</kbd></td><td data-t="t360">zastavit, zavřít menu, výběr nebo editor</td></tr>
+</table>
+</div>
+</section>
+<footer data-t="t361">FS25_CinemaStudio · tento průvodce je součástí módu (složka <code>manual</code> v zipu módu).</footer>
+</main>
+</div>
+<script src="lang/en.js"></script>
+<script>
+// Jazyk průvodce: čeština je přímo ve stránce, ostatní jazyky v lang/<jazyk>.js (window.MANUAL_TEXTS[jazyk] = { klíč: html }).
+(function () {
+  var texts = window.MANUAL_TEXTS || {};
+  var original = {};
+  var units = document.querySelectorAll("[data-t]");
+  var labels = document.querySelectorAll("[data-t-aria]");
+  function apply(lang) {
+    var table = texts[lang] || {};
+    units.forEach(function (el) {
+      var key = el.getAttribute("data-t");
+      if (!(key in original)) original[key] = el.innerHTML;
+      el.innerHTML = lang !== "cz" && table[key] != null ? table[key] : original[key];
+    });
+    labels.forEach(function (el) {
+      var key = el.getAttribute("data-t-aria");
+      if (!(key in original)) original[key] = el.getAttribute("aria-label");
+      el.setAttribute("aria-label", lang !== "cz" && table[key] != null ? table[key] : original[key]);
+    });
+    document.documentElement.lang = lang === "cz" ? "cs" : lang;
+    document.querySelectorAll(".lang button").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false");
+    });
+    try { localStorage.setItem("cinemaManualLang", lang); } catch (e) {}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem("cinemaManualLang"); } catch (e) {}
+  var browser = (navigator.language || "").toLowerCase();
+  apply(saved || (browser.indexOf("cs") === 0 || browser.indexOf("sk") === 0 ? "cz" : "en"));
+  document.querySelectorAll(".lang button").forEach(function (b) {
+    b.addEventListener("click", function () { apply(b.getAttribute("data-lang")); });
+  });
+})();
+</script>
+</body>
+</html>
