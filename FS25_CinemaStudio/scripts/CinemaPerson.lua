@@ -1,8 +1,6 @@
--- Postava v záběru (docs/PLAN-postava.md): herec s actor.person = "player" je hráč sám. Chodí po trase herce (body jako
--- u vozidla, bod může mít natočení p[6]), při přehrávání se mu každý snímek dosadí vstup, jako by držel klávesy
--- (ověřeno sondou ve hře). Start: actor.start.person = { x, y, z, yaw }.
--- actor.person = "helper" je pomocník (actor.helper = jméno z HelperManageru): jen model bez fyziky, který stojí přesně
--- tam, kde ho trasa v čase osy chce mít, i mimo přehrávání.
+-- Postava v záběru (docs/PLAN-postava.md): herec s actor.person = "helper" je pomocník (actor.helper = jméno z
+-- HelperManageru): jen model bez fyziky, který stojí přesně tam, kde ho trasa v čase osy chce mít, i mimo přehrávání.
+-- Chodí po trase herce (body jako u vozidla, bod může mít natočení p[6]). Start: actor.start.person = { x, y, z, yaw }.
 -- Akce postavy (CinemaActions, druhy seat a door): nástup do vozidla a výstup, otevření a zavření animace vozidla.
 
 CinemaPerson = CinemaPerson or {}
@@ -10,25 +8,24 @@ local Pe = CinemaPerson
 local R = CinemaRoute
 local M = CinemaMath
 
-Pe.PLAYER = "player"
 Pe.HELPER = "helper"
--- Postava jde pomalu, jde, nebo běží; stát = pauza v bodě trasy. Hráč ve hře má plný krok 4 m/s a běh 7 m/s
--- (PlayerStateWalk.MAXIMUM_WALK_SPEED / MAXIMUM_RUN_SPEED, přečteno ve hře), ale model pomocníka při 4 m/s hraje běh
--- (animace podle absSpeed), takže chůze je 1,5 m/s (při 5 km/h ve hře viditelně šel) a běh jako ve hře.
+local LEGACY_PLAYER = "player"
+-- Postava jde pomalu, jde, nebo běží; stát = pauza v bodě trasy. Chůze a běh jsou stejně rychlé jako u hráče ve hře
+-- (PlayerStateWalk.MAXIMUM_WALK_SPEED 4 m/s / MAXIMUM_RUN_SPEED 7 m/s, přečteno ve hře), takže nahraná chůze trvá stejně.
+-- Model pomocníka ale hraje animaci podle absSpeed a při 4 m/s už běží (při 1,5 m/s ve hře viditelně šel): chůzi proto
+-- dostane animaci zpomalenou na Pe.NPC_WALK_ANIM_MPS (Pe.npcAnimSpeed).
 Pe.GAME_WALK_MPS = 4
-Pe.SLOW_MPS = 0.9
-Pe.WALK_MPS = 1.5
+Pe.SLOW_MPS = 1.5
+Pe.WALK_MPS = Pe.GAME_WALK_MPS
 Pe.RUN_MPS = 7
+Pe.NPC_WALK_ANIM_MPS = 1.5
 Pe.SLOW_KMH = Pe.SLOW_MPS * 3.6
 Pe.WALK_KMH = Pe.WALK_MPS * 3.6
 Pe.RUN_KMH = Pe.RUN_MPS * 3.6
 Pe.GAITS = { { name = "slow", kmh = Pe.SLOW_KMH }, { name = "walk", kmh = Pe.WALK_KMH }, { name = "run", kmh = Pe.RUN_KMH } }
-Pe.CATCH_UP = 1.5 -- 1/s; jak rychle postava dohání plánovanou polohu
 Pe.TURN_RATE = math.pi -- rad/s; otáčení na místě
-Pe.IDLE_MPS = 0.15
-
--- Vstup, který hook dosadí hráči v tomto snímku: { dirX, dirZ, axis } nebo nil.
-Pe.feed = nil
+Pe.JUMP_TIME = 0.7 -- s; jak dlouho je pomocník při skoku ve vzduchu
+Pe.JUMP_HEIGHT = 0.45 -- m
 
 function Pe.isPerson(actor)
     return actor ~= nil and actor.person ~= nil
@@ -67,18 +64,9 @@ function Pe.captureStart()
     return { entries = {}, joints = {}, person = { x = x, y = y, z = z, yaw = Pe.playerYaw() } }
 end
 
-function Pe.newActor(name)
-    local start = Pe.captureStart()
-    return { person = Pe.PLAYER, name = name, speed = Pe.WALK_KMH, delay = 0, points = { { start.person.x, start.person.z } },
-        start = start, actions = {} }
-end
-
--- Pomocník „Já“: model se vzhledem hráče, chodí s animací jako ostatní pomocníci (hráč sám se při přehrávání jen posouvá).
-Pe.SELF = "cinemaSelf"
-
--- Z koho jde pomocník udělat: „Já“ a pomocníci HelperManageru se vzhledem. { name, title }.
+-- Z koho jde pomocník udělat: pomocníci HelperManageru se vzhledem. { name, title }.
 function Pe.helperChoices()
-    local list = { { name = Pe.SELF, title = g_i18n:getText("cine_person_self") } }
+    local list = {}
     for _, helper in ipairs(CinemaWorld.helperList()) do
         if helper.playerStyle ~= nil then
             list[#list + 1] = { name = helper.name, title = helper.title or helper.name }
@@ -96,21 +84,40 @@ function Pe.helperTitle(name)
     return "?"
 end
 
--- Vzhled pomocníka podle jména; u „Já“ kopie současného vzhledu hráče (nil, když hráč není).
-function Pe.styleOf(name)
-    if name == Pe.SELF then
-        local p = player()
-        local gc = p ~= nil and p.graphicsComponent or nil
-        if gc == nil or gc.getStyle == nil or PlayerStyle == nil then
-            return nil
+-- Výchozí pomocník pro postavu, která vznikne sama (nahrávka): první, který v záběru ještě nemá žádná postava, jinak první.
+function Pe.defaultHelper(actors)
+    local used = {}
+    for _, a in ipairs(actors or {}) do
+        if Pe.isHelper(a) and a.helper ~= nil then
+            used[a.helper] = true
         end
-        local ok, style = pcall(function()
-            local copy = PlayerStyle.new()
-            copy:copyFrom(gc:getStyle(true))
-            return copy
-        end)
-        return ok and style or nil
     end
+    local choices = Pe.helperChoices()
+    for _, choice in ipairs(choices) do
+        if not used[choice.name] then
+            return choice
+        end
+    end
+    return choices[1]
+end
+
+-- Dřívější záběry mívaly postavu hráče a pomocníka „Já“: nově jsou jen AI postavy, takže se z nich stane výchozí pomocník.
+function Pe.convertLegacy(actor, actors)
+    local legacy = actor.person == LEGACY_PLAYER or (actor.person == Pe.HELPER and actor.helper == "cinemaSelf")
+    local choice = legacy and Pe.defaultHelper(actors) or nil
+    if choice == nil then
+        return false
+    end
+    local oldTitle = actor.name
+    actor.person, actor.helper = Pe.HELPER, choice.name
+    if oldTitle == nil or oldTitle == "" or oldTitle == "Já" or oldTitle == "Já (hráč)" then
+        actor.name = choice.title
+    end
+    return true
+end
+
+-- Vzhled pomocníka podle jména z HelperManageru (nil, když takový není).
+function Pe.styleOf(name)
     local helper = g_helperManager ~= nil and name ~= nil and g_helperManager:getHelperByName(name) or nil
     return helper ~= nil and helper.playerStyle or nil
 end
@@ -207,7 +214,7 @@ end
 
 function Pe.canWardrobe(actor)
     local p = player()
-    return Pe.isHelper(actor) and actor.helper ~= Pe.SELF and WardrobeScreen ~= nil and g_gui ~= nil and g_gui.changeScreen ~= nil
+    return Pe.isHelper(actor) and WardrobeScreen ~= nil and g_gui ~= nil and g_gui.changeScreen ~= nil
         and p ~= nil and p.setStyleAsync ~= nil and p.graphicsComponent ~= nil and p.graphicsComponent.getStyle ~= nil
 end
 
@@ -394,6 +401,16 @@ function Pe.snapGaits(actor)
     for id in pairs(actor.curves or {}) do
         if id:sub(1, 5) == "speed" then
             actor.curves[id] = nil
+        end
+    end
+end
+
+-- Záběr z formátu 4, kde chůze (bez rychlosti v bodě) byla 1,5 m/s: dnes je to pomalá chůze, takže postava jde stejně
+-- rychle jako dřív. Dřívější pomalou chůzi (0,9 m/s) a běh přichytí k pomalé chůzi a běhu snapGaits.
+function Pe.keepOldWalk(actor)
+    for _, p in ipairs(actor.points or {}) do
+        if p[3] == nil then
+            p[3] = Pe.SLOW_KMH
         end
     end
 end
@@ -799,34 +816,6 @@ function Pe.playerVehicle()
     return p:getCurrentVehicle()
 end
 
--- Hráč nasedne do vozidla (i z dálky, ověřeno sondou). Hra přitom přepne na kameru vozidla; naši vrací Pe.keepCamera.
-function Pe.enter(v)
-    local p = player()
-    if p == nil or v == nil or Pe.playerVehicle() == v then
-        return
-    end
-    if Pe.playerVehicle() ~= nil then
-        pcall(function() p:leaveVehicle() end)
-    end
-    Pe.feed = nil
-    pcall(function() p:requestToEnterVehicle(v) end)
-    Pe.entered = true
-end
-
-function Pe.leave()
-    local p = player()
-    if p ~= nil and Pe.playerVehicle() ~= nil then
-        pcall(function() p:leaveVehicle() end)
-    end
-end
-
--- Nástup i výstup hráče přepnou kameru; v editoru s postavou musí zůstat aktivní ta naše.
-function Pe.keepCamera(cam)
-    if cam ~= nil and cam.active and cam.node ~= nil and g_cameraManager:getActiveCamera() ~= cam.node then
-        g_cameraManager:setActiveCamera(cam.node)
-    end
-end
-
 local function turnTowards(yaw, target, dt)
     local diff = M.angleDiff(yaw, target)
     local step = Pe.TURN_RATE * dt * 0.001
@@ -836,81 +825,22 @@ local function turnTowards(yaw, target, dt)
     return yaw + (diff > 0 and step or -step), false
 end
 
--- Hráč na místo, kde má postava být v čase t, natočený podle plánu. Z vozidla nejdřív vystoupí; cam = kamera editoru,
--- kterou výstup z vozidla přepne na hráčovu.
-function Pe.place(actor, t, cam)
-    if Pe.isHelper(actor) then
-        return true
+-- Výška nad zemí, kterou postava v čase t (s od začátku záběru) má kvůli skoku: oblouk po dobu Pe.JUMP_TIME od akce.
+function Pe.jumpLift(actor, t)
+    local tl = t - (actor.delay or 0)
+    for _, action in ipairs(actor.actions or {}) do
+        if action.kind == "jump" then
+            local u = (tl - action.t) / Pe.JUMP_TIME
+            if u > 0 and u < 1 then
+                return 4 * Pe.JUMP_HEIGHT * u * (1 - u)
+            end
+        end
     end
-    local p = player()
-    if p == nil then
-        return false, "missing"
-    end
-    if p.getCurrentVehicle ~= nil and p:getCurrentVehicle() ~= nil then
-        pcall(function() p:leaveVehicle() end)
-    end
-    -- do vozidla ho případně posadí akce
-    local x, z, yaw, y = Pe.poseAt(actor, t)
-    y = Pe.snapFloor(x, y, z)
-    local ok = pcall(function() p:teleportTo(x, y + 0.05, z) end)
-    if p.setMovementYaw ~= nil then
-        pcall(p.setMovementYaw, p, yaw)
-    end
-    if cam ~= nil and cam.active and cam.node ~= nil then
-        g_cameraManager:setActiveCamera(cam.node)
-    end
-    Pe.feed = nil
-    return ok, ok and nil or "missing"
+    return 0
 end
 
 function Pe.newRuntime(actor)
     return { person = true, state = "waiting", name = actor.name }
-end
-
--- Jeden snímek přehrávání: vstup, který dovede hráče na plánovanou polohu; stojí-li, otočí ho podle plánu. Ve vozidle
--- nedělá nic, po výstupu jde další částí trasy.
-function Pe.update(rt, actor, t, dt)
-    if Pe.isHelper(actor) then
-        return
-    end
-    local p = player()
-    local seat = Pe.seatAt(actor, t)
-    if p == nil or Pe.playerVehicle() ~= nil or (seat ~= nil and seat.inside) then
-        Pe.feed = nil
-        return
-    end
-    local x, _, z = Pe.playerPos()
-    local tx, tz, yaw = Pe.poseAt(actor, t)
-    local nx, nz = Pe.poseAt(actor, t + 0.1)
-    local vx = (nx - tx) / 0.1 + (tx - x) * Pe.CATCH_UP
-    local vz = (nz - tz) / 0.1 + (tz - z) * Pe.CATCH_UP
-    local speed = math.sqrt(vx * vx + vz * vz)
-    if speed < Pe.IDLE_MPS then
-        Pe.feed = nil
-        local current = Pe.playerYaw()
-        if math.abs(M.angleDiff(current, yaw)) > 0.01 and p.setMovementYaw ~= nil then
-            pcall(p.setMovementYaw, p, (turnTowards(current, yaw, dt)))
-        end
-        return
-    end
-    local run = 0
-    if speed > Pe.GAME_WALK_MPS * 1.05 then
-        run = M.clamp((speed - Pe.GAME_WALK_MPS) / (Pe.RUN_MPS - Pe.GAME_WALK_MPS), 0.1, 1)
-    end
-    Pe.feed = { dirX = vx / speed, dirZ = vz / speed, axis = M.clamp(speed / Pe.GAME_WALK_MPS, 0.1, 1), run = run }
-end
-
-function Pe.stop()
-    Pe.feed = nil
-end
-
--- Kamera editoru skryje model hráče; postava v záběru ale vidět být musí. Po zavření editoru v první osobě model zase schovat.
-function Pe.keepVisible()
-    local p = player()
-    if p ~= nil and p.graphicsComponent ~= nil and (p.getCurrentVehicle == nil or p:getCurrentVehicle() == nil) then
-        p.graphicsComponent:setModelVisibility(true)
-        Pe.forcedVisible = true
-    end
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -962,9 +892,20 @@ local function deleteNpc(npc)
     end
 end
 
+-- Rychlost animace pomocníka pro skutečnou rychlost speed (m/s): do chůze zpomalená, aby model šel a neběžel, mezi
+-- chůzí a během plynule až do skutečné rychlosti běhu.
+function Pe.npcAnimSpeed(speed)
+    if speed <= Pe.WALK_MPS then
+        return speed * Pe.NPC_WALK_ANIM_MPS / Pe.WALK_MPS
+    end
+    local u = math.min((speed - Pe.WALK_MPS) / (Pe.RUN_MPS - Pe.WALK_MPS), 1)
+    return Pe.NPC_WALK_ANIM_MPS + (Pe.RUN_MPS - Pe.NPC_WALK_ANIM_MPS) * u
+end
+
 local function poseNpc(npc, x, y, z, yaw, speed, turn, dt)
     local gc, st = npc.gc, npc.state
     local running = speed > (Pe.WALK_MPS + Pe.RUN_MPS) * 0.5
+    speed = Pe.npcAnimSpeed(speed)
     st.absSpeed, st.isWalking, st.isRunning, st.isIdling = speed, speed > 0.05 and not running, running, speed <= 0.05
     st.isGrounded, st.isCloseToGround, st.distanceToGround, st.isNPC = true, true, 0, true
     st.relativeVelocityX, st.relativeVelocityY, st.relativeVelocityZ = 0, 0, speed
@@ -1007,7 +948,7 @@ function Pe.syncHelpers(actors, t, dt, moving)
                 else
                     setNpcVisible(npc, true)
                     local x, z, yaw, y = Pe.poseAt(actor, t)
-                    y = Pe.snapFloor(x, y, z)
+                    y = Pe.snapFloor(x, y, z) + Pe.jumpLift(actor, t)
                     local speed, turn = 0, 0
                     if moving and npc.x ~= nil and dt > 0 then
                         -- rychlost z plánu, ne z posunu za snímek: skok ukazatele nebo start přehrávání by dal na pár
@@ -1040,6 +981,7 @@ Pe.CARRY_LIFT = 0.6 -- s; zvednutí na začátku a položení na konci akce
 Pe.CARRY_ONE_HAND = 0.3 -- m; předmět s poloměrem do tolika nese v jedné ruce u boku, větší oběma před sebou
 Pe.CARRY_MAX = 1.5 -- m; větší objekt (stroj, budova) postava nezvedne
 Pe.CARRY_GROUP = 6 -- uzel s víc dětmi je skupina předmětů mapy, ne předmět
+Pe.CARRY_DISPLACED = 0.3 -- m; dál od místa zvednutí předmět neleží na svém místě
 -- křivky posunu předmětu proti místu v rukou (m): doleva, výš, dopředu
 Pe.CARRY_CURVES = { "carryX", "carryY", "carryZ" }
 -- křivky natočení (°): naklonit dopředu (vysypat), naklonit do strany, otočit kolem svislé osy
@@ -1147,18 +1089,11 @@ end
 
 -- Kde postava stojí: x, y (zem), z, natočení; nil, když není vidět (sedí ve vozidle).
 local function bodyPose(actor)
-    if Pe.isHelper(actor) then
-        local npc = Pe.npcs[actor]
-        if npc == nil or npc.x == nil or npc.hidden then
-            return nil
-        end
-        return npc.x, npc.y or CinemaWorld.terrainY(npc.x, npc.z), npc.z, npc.yaw or 0
-    end
-    if Pe.playerVehicle() ~= nil then
+    local npc = Pe.npcs[actor]
+    if npc == nil or npc.x == nil or npc.hidden then
         return nil
     end
-    local x, y, z = Pe.playerPos()
-    return x, y, z, Pe.playerYaw()
+    return npc.x, npc.y or CinemaWorld.terrainY(npc.x, npc.z), npc.z, npc.yaw or 0
 end
 
 -- Místo ve světě pro postavu v x, y, z s natočením yaw a místem vůči ní ox (doleva), oy, oz (dopředu).
@@ -1250,6 +1185,17 @@ local function placeCarry(c, x, y, z, rx, ry, rz, state)
     c.state, c.moved = state, c.moved or state ~= "rest"
 end
 
+-- Neleží předmět, kde ho postava zvedá (nahrávka ho nechala tam, kde ho hráč položil)? Pak ho první snímek vrátí na místo.
+local function carryDisplaced(target)
+    local v, node = carryHandle(target)
+    local n = v ~= nil and v.rootNode or node
+    if n == nil then
+        return false
+    end
+    local x, y, z = getWorldTranslation(n)
+    return (x - target.x) ^ 2 + (y - target.y) ^ 2 + (z - target.z) ^ 2 > Pe.CARRY_DISPLACED ^ 2
+end
+
 -- Předmět zpátky na místo, kde ležel (akce zmizela, editor se zavírá).
 local function restoreCarry(action)
     local c = Pe.carried[action]
@@ -1272,7 +1218,7 @@ function Pe.syncCarry(actors, t)
                     c = nil
                 end
                 if c == nil then
-                    c = { target = action.carry }
+                    c = { target = action.carry, moved = carryDisplaced(action.carry) }
                     Pe.carried[action] = c
                 end
                 seen[action] = true
@@ -1298,32 +1244,4 @@ function Pe.release()
         deleteNpc(npc)
         Pe.npcs[actor] = nil
     end
-    Pe.feed = nil
-    -- do vozidla posadila hráče osa; po zavření editoru stojí zase venku
-    if Pe.entered then
-        Pe.leave()
-        Pe.entered = nil
-    end
-    local p = player()
-    if Pe.forcedVisible and p ~= nil and p.graphicsComponent ~= nil and p.camera ~= nil and p.camera.isFirstPerson then
-        p.graphicsComponent:setModelVisibility(false)
-    end
-    Pe.forcedVisible = nil
-end
-
--- Vstup se dosazuje až po PlayerInputComponent.update: stavový automat ho čte hned potom a resetState ho na konci snímku smaže.
-function Pe.feedInput(ic)
-    local feed = Pe.feed
-    if feed == nil or ic.player ~= g_localPlayer then
-        return
-    end
-    ic.moveForward, ic.moveRight = 1, 0
-    ic.worldDirectionX, ic.worldDirectionZ = feed.dirX, feed.dirZ
-    ic.walkAxis, ic.runAxis = feed.axis, feed.run or 0
-    ic.hasMovementInputs = true
-end
-
-if PlayerInputComponent ~= nil and PlayerInputComponent.update ~= nil and not PlayerInputComponent.cinemaStudioHooked then
-    PlayerInputComponent.cinemaStudioHooked = true
-    PlayerInputComponent.update = Utils.appendedFunction(PlayerInputComponent.update, function(ic) CinemaPerson.feedInput(ic) end)
 end

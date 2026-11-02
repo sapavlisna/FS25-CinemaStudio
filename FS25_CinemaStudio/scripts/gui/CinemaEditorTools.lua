@@ -1319,17 +1319,17 @@ function CinemaEditorScreen:mountFrame(track, t, live)
     if v == nil then
         return nil
     end
-    local node
+    local frame
     if track.camIndex ~= nil then
         local camera = W.vehicleCameras(v)[track.camIndex]
-        node = camera ~= nil and camera.node or nil
+        frame = camera ~= nil and W.vehicleCameraFrame(camera) or nil
     else
-        node = W.nodeAt(v, track.mountPath or "c1")
+        local node = W.nodeAt(v, track.mountPath or "c1")
+        frame = node ~= nil and W.frame(node) or nil
     end
-    if node == nil then
+    if frame == nil then
         return nil
     end
-    local frame = W.frame(node)
     if live then
         return frame
     end
@@ -2342,7 +2342,68 @@ function CinemaEditorScreen:findActor(vehicle)
     return nil
 end
 
--- Nahrávka ruční jízdy (CinemaRecorder) se vloží do záběru jako nové vozidlo; jízda začíná na playheadu.
+-- Postava z nahrávky: AI pomocník (první, který v záběru ještě není), v menu herce se vzhled vymění za jiného. Nil, když
+-- hra žádného pomocníka nemá.
+function CinemaEditorScreen:newRecordedPerson(s)
+    local helper = Pe.defaultHelper(self.shot.actors)
+    if helper == nil then
+        self:showMessage(g_i18n:getText("cine_msg_noHelper"))
+        return nil
+    end
+    local actor = Pe.newHelperActor(helper, s.x, s.z, s.yaw)
+    actor.start.person = { x = s.x, y = s.y, z = s.z, yaw = s.yaw }
+    return actor
+end
+
+-- Nahrávka chůze se vloží jako AI postava. Zvednuté předměty jsou akce nesení, takže se na začátku záběru vrátí, kde ležely.
+function CinemaEditorScreen:importWalk(rec)
+    local actor = self:newRecordedPerson(rec.start)
+    if actor == nil then
+        return
+    end
+    actor.points, actor.curves, actor.delay, actor.actions = rec.points, rec.curves, self.playhead, {}
+    for _, action in ipairs(rec.actions) do
+        A.add(actor, action)
+    end
+    table.insert(self.shot.actors, actor)
+    self.activeTarget = #self.shot.actors
+    self.actorRt = {}
+    self:markDirty()
+    self:showMessage(string.format(g_i18n:getText("cine_msg_recImported"), actor.name, rec.duration, #actor.points, #actor.actions))
+end
+
+-- Souvislý záznam (chůze, nástup, jízda, výstup…): postava s akcemi Nastoupit a Vystoupit a chůzí za výstupem jako další
+-- částí trasy, vozidla jako herci, kteří začínají při nástupu. Vozidlo s postavou uvnitř nemá pomocníka (syncDrivers).
+function CinemaEditorScreen:importSession(rec)
+    local p = rec.person
+    local actor = self:newRecordedPerson(p.start)
+    if actor == nil then
+        return
+    end
+    actor.points, actor.curves, actor.delay, actor.actions = p.points, p.curves, self.playhead, {}
+    local total = #p.actions
+    for _, action in ipairs(p.actions) do
+        A.add(actor, action)
+    end
+    table.insert(self.shot.actors, actor)
+    local personIndex = #self.shot.actors
+    for _, v in ipairs(rec.vehicles) do
+        local vehicle = { name = v.name, speed = E.ACTOR_SPEED_DEFAULT, delay = self.playhead + v.delay, points = v.points,
+            start = v.start, curves = v.curves, actions = {} }
+        for _, action in ipairs(v.actions) do
+            A.add(vehicle, action)
+        end
+        total = total + #v.actions
+        table.insert(self.shot.actors, vehicle)
+    end
+    self:syncDrivers()
+    self.activeTarget = personIndex
+    self.actorRt = {}
+    self:markDirty()
+    self:showMessage(string.format(g_i18n:getText("cine_msg_recImported"), actor.name, rec.duration, #p.points, total))
+end
+
+-- Nahrávka ruční jízdy (CinemaRecorder) se vloží do záběru jako nové vozidlo (chůze jako postava); začíná na playheadu.
 function CinemaEditorScreen:importRecording()
     local rec = CinemaRecorder.pending
     if rec == nil or self.shot == nil then
@@ -2350,6 +2411,14 @@ function CinemaEditorScreen:importRecording()
     end
     CinemaRecorder.pending = nil
     self:pushUndo()
+    if rec.session then
+        self:importSession(rec)
+        return
+    end
+    if rec.person then
+        self:importWalk(rec)
+        return
+    end
     local actor = { name = rec.name, speed = E.ACTOR_SPEED_DEFAULT, delay = self.playhead, points = rec.points, start = rec.start,
         curves = rec.curves, actions = {} }
     for _, action in ipairs(rec.actions) do
@@ -2406,30 +2475,6 @@ function CinemaEditorScreen:addActor(vehicle)
     self:showMessage(string.format(g_i18n:getText(root.spec_drivable ~= nil and "cine_msg_actorAdded" or "cine_msg_actorAddedStatic"), actor.name))
 end
 
--- Postava: hráč sám jako herec (jedna na záběr); start je tam, kde teď stojí.
-function CinemaEditorScreen:addPersonActor()
-    for i, a in ipairs(self.shot.actors) do
-        if a.person == Pe.PLAYER then
-            self.activeTarget = i
-            if self.topdown == nil then
-                self:enterTopdown()
-            end
-            self:showMessage(self:getActiveTargetText())
-            return
-        end
-    end
-    self:pushUndo()
-    local actor = Pe.newActor(g_i18n:getText("cine_person_me"))
-    table.insert(self.shot.actors, actor)
-    self.activeTarget = #self.shot.actors
-    self.actorRt = {}
-    self:markDirty()
-    if self.topdown == nil then
-        self:enterTopdown()
-    end
-    self:showMessage(g_i18n:getText("cine_msg_personAdded"))
-end
-
 -- Pomocník jako postava: stojí na terénu uprostřed obrazu (jinak u hráče), čelem ke kameře.
 function CinemaEditorScreen:addHelperActor(helperName)
     local helper = nil
@@ -2477,7 +2522,6 @@ function CinemaEditorScreen:openAddActorMenu(x, y)
     end
     local items = {
         { text = t("cine_actor_addVehicle"), action = function(s) s:pickActorVehicle() end },
-        { text = t("cine_actor_addMe"), action = function(s) s:addPersonActor() end },
         { text = t("cine_actor_addFocusRow"), action = function(s) s:addFocusRow() end, disabled = self:hasFocusRow() },
         { text = t("cine_actor_addProps"), submenu = true, action = function(s) s:openMenu(t("cine_actor_addProps"), s:propAddItems(), x, y) end },
         { text = t("cine_actor_addObject"), action = function(s) s:pickObject() end },
@@ -2515,8 +2559,6 @@ end
 function CinemaEditorScreen:defaultActorName(actor)
     if Pe.isHelper(actor) then
         return Pe.helperTitle(actor.helper)
-    elseif actor.person == Pe.PLAYER then
-        return g_i18n:getText("cine_person_me")
     end
     local first = actor.start ~= nil and actor.start.entries[1] or nil
     local v = first ~= nil and W.find(first.uid) or nil
@@ -2548,11 +2590,9 @@ end
 
 -- Co brání přehrání kvůli vozidlům herců: v soupravě sedí hráč (přehrání by vozidlo vracelo na start i s ním) nebo
 -- vozidlo s trasou nejde řídit. Vrací klíč hlášky, jméno herce a případně klíč důvodu; nil, když nic nebrání.
--- Hráč, který je sám hercem, ve vozidle sedí podle osy (akce nástupu), takže nebrání.
 function CinemaEditorScreen:getActorBlocker()
-    local playerActor = self:hasPersonActor()
     local player = g_localPlayer
-    local current = not playerActor and player ~= nil and player.getCurrentVehicle ~= nil and player:getCurrentVehicle() or nil
+    local current = player ~= nil and player.getCurrentVehicle ~= nil and player:getCurrentVehicle() or nil
     local currentRoot = current ~= nil and W.rootOf(current) or nil
     for _, a in ipairs(self.shot.actors) do
         local first = a.start ~= nil and a.start.entries[1] or nil
@@ -2562,7 +2602,7 @@ function CinemaEditorScreen:getActorBlocker()
                 return "cine_msg_playOccupied", a.name or "?"
             end
             if R.plan(a) ~= nil then
-                local ok, why = W.canDrive(v, playerActor)
+                local ok, why = W.canDrive(v)
                 if not ok then
                     return "cine_msg_playBlocked", a.name or "?", REASONS[why] or "cine_msg_actorMissing"
                 end
@@ -2578,10 +2618,8 @@ function CinemaEditorScreen:resetActors(showMessage)
     CinemaEnvironment.restart(self.shot.env, self.envStart, self.envSaved)
     local failed = self:resetProps()
     for _, a in ipairs(self.shot.actors) do
-        local ok, why
-        if Pe.isPerson(a) then
-            ok, why = Pe.place(a, 0, self.cam)
-        else
+        local ok, why = true, nil
+        if not Pe.isPerson(a) then
             ok, why = W.resetStart(a.start)
         end
         if not ok then
@@ -2646,10 +2684,8 @@ function CinemaEditorScreen:resetActorsAt(t, showMessage)
                 return x, y, z, 0, ry or entry.ry, 0
             end
         end
-        local ok, why
-        if Pe.isPerson(a) then
-            ok, why = Pe.place(a, t, self.cam)
-        else
+        local ok, why = true, nil
+        if not Pe.isPerson(a) then
             ok, why = W.resetStart(a.start, placement)
         end
         if not ok then
@@ -2687,7 +2723,7 @@ function CinemaEditorScreen:prepareActors(t)
         elseif rt.route == nil then
             rt.state = "done"
         else
-            local ok, why = W.canDrive(rt.vehicle, self:hasPersonActor())
+            local ok, why = W.canDrive(rt.vehicle)
             if ok and rt.route.hasReverse and not W.canReverse(rt.vehicle) then
                 ok, why = false, "cannotReverse"
             end
@@ -2706,9 +2742,6 @@ function CinemaEditorScreen:updateActors(dt, t)
     for i, a in ipairs(self.shot.actors) do
         local rt = self.actorRt[i]
         if rt ~= nil and rt.person then
-            if rt.state == "walking" then
-                Pe.update(rt, a, t, dt)
-            end
             A.update(rt, a, t - (a.delay or 0), dt)
         elseif rt ~= nil then
             if rt.state == "waiting" and t >= (a.delay or 0) then
@@ -2730,9 +2763,7 @@ end
 
 function CinemaEditorScreen:stopActors()
     for _, rt in pairs(self.actorRt) do
-        if rt.person then
-            Pe.stop()
-        else
+        if not rt.person then
             W.stopActor(rt)
         end
         A.finish(rt)

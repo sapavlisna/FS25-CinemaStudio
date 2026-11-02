@@ -1493,10 +1493,6 @@ function CinemaEditorScreen:actorMenuItems(i, x, y, span)
             function(s) edit(s, function() actor.pinActions = not actor.pinActions or nil end) end, { keepOpen = true }),
         item(t("cine_menu_resetHere"), function(s) s:resetActorsAt(s.playhead, true) end),
         notHelper(item(t("cine_menu_resetActor"), function(s)
-            if CinemaPerson.isPerson(actor) then
-                CinemaPerson.place(actor, 0, s.cam)
-                return
-            end
             local ok, why = W.resetStart(actor.start)
             if not ok then
                 s:showMessage(t(why == "noStart" and "cine_msg_actorNoStart" or "cine_msg_actorMissing"))
@@ -1565,7 +1561,7 @@ function CinemaEditorScreen:actorMenuItems(i, x, y, span)
                 table.remove(s.undoStack)
                 s:showMessage(t("cine_msg_noWardrobe"))
             end
-        end, { disabled = actor.helper == CinemaPerson.SELF })),
+        end)),
         helperOnly(item(t("cine_look_reset"), function(s) edit(s, function() actor.look = nil end) end,
             { disabled = actor.look == nil })),
         item(t("cine_menu_rename"), function(s) s:openRenameActor(i) end),
@@ -1683,6 +1679,9 @@ function CinemaEditorScreen:openPersonActionMenu(i, at, x, y, kind)
     end
     if kind == nil or kind == "carry" then
         items[#items + 1] = item(t("cine_act_carry_1"), function(s) s:pickCarryTarget(i, at) end)
+    end
+    if kind == nil or kind == "jump" then
+        items[#items + 1] = item(t("cine_act_jump_1"), function(s) addAction(s, i, { t = at, kind = "jump", value = 1, entry = 0 }) end)
     end
     self:openMenu(string.format(t("cine_menu_actionAtTitle"), at), items, x, y)
 end

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <l10n>
     <texts>
-        <text name="input_CINE_RECORD" text="Cinema Studio: record vehicle drive (start / stop)"/>
-        <text name="cine_rec_noVehicle" text="Cinema Studio: recording works only inside a vehicle"/>
+        <text name="input_CINE_RECORD" text="Cinema Studio: record a vehicle drive or a walk (on / off)"/>
+        <text name="cine_rec_noVehicle" text="Cinema Studio: cannot record here, get into a vehicle or out of it"/>
+        <text name="cine_rec_startedWalk" text="Cinema Studio: recording a walk"/>
+        <text name="cine_rec_tooShortWalk" text="Cinema Studio: the character barely moved and did nothing, the recording was not kept"/>
         <text name="cine_rec_started" text="Cinema Studio: recording the drive (%s)"/>
         <text name="cine_rec_tooShort" text="Cinema Studio: the vehicle barely moved, recording discarded"/>
         <text name="cine_rec_done" text="Cinema Studio: recording %s (%.0f s) is waiting, open the editor"/>
@@ -731,6 +733,8 @@
         <text name="cine_lane_door" text="Doors and animations"/>
         <text name="cine_act_carry_1" text="Carry an object"/>
         <text name="cine_act_carry_0" text="Put the object down"/>
+        <text name="cine_act_jump_1" text="Jump"/>
+        <text name="cine_lane_jump" text="Jump"/>
         <text name="cine_lane_carry" text="Carrying"/>
         <text name="cine_msg_pickCarry" text="Click the object the person picks up (pallet, canister, map crate…)"/>
         <text name="cine_msg_noCarry" text="Nothing here can be picked up"/>
@@ -913,8 +917,9 @@
         <text name="cine_hint_edge" text="drag trims the block (the other end stays) | right button block settings"/>
         <text name="cine_hint_curveKey" text="drag up and down: camera speed at the K-frame | handles sideways: ease in and out | right button K-frame menu"/>
         <text name="cine_ch_hintSpeed" text="points = flight K-frames: up and down speed, the selected one's handles sideways ease length | red = jerk | right button menu"/>
-        <text name="cine_person_me" text="Me (player)"/>
-        <text name="cine_msg_personAdded" text="Character added where you stand now. Click the walking route from above."/>
+        <text name="cine_rec_walkName" text="walk"/>
+        <text name="cine_rec_sessionName" text="walk and drive"/>
+        <text name="cine_msg_noHelper" text="The game has no helper, the character was not inserted."/>
         <text name="cine_menu_faceLeft" text="Turn left / right by 45° (now %+.0f°)"/>
         <text name="cine_menu_faceWalk" text="Remove facing (follow the path)"/>
         <text name="cine_msg_exitPoint" text="The exit point belongs to the get-out action on the timeline (Get in/out lane) and stays at the vehicle. Once the get-out is deleted, it can be deleted together with its whole route part."/>
@@ -934,7 +939,6 @@
         <text name="cine_actor_addButton" text="+ Add to scene"/>
         <text name="cine_actor_addTitle" text="Add to scene"/>
         <text name="cine_actor_addVehicle" text="Vehicle (pick in the scene)"/>
-        <text name="cine_actor_addMe" text="Person (me - the player)"/>
         <text name="cine_actor_addFocusRow" text="Point of interest row"/>
         <text name="cine_actor_addProps" text="Prop placed on reset"/>
         <text name="cine_props_label" text="Props (%d)"/>
@@ -1057,7 +1061,6 @@
         <text name="cine_menu_wardrobe" text="Dress in the game wardrobe"/>
         <text name="cine_msg_noWardrobe" text="The game wardrobe cannot be opened here."/>
         <text name="cine_look_reset" text="Original look"/>
-        <text name="cine_person_self" text="Me"/>
         <text name="cine_lane_attach" text="Hitching"/>
         <text name="cine_act_attach_1" text="Hitch"/>
         <text name="cine_act_attach_0" text="Detach"/>

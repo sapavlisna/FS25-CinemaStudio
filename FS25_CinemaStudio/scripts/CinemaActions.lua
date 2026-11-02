@@ -668,29 +668,28 @@ A.KINDS = {
         available = function(v) return #fillUnitsOf(v) > 0 end,
         apply = function(v, value, ctx)
             local name, liters = A.parseFill(value)
-            if name ~= nil and ctx.sub ~= nil then
+            if name == nil then
+                Logging.warning("[CinemaStudio] Neplatný obsah nádrže '%s', čekám tvar DRUH@litry.", tostring(value))
+            elseif ctx.sub ~= nil then
                 setFillUnit(v, ctx.sub, name, liters)
             end
         end },
     toolbox = { group = "toolbox", values = {}, stateOnly = true,
         available = function(v) return toolboxOf(v) ~= nil end,
         apply = function(v, value) writeCanisters(v, A.parseCanisters(value) or {}) end },
-    -- akce postavy (person = true): vozidlo nese akce v action.vehicle (uid), animace v action.anim; u pomocníka se
-    -- nástup neprovádí tady, ale podle času v CinemaPerson.syncHelpers
+    -- akce postavy (person = true): vozidlo nese akce v action.vehicle (uid), animace v action.anim; nástup se neprovádí
+    -- tady, ale podle času v CinemaPerson.syncHelpers
     seat = { group = "seat", values = { 1, 0 }, person = true,
         available = function(v) return v.spec_enterable ~= nil end,
-        apply = function(v, value)
-            if value == 1 then
-                CinemaPerson.enter(v)
-            else
-                CinemaPerson.leave()
-            end
-        end },
+        apply = function() end },
     door = { group = "door", values = { 1, 0 }, person = true,
         available = animationsOf,
         apply = function(v, value, ctx) setAnimation(v, ctx.action.anim, value, ctx.instant) end },
     -- postava nese předmět ze světa (action.carry) po dobu akce; drží ho CinemaPerson.syncCarry podle času
     carry = { group = "carry", values = { 1, 0 }, person = true, noVehicle = true,
+        available = function() return true end, apply = function() end },
+    -- postava vyskočí: pomocník poskočí obloukem (CinemaPerson.jumpLift)
+    jump = { group = "jump", values = { 1 }, person = true, noVehicle = true,
         available = function() return true end, apply = function() end },
     -- akce objektů ve světě (world = true, CinemaObjects): cíl je obal { uniqueId, anim | placeable }, action.sub vybírá
     -- skupinu světel nebo výrobu budovy
@@ -713,7 +712,7 @@ A.KINDS = {
 }
 
 A.ORDER = { "lights", "workLights", "highBeam", "beacon", "turn", "motor", "courseplay", "fold", "lower", "turnOn", "tip", "discharge",
-    "pipe", "honk", "droneStart", "droneHome", "droneGenerator", "hose", "attach", "canisters", "toolboxDoor", "pump", "seat", "door", "carry", "gate", "lamp", "production" }
+    "pipe", "honk", "droneStart", "droneHome", "droneGenerator", "hose", "attach", "canisters", "toolboxDoor", "pump", "seat", "door", "carry", "jump", "gate", "lamp", "production" }
 
 -- Spojité stavy herce (A.KINDS se stateOnly): čtou se jen při zapamatování startu, ne při nahrávání jízdy.
 A.STATE_ORDER = { "dirt", "wear", "fill", "toolbox" }
@@ -886,24 +885,6 @@ A.GROUPS = {
     toolboxDoor = {
         capture = function(v) return { open = toolboxDoorOf(v).open == true } end,
         restore = function(v, snap) setToolboxDoor(v, snap.open, true) end,
-    },
-    -- v čem hráč seděl (uid kořene soupravy, nebo false venku)
-    seat = {
-        capture = function()
-            local current = CinemaPerson.playerVehicle()
-            return { inside = current ~= nil and uidOf(current) or false }
-        end,
-        restore = function(_, snap)
-            local current = CinemaPerson.playerVehicle()
-            if snap.inside == false then
-                CinemaPerson.leave()
-            elseif current == nil or uidOf(current) ~= snap.inside then
-                local v = CinemaWorld.find(snap.inside)
-                if v ~= nil then
-                    CinemaPerson.enter(v)
-                end
-            end
-        end,
     },
     door = {
         capture = function(v, action)
@@ -1083,6 +1064,7 @@ A.GROUP_COLORS = {
     honk = { 1, 1, 1 }, drone = { 0.8, 0.6, 1 }, seat = { 0.45, 0.8, 1 }, door = { 0.95, 0.75, 0.5 },
     gate = { 0.95, 0.75, 0.5 }, lamp = { 1, 0.9, 0.3 }, production = { 0.55, 0.85, 0.45 }, hose = { 0.4, 0.7, 1 },
     attach = { 0.6, 0.85, 0.55 }, canisters = { 0.8, 0.6, 1 }, toolboxDoor = { 0.8, 0.6, 1 }, pump = { 1, 0.4, 0.35 }, carry = { 0.85, 0.7, 0.45 },
+    jump = { 0.6, 0.9, 0.9 },
 }
 
 function A.color(action)
@@ -1382,24 +1364,21 @@ local function remember(state, group, v, action)
     end
 end
 
--- Akce postavy: vozidlo je v akci (výstup ho mít nemusí), nástup a výstup hraje jen hráč.
+-- Akce postavy: vozidlo je v akci; nástup a výstup se tu nedělá, hraje ho CinemaPerson.syncHelpers podle času.
 local function firePerson(state, actor, action, def)
-    if def.noVehicle or (action.kind == "seat" and actor.person ~= CinemaPerson.PLAYER) then
+    if def.noVehicle or action.kind == "seat" then
         return
     end
     local v = action.vehicle ~= nil and CinemaWorld.find(action.vehicle) or nil
-    if v == nil and (action.vehicle ~= nil or action.kind ~= "seat") then
+    if v == nil then
         log("warning", "CinemaStudio: action %s: vehicle %s not found", action.kind, tostring(action.vehicle))
         return
     end
-    if v ~= nil then
-        local okAvailable, available = pcall(def.available, v)
-        if not okAvailable or not available then
-            return
-        end
+    local okAvailable, available = pcall(def.available, v)
+    if not okAvailable or not available then
+        return
     end
-    -- kde hráč seděl, je jeden stav bez ohledu na vozidlo
-    remember(state, def.group, action.kind == "seat" and { uniqueId = "player" } or v, action)
+    remember(state, def.group, v, action)
     state.action = action
     local ok, err = pcall(def.apply, v, action.value or 1, state)
     state.action = nil
@@ -1437,6 +1416,12 @@ function A.fire(state, actor, action)
         return
     end
     local count = 0
+    -- Světla tahače hra přenese na zapřažené vleky, takže se před první změnou pamatuje celá souprava, ne jen cíl akce.
+    if def.group == "lights" and actor.targets == nil then
+        for _, v in ipairs(A.vehicles(actor, nil)) do
+            remember(state, def.group, v, nil)
+        end
+    end
     for _, v in ipairs(A.vehicles(actor, action.entry)) do
         local okAvailable, available = pcall(def.available, v)
         if okAvailable and available then
@@ -1507,7 +1492,7 @@ function A.finish(rt)
     for group, perVehicle in pairs(state.snaps) do
         for _, entry in pairs(perVehicle) do
             local v = entry.target or CinemaWorld.find(entry.uid)
-            if (v ~= nil or group == "seat") and entry.snap ~= false then
+            if v ~= nil and entry.snap ~= false then
                 local ok, err = pcall(A.GROUPS[group].restore, v, entry.snap)
                 if not ok then
                     log("warning", "CinemaStudio: restoring state %s failed: %s", group, tostring(err))

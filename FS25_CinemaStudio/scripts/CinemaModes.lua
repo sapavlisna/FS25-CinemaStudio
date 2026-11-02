@@ -431,26 +431,27 @@ function Mo.evaluate(track, t, target, extra)
     local tx, ty, tz = target.x, target.y, target.z
     local lx, ly, lz = tx, ty + (track.lookHeight or Mo.LOOK_HEIGHT), tz
     local mode = track.mode
+    local angle0 = track.angle0 or 0
     local px, py, pz
     if mode == "orbit" then
-        local angle = track.angle0 + (track.dir or 1) * 2 * math.pi * (track.laps or 1) * e
+        local angle = angle0 + (track.dir or 1) * 2 * math.pi * (track.laps or 1) * e
         px, pz = ring(tx, tz, angle, track.radius)
         py = ty + track.height
     elseif mode == "dronie" then
         local dist = track.dist + (track.dist2 - track.dist) * e
-        px, pz = ring(tx, tz, track.angle0, dist)
+        px, pz = ring(tx, tz, angle0, dist)
         py = ty + track.height + (track.height2 - track.height) * e
     elseif mode == "rocket" then
-        px, pz = ring(tx, tz, track.angle0, track.radius or 1.5)
+        px, pz = ring(tx, tz, angle0, track.radius or 1.5)
         py = ty + track.height + (track.height2 - track.height) * e
         ly = ty
     elseif mode == "helix" then
-        local angle = track.angle0 + (track.dir or 1) * 2 * math.pi * (track.laps or 1) * e
+        local angle = angle0 + (track.dir or 1) * 2 * math.pi * (track.laps or 1) * e
         px, pz = ring(tx, tz, angle, track.radius + (track.radius2 - track.radius) * e)
         py = ty + track.height + (track.height2 - track.height) * e
     elseif mode == "approach" then
         local dist = track.dist + (track.dist2 - track.dist) * e
-        px, pz = ring(tx, tz, track.angle0, dist)
+        px, pz = ring(tx, tz, angle0, dist)
         py = ty + track.height + (track.height2 - track.height) * e
     elseif mode == "follow" then
         local heading = target.heading or 0
@@ -475,7 +476,7 @@ function Mo.evaluate(track, t, target, extra)
         px, pz = at.x + rx * track.side, at.z + rz * track.side
         py = at.y + track.height
     elseif mode == "parallel" then
-        px, pz = ring(tx, tz, track.angle0, track.dist)
+        px, pz = ring(tx, tz, angle0, track.dist)
         py = ty + track.height
     elseif mode == "topdown" then
         local yaw = track.rotate and (target.heading or 0) or math.pi
@@ -488,7 +489,7 @@ function Mo.evaluate(track, t, target, extra)
         local dx, dz = second.x - tx, second.z - tz
         local sep = math.sqrt(dx * dx + dz * dz)
         -- kolmo na spojnici, na té straně, kam ukazuje angle0 (bez přeskoku, když se cíle prohodí)
-        local nx, nz = math.sin(track.angle0), math.cos(track.angle0)
+        local nx, nz = math.sin(angle0), math.cos(angle0)
         if sep > 0.5 then
             local px1, pz1 = dz / sep, -dx / sep
             if px1 * nx + pz1 * nz < 0 then
@@ -510,7 +511,7 @@ function Mo.evaluate(track, t, target, extra)
     elseif mode == "boomerang" then
         -- ovál: blízko u startu, nejdál a nejvýš v půlce kola, zpět na start
         local phase = 2 * math.pi * e
-        local angle = track.angle0 + (track.dir or 1) * phase
+        local angle = angle0 + (track.dir or 1) * phase
         local wide = (1 - math.cos(phase)) * 0.5
         px, pz = ring(tx, tz, angle, track.radius + (track.radius2 - track.radius) * wide)
         py = ty + track.height + (track.height2 - track.height) * wide
@@ -567,6 +568,9 @@ function Mo.adjust(track, key, steps)
     end
     local minimum = (key == "side") and -60 or (key == "laps" and 0.25 or (key == "duration" and 2 or 0.5))
     track[key] = math.max(minimum, value)
+    if key == "duration" and track.passAt ~= nil then
+        track.passAt = math.min(track.passAt, track[key])
+    end
     return true
 end
 

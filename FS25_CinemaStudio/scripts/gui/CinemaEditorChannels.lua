@@ -61,7 +61,7 @@ function CinemaEditorScreen:channelList()
             if carries then
                 for _, id in ipairs(CinemaPerson.CARRY_CURVES) do
                     list[#list + 1] = { key = string.format("a%d:%s", i, id), owner = i, id = id, kind = "carry",
-                        label = t("cine_ch_" .. id), unit = "m", min = -1, max = 1 }
+                        label = t("cine_ch_" .. id), unit = "m", min = -2, max = 2 }
                 end
                 for _, id in ipairs(CinemaPerson.CARRY_TURNS) do
                     list[#list + 1] = { key = string.format("a%d:%s", i, id), owner = i, id = id, kind = "carry",

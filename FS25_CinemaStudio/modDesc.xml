@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="104">
     <author>sapavlisna</author>
-    <version>0.5.0.0</version>
+    <version>0.5.1.0</version>
     <title>
         <en>Cinema Studio (Beta)</en>
         <cz>Cinema Studio (Beta)</cz>
@@ -16,7 +16,7 @@
 - Every playback from the start restores the scene: vehicles, fill levels, pallets, bales, heaps, time of day, season, weather and optionally fields (crop, growth, soil, windrows of straw or grass).
 - Several shots and several cameras per shot, letterbox, rule of thirds, handheld shake, undo history.
 
-Open the editor: Alt + C. Record a drive while sitting in a vehicle: Alt + V. Press F1 in the editor for all shortcuts (all rebindable in controls).
+Open the editor: Alt + C. Record a drive in a vehicle or a walk on foot (jumps, carried items): Alt + V. Press F1 in the editor for all shortcuts (all rebindable in controls).
 A guide with examples is in the folder manual of the mod (unzip it to read).
 Optional: with Courseplay or Spray Drone installed, the editor offers their actions too.
 Single player only.]]></en>
@@ -29,7 +29,7 @@ Single player only.]]></en>
 - Každé přehrání od začátku vrátí scénu: vozidla, naplnění, palety, balíky, hromady, čas, roční období, počasí a volitelně i pole (plodinu, růst, půdu, řádky slámy nebo trávy).
 - Víc záběrů a víc kamer v záběru, širokoúhlé pruhy, mřížka třetin, třes z ruky, historie úprav.
 
-Otevření editoru: Alt + C. Nahrání jízdy ve vozidle: Alt + V. V editoru F1 ukáže všechny zkratky (všechny jdou přenastavit v ovládání).
+Otevření editoru: Alt + C. Nahrání jízdy ve vozidle nebo chůze pěšky (skoky, nesené předměty): Alt + V. V editoru F1 ukáže všechny zkratky (všechny jdou přenastavit v ovládání).
 Průvodce s ukázkami je ve složce manual v módu (zip je potřeba rozbalit).
 Volitelně: s nainstalovaným Courseplay nebo Spray Drone nabídne editor i jejich akce.
 Jen pro hru jednoho hráče.]]></cz>

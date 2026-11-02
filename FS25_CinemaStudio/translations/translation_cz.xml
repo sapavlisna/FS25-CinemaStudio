@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <l10n>
     <texts>
-        <text name="input_CINE_RECORD" text="Cinema Studio: nahrát jízdu vozidla (zapnout / vypnout)"/>
-        <text name="cine_rec_noVehicle" text="Cinema Studio: nahrávat jde jen ve vozidle"/>
+        <text name="input_CINE_RECORD" text="Cinema Studio: nahrát jízdu vozidla nebo chůzi (zapnout / vypnout)"/>
+        <text name="cine_rec_noVehicle" text="Cinema Studio: tady nahrávat nejde, sedni do vozidla, nebo vystup"/>
+        <text name="cine_rec_startedWalk" text="Cinema Studio: nahrávám chůzi"/>
+        <text name="cine_rec_tooShortWalk" text="Cinema Studio: postava skoro nešla ani nic neudělala, nahrávka se neuložila"/>
         <text name="cine_rec_started" text="Cinema Studio: nahrávám jízdu (%s)"/>
         <text name="cine_rec_tooShort" text="Cinema Studio: vozidlo skoro nejelo, nahrávka se neuložila"/>
         <text name="cine_rec_done" text="Cinema Studio: nahrávka %s (%.0f s) čeká, otevři editor"/>
@@ -731,6 +733,8 @@
         <text name="cine_lane_door" text="Dveře a animace"/>
         <text name="cine_act_carry_1" text="Nést předmět"/>
         <text name="cine_act_carry_0" text="Položit předmět"/>
+        <text name="cine_act_jump_1" text="Skočit"/>
+        <text name="cine_lane_jump" text="Skok"/>
         <text name="cine_lane_carry" text="Nesení"/>
         <text name="cine_msg_pickCarry" text="Klikni na předmět, který postava zvedne (paleta, kanystr, bedna mapy…)"/>
         <text name="cine_msg_noCarry" text="Tady není nic, co jde zvednout"/>
@@ -913,8 +917,9 @@
         <text name="cine_hint_edge" text="tažení ořízne blok (druhý konec stojí) | pravé tlačítko nastavení bloku"/>
         <text name="cine_hint_curveKey" text="tažení nahoru a dolů: rychlost kamery v K-framu | táhla do stran: rozjezd a dojezd | pravé tlačítko menu K-framu"/>
         <text name="cine_ch_hintSpeed" text="body = K-framy Letu: nahoru a dolů rychlost, táhla vybraného do stran délka rozjezdu | červeně = škubnutí | pravé tlačítko menu"/>
-        <text name="cine_person_me" text="Já (hráč)"/>
-        <text name="cine_msg_personAdded" text="Postava přidána: stojí tam, kde teď jsi. Shora naklikej trasu chůze."/>
+        <text name="cine_rec_walkName" text="chůze"/>
+        <text name="cine_rec_sessionName" text="chůze a jízda"/>
+        <text name="cine_msg_noHelper" text="Hra nemá žádného pomocníka, postava se nevložila."/>
         <text name="cine_menu_faceLeft" text="Natočení vlevo / vpravo po 45° (teď %+.0f°)"/>
         <text name="cine_menu_faceWalk" text="Zrušit natočení (po směru cesty)"/>
         <text name="cine_msg_exitPoint" text="Bod výstupu z vozidla patří k výstupu na ose (lajna Nástup) a stojí u vozidla. Po smazání výstupu jde smazat i s celou svou částí trasy."/>
@@ -934,7 +939,6 @@
         <text name="cine_actor_addButton" text="+ Přidat do scény"/>
         <text name="cine_actor_addTitle" text="Přidat do scény"/>
         <text name="cine_actor_addVehicle" text="Vozidlo (vybrat ve scéně)"/>
-        <text name="cine_actor_addMe" text="Postava (já - hráč sám)"/>
         <text name="cine_actor_addFocusRow" text="Řádek Bod zájmu"/>
         <text name="cine_actor_addProps" text="Předmět na místo při resetu"/>
         <text name="cine_props_label" text="Předměty (%d)"/>
@@ -1057,7 +1061,6 @@
         <text name="cine_menu_wardrobe" text="Obléct v šatníku hry"/>
         <text name="cine_msg_noWardrobe" text="Šatník hry tady otevřít nejde."/>
         <text name="cine_look_reset" text="Původní vzhled"/>
-        <text name="cine_person_self" text="Já"/>
         <text name="cine_lane_attach" text="Zapřažení"/>
         <text name="cine_act_attach_1" text="Zapřáhnout"/>
         <text name="cine_act_attach_0" text="Odpojit"/>

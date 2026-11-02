@@ -37,10 +37,10 @@ camera modes, actions, the timeline, recipes and all shortcuts. The same guide i
 
 ## Instalace / Installation
 
-Zip `FS25_CinemaStudio.zip` patří do složky módů hry. Editor se otevře klávesami Alt + C, nahrávání jízdy Alt + V,
+Zip `FS25_CinemaStudio.zip` patří do složky módů hry. Editor se otevře klávesami Alt + C, nahrávání jízdy nebo chůze Alt + V,
 v editoru F1 ukáže všechny zkratky. Jen pro hru jednoho hráče.
 
-Put `FS25_CinemaStudio.zip` into the game's mods folder. Open the editor with Alt + C, record a drive with Alt + V,
+Put `FS25_CinemaStudio.zip` into the game's mods folder. Open the editor with Alt + C, record a drive or a walk with Alt + V,
 press F1 in the editor for all shortcuts. Single player only.
 
 ## Rozšíření / Extensions

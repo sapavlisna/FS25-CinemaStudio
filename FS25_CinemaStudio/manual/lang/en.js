@@ -66,7 +66,7 @@ window.MANUAL_TEXTS.en = {
  "t063": "<b class=\"t\">Add actions</b>\n<p>Click the vehicle row and then <b>+ Action</b> on the right of the timeline bar: the action is added at the playhead. Or right-click a route point → <span class=\"menu\">Action at this point...</span>. For example start the engine and turn on the lights at the start, then unfold, lower and turn on the tool at the field.</p>",
  "t064": "<b class=\"t\">Set up the camera</b>\n<p>Click the Camera row, put the playhead at the start and click <b>+ Camera</b> on the right of the timeline bar. Choose a mode, for example <b>Follow</b>, the target Tractor and the side from behind. Add an <b>Orbit</b> after it. Modes are computed live around the machine, so they fit even when physics drives a little differently.</p>",
  "t065": "<b class=\"t\">Fine-tune and play</b>\n<p><kbd>Enter</kbd> plays from the start with pre-roll: vehicles return to the start and the picture is clean. <kbd>Space</kbd> plays from the playhead. <kbd>L</kbd> adds letterbox bars, <kbd>G</kbd> a rule-of-thirds grid. Record the video with your usual tool (OBS, ShadowPlay) and cut it in a video editor.</p>",
- "t066": "<b>Tip:</b> you do not have to click the drive. In the game (not in the editor) get into a vehicle, press <kbd>Alt</kbd>+<kbd>V</kbd> and drive it yourself. Press it again to stop recording, then open the editor (<kbd>Alt</kbd>+<kbd>C</kbd>): the recorded route is waiting there with speeds, reversing and actions.",
+ "t066": "<b>Tip:</b> you do not have to click the drive. In the game (not in the editor) get into a vehicle, press <kbd>Alt</kbd>+<kbd>V</kbd> and drive it yourself. Press it again to stop recording, then open the editor (<kbd>Alt</kbd>+<kbd>C</kbd>): the recorded route is waiting there with speeds, reversing and actions. On foot you record a character's walk the same way. Recording keeps running through getting in and out: walk to the vehicle, get in, drive a bit, get out and walk on, and the shot gets a character with Get in and Get out actions, the vehicle starting when you get in, and the walk after getting out.",
  "t067": "Actors: vehicles and characters",
  "t068": "Everything that moves in the scene or must be in its place after a reset is added with the <b>+ Add to scene</b> button on the timeline: a vehicle, yourself, a helper (AI character), a point of interest row or props.",
  "t069": "Vehicles and routes",
@@ -301,7 +301,7 @@ window.MANUAL_TEXTS.en = {
  "t298": "Default layout. All actions can be rebound in the game controls. <kbd>F1</kbd> in the editor shows the same overview.",
  "t299": "Outside the editor",
  "t300": "open the editor",
- "t301": "record the drive of the vehicle you sit in (again = stop, then open the editor)",
+ "t301": "record the drive of the vehicle you sit in, or a walk on foot, including getting in and out (again = stop, then open the editor)",
  "t302": "Movement and view",
  "t303": "fly",
  "t304": "down / up",
@@ -377,5 +377,7 @@ window.MANUAL_TEXTS.en = {
  "t369": "<b>Drones</b>: start the mission, return home, switch the generator on and off.",
  "t370": "<b>Canister cabinet</b> open and close, <b>crate</b> fill or empty.",
  "t371": "<b>Pump</b> on and off, <b>hose</b> connect and disconnect.",
+ "t373": "<b>Jump</b>: the player jumps, a helper hops.",
+ "t374": "<b>Record on foot</b>: in the game press <kbd>Alt</kbd>+<kbd>V</kbd> while not in a vehicle and walk it yourself. The route with its pace, stops with facing, jumps and every item you pick up are recorded, including how you hold and turn it. After opening the editor a character is added and the picked-up items return to where they lay at the start of the shot.",
  "t372": "Without these mods the menu items do not appear at all. A version of the mod the extension does not expect will not crash the editor, the action just does nothing."
 };

@@ -5,6 +5,23 @@ dřív, než se vydá.
 
 The version matches `<version>` in `modDesc.xml`. A release takes its notes from the section of its version.
 
+## 0.5.1.0 (beta)
+
+- Opravy z testu všech menu, kamer a akcí. / Fixes from a test of all menus, cameras and actions.
+  - Světla zapřažených vleků se po přehrání vrátí na výchozí stav (dřív zůstala svítit).
+    Lights of attached trailers return to their start state after playback (they used to stay on).
+  - Kamera vozidla venku (Připevnit → Kamera vozidla) míří na vozidlo, dřív ukazovala místo, kde kamera naposledy byla.
+    The outside vehicle camera mount points at the vehicle; it used to show wherever the camera was last.
+  - Průjezd: čas průjezdu už nezůstane za koncem bloku po jeho zkrácení.
+    Pass: the pass-by time no longer ends up past the end of a shortened block.
+  - Neplatný obsah nádrže ve stavu záběru se zapíše do logu, ručně psané záběry bez úhlu nepadají.
+    An invalid tank content in a shot state is logged, and hand-written shots without an angle no longer crash.
+- Nahrávání pěšky (Alt + V mimo vozidlo): trasa s tempem, zastávky s natočením, skoky a zvednuté předměty i s tím, jak
+  je postava drží a natáčí; předměty se na začátku záběru vrátí, kde ležely.
+  Recording on foot (Alt + V outside a vehicle): route with pace, stops with facing, jumps and picked-up items including
+  how they are held and turned; the items return to where they lay at the start of the shot.
+- Nová akce postavy Skočit. / New character action Jump.
+
 ## 0.5.0.0 (beta)
 
 První veřejná verze. / First public version.

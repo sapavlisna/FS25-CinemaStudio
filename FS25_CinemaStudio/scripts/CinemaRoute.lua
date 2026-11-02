@@ -19,7 +19,7 @@ R.DEFAULT_KMH = 15
 R.STOP_DEFAULT = 1 -- s; nejkratší zastávka v bodě s rychlostí 0 km/h
 R.CUSP_WAIT = 1 -- s; vozidlo stojí v bodě, kde se mění směr jízdy (vpřed / couvání)
 R.REVERSE_KMH = 15 -- nejvyšší rychlost při couvání
-R.WALK_ACCEL = 4 -- m/s²; postava se rozejde i zastaví skoro hned a v zatáčkách nezpomaluje (route.walk)
+R.WALK_ACCEL = 12 -- m/s²; postava se rozejde i zastaví skoro hned jako hráč (ten zrychluje okamžitě) a v zatáčkách nezpomaluje (route.walk)
 
 -- points = { {x, z, kmh?, wait?, reverse?}, ... }; kmh bodu přebíjí rychlost celé trasy defaultKmh, wait je pauza v bodě
 -- v sekundách (vozidlo tam zastaví a po ní pokračuje), reverse znamená, že úsek k tomuto bodu vozidlo couvá (zádí napřed).

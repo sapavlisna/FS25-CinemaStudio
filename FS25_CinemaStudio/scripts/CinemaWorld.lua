@@ -317,10 +317,36 @@ function W.vehicleCameras(v)
     local spec = v ~= nil and v.spec_enterable or nil
     for _, camera in ipairs(spec ~= nil and spec.cameras or {}) do
         if camera.cameraNode ~= nil and camera.cameraNode ~= 0 then
-            list[#list + 1] = { node = camera.cameraNode, inside = camera.isInside == true }
+            list[#list + 1] = { node = camera.cameraNode, inside = camera.isInside == true, object = camera }
         end
     end
     return list
+end
+
+-- Rám kamery vozidla (osy jako W.frame). Venkovní kameru s oddělenou polohou hra staví jen dokud je aktivní, neaktivní má
+-- uzel na staré poloze někde ve světě, proto se její výchozí pohled (výchozí natočení a vzdálenost) spočítá z uzlů vozidla.
+function W.vehicleCameraFrame(camera)
+    local c = camera.object
+    if c == nil or c.isActivated or c.rotateNode == nil or c.rotateNode == c.cameraPositionNode or c.cameraPositionNode == nil
+        or c.origRotX == nil or c.origTransX == nil or c.updateRotateNodeRotation == nil then
+        return W.frame(camera.node)
+    end
+    c.rotX, c.rotY, c.rotZ = c.origRotX, c.origRotY, c.origRotZ
+    c:updateRotateNodeRotation()
+    setTranslation(c.cameraPositionNode, c.origTransX, c.origTransY, c.origTransZ)
+    local lx, ly, lz = getWorldTranslation(c.rotateNode)
+    local px, py, pz = getWorldTranslation(c.cameraPositionNode)
+    local dx, dy, dz = px - lx, py - ly, pz - lz
+    local len = math.sqrt(dx * dx + dy * dy + dz * dz)
+    local horizontal = math.sqrt(dx * dx + dz * dz)
+    if len < 1e-3 or horizontal < 1e-3 then
+        return W.frame(camera.node)
+    end
+    local azx, azy, azz = dx / len, dy / len, dz / len
+    -- ax = nahoru (svět Y) × az
+    local axx, axz = azz * len / horizontal, -azx * len / horizontal
+    local ayx, ayy, ayz = azy * axz, azz * axx - azx * axz, -azy * axx
+    return { x = px, y = py, z = pz, ax = { axx, 0, axz }, ay = { ayx, ayy, ayz }, az = { azx, azy, azz } }
 end
 
 -- Část vozidla v, na kterou míří paprsek (uzel tvaru), nebo nil.
@@ -548,8 +574,7 @@ end
 ---------------------------------------------------------------------------------------------------
 -- herci: jízda po trase
 
--- playerActor: hráč je herec záběru, takže ve vozidle sedí podle osy a jízdě nebrání.
-function W.canDrive(v, playerActor)
+function W.canDrive(v)
     if v == nil or v.spec_drivable == nil or v.getIsMotorStarted == nil then
         return false, "notDrivable"
     end
@@ -557,7 +582,7 @@ function W.canDrive(v, playerActor)
         return false, "notServer"
     end
     local player = g_localPlayer
-    if not playerActor and player ~= nil and player.getCurrentVehicle ~= nil then
+    if player ~= nil and player.getCurrentVehicle ~= nil then
         local current = player:getCurrentVehicle()
         if current ~= nil and W.rootOf(current) == v then
             return false, "occupied"

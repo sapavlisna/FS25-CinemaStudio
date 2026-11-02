@@ -9,7 +9,8 @@ local M = CinemaMath
 
 St.ROOT = "cinemaShot"
 St.INDEX_ROOT = "cinemaShots"
-St.FORMAT = 4
+-- 5: chůze postavy rychlostí hráče (4 m/s); ve 4 šla 1,5 m/s, tedy dnešní pomalou chůzí
+St.FORMAT = 5
 
 -- Při kontrolovaném načtení (St.loadChecked) se sem sbírá, co načtení zahodilo nebo nepochopilo.
 local problems = nil
@@ -728,6 +729,7 @@ end
 
 -- Přečte záběr (nebo jeho snímek) z prvku root souboru xmlFile.
 local function readShot(xmlFile, root, file)
+    local format = xmlFile:getInt(root .. "#format", St.FORMAT)
     local shot = S.new(xmlFile:getString(root .. "#name", file))
     shot.file = file
     shot.preroll = xmlFile:getFloat(root .. "#preroll", S.DEFAULT_PREROLL)
@@ -809,6 +811,9 @@ local function readShot(xmlFile, root, file)
         end)
         readStart(xmlFile, key, a.start)
         if a.person ~= nil and CinemaPerson ~= nil then
+            if format < 5 then
+                CinemaPerson.keepOldWalk(a)
+            end
             CinemaPerson.snapGaits(a)
         end
         shot.actors[#shot.actors + 1] = a
@@ -829,6 +834,9 @@ local function readShot(xmlFile, root, file)
         end
     end)
     for _, a in ipairs(shot.actors) do
+        if CinemaPerson ~= nil and CinemaPerson.convertLegacy ~= nil then
+            CinemaPerson.convertLegacy(a, shot.actors)
+        end
         S.actorId(shot, a)
     end
     for _, a in ipairs(shot.actors) do

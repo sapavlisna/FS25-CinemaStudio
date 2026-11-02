@@ -1707,15 +1707,6 @@ end
 ---------------------------------------------------------------------------------------------------
 -- průběh
 
-function CinemaEditorScreen:hasPersonActor()
-    for _, a in ipairs(self.shot ~= nil and self.shot.actors or {}) do
-        if a.person == CinemaPerson.PLAYER then
-            return true
-        end
-    end
-    return false
-end
-
 function CinemaEditorScreen:update(dt)
     CinemaEditorScreen:superClass().update(self, dt)
     if not self.cam.active then
@@ -1728,10 +1719,6 @@ function CinemaEditorScreen:update(dt)
     end
     self:updateAltCursor()
     self:releaseCursor()
-    if self:hasPersonActor() then
-        CinemaPerson.keepVisible()
-        CinemaPerson.keepCamera(self.cam)
-    end
     if not self.playing and self.shot ~= nil then
         self:syncVehiclesToPlayhead()
         self:syncDrivers()
