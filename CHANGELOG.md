@@ -5,6 +5,12 @@ dřív, než se vydá.
 
 The version matches `<version>` in `modDesc.xml`. A release takes its notes from the section of its version.
 
+## 0.5.1.1 (beta)
+
+- Průvodce má snímky přímo z hry (editor, časová osa, menu bloku, vozidla, akcí a prostředí, panel Přidat, pohled shora,
+  křivky). / The guide now has screenshots taken in the game (editor, timeline, block, vehicle, action and environment
+  menus, Add panel, top-down view, curves).
+
 ## 0.5.1.0 (beta)
 
 - Opravy z testu všech menu, kamer a akcí. / Fixes from a test of all menus, cameras and actions.

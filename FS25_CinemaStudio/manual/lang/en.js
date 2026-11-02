@@ -379,5 +379,13 @@ window.MANUAL_TEXTS.en = {
  "t371": "<b>Pump</b> on and off, <b>hose</b> connect and disconnect.",
  "t373": "<b>Jump</b>: the player jumps, a helper hops.",
  "t374": "<b>Record on foot</b>: in the game press <kbd>Alt</kbd>+<kbd>V</kbd> while not in a vehicle and walk it yourself. The route with its pace, stops with facing, jumps and every item you pick up are recorded, including how you hold and turn it. After opening the editor a character is added and the picked-up items return to where they lay at the start of the shot.",
+ "t380": "What the editor looks like in the game (sample shot: the camera circles a tanker truck). <b>1</b> shot bar with playback and views, <b>2</b> live preview with the vehicle route and the camera path, <b>3</b> edit bar, <b>4</b> vehicle actions in lanes, <b>5</b> camera blocks (Orbit, Follow, Dronie), <b>6</b> time ruler with the playhead. The screenshots are from a Czech game; in an English game the layout is the same and only the labels are English.",
+ "t381": "Right click on a camera block: target, mode settings, split, duplicate and a smooth join to the previous block.",
+ "t382": "Top view (<kbd>M</kbd>): the vehicle route and the camera path over the map. Points are grabbed and dragged, right click on a point or on the route opens its menu.",
+ "t383": "Vehicle menu: route speed, start delay, actions, drawing the route, remembering the start, filling and the driver.",
+ "t384": "The <b>+ Camera</b> panel: all modes as tiles, grouped by what the camera does. The target the new block attaches to is at the top right.",
+ "t385": "The <b>+ Action</b> menu on a vehicle row offers only what the selected vehicle can do and inserts the action at the playhead time.",
+ "t386": "The curves panel (<kbd>V</kbd>): the channel list on the left (zoom, camera speed, points of interest, vehicle speed), the graph of the selected channel on the right. Points and handles are dragged with the mouse.",
+ "t387": "Scene environment: weather, season and time of day, set on every playback.",
  "t372": "Without these mods the menu items do not appear at all. A version of the mod the extension does not expect will not crash the editor, the action just does nothing."
 };

@@ -27,6 +27,7 @@ end
 
 function CinemaStudio:update(dt)
     CinemaRecorder.update(dt)
+    if CinemaDev ~= nil and CinemaDev.update ~= nil then CinemaDev.update(dt) end
     if CinemaPerson.reopenEditor then
         CinemaPerson.reopenEditor = nil
         CinemaEditorScreen.show()

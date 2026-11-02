@@ -83,6 +83,8 @@ kbd {
 figure { margin: 20px 0; }
 figure svg { width: 100%; height: auto; display: block; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 figcaption { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+figure img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+figure.narrow { max-width: 460px; }
 table { width: 100%; border-collapse: collapse; font-size: 14.5px; margin: 10px 0 18px; }
 th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
@@ -226,6 +228,10 @@ footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line);
 </svg>
 <figcaption data-t="t051">Nahoře lišta záběru s přehráváním, uprostřed živý náhled s trasami, dole lišta úprav a časová osa. Tlačítko vpravo na liště osy se řídí vybraným řádkem: na kameře ukazuje <b>+ Kamera</b> (přidá blok kamery), na vozidle, postavě nebo objektu <b>+ Akce</b> (přidá akci na ukazatel). Kamera má řádek bloků (Let s K-framy, Orbit, Statická kamera), pod ní je bod zájmu a každé vozidlo s jízdou a lajnami akcí.</figcaption>
 </figure>
+<figure>
+<img alt="" loading="lazy" src="img/editor-overview.jpg">
+<figcaption data-t="t380">Takhle vypadá editor ve hře (ukázkový záběr: kamera obletuje cisternu). <b>1</b> lišta záběru s přehráváním a pohledy, <b>2</b> živý náhled s trasou vozidla a dráhou kamery, <b>3</b> lišta úprav, <b>4</b> akce vozidla v lajnách, <b>5</b> bloky kamery (Orbit, Sledování, Dronie), <b>6</b> časové pravítko s ukazatelem. Snímky jsou z české hry; v anglické je rozvržení stejné, jen popisky jsou anglicky.</figcaption>
+</figure>
 <div class="two">
 <div>
 <h3 data-t="t052">Dva druhy ovládání</h3>
@@ -237,6 +243,10 @@ footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line);
 <p data-t="t056">Blok, K-frame, řádek vozidla, bod trasy, akce, objekt: každý má vlastní menu s tím, co jde změnit. Hodnoty s šipkami (rychlost, výška, délka, procenta) se mění kolečkem nebo klikem vlevo a vpravo.</p>
 </div>
 </div>
+<figure class="narrow">
+<img alt="" loading="lazy" src="img/menu-block.jpg">
+<figcaption data-t="t381">Pravé tlačítko na bloku kamery: cíl, nastavení režimu, rozdělení, duplikace a plynulé navázání na předchozí blok.</figcaption>
+</figure>
 </section>
 <section id="prvni">
 <h2 data-t="t057">První záběr krok za krokem</h2>
@@ -282,6 +292,14 @@ footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line);
 </ul>
 </div>
 </div>
+<figure>
+<img alt="" loading="lazy" src="img/topdown.jpg">
+<figcaption data-t="t382">Pohled shora (<kbd>M</kbd>): trasa vozidla a dráha kamery nad mapou. Body se chytají a táhnou, pravé tlačítko na bodu nebo na trase otevře jejich menu.</figcaption>
+</figure>
+<figure class="narrow">
+<img alt="" loading="lazy" src="img/menu-vehicle.jpg">
+<figcaption data-t="t383">Menu vozidla: rychlost trasy, zpoždění rozjezdu, akce, kreslení trasy, zapamatování startu, naplnění a řidič.</figcaption>
+</figure>
 <h3 data-t="t079" id="stav">Stav, nádrže, náklad</h3>
 <p data-t="t080">Start vozidla si pamatuje nejen polohu, ale i stav: rozložení, nádrže, náklad a špínu. Při každém <kbd>R</kbd> a <kbd>Enter</kbd> se obnoví.</p>
 <figure>
@@ -326,6 +344,10 @@ footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line);
 <div class="note" data-t="t106"><b>Každý blok jde přestavět kamerou.</b> Doleť volnou kamerou tam, odkud se chceš dívat, a stiskni <kbd>K</kbd>. V Letu a Sledování z bodu vznikne K-frame s pózou a ohniskem. Ve Statické a Připevněné kameře se celý blok přesune na nové místo. V režimech kolem cíle (orbit, sledování…) se uloží posun kamery vůči režimu a ohnisko. Posun vrátí <span class="menu">Zrušit posun kamery bloku</span>.</div>
 <h3 data-t="t107" id="rezimy">Všechny režimy</h3>
 <p data-t="t108"><span class="tag auto">sám kolem cíle</span> <span class="tag keys">po K-framech</span> <span class="tag still">stojí</span> <span class="tag on">jede na vozidle</span></p>
+<figure class="narrow">
+<img alt="" loading="lazy" src="img/panel-add.jpg">
+<figcaption data-t="t384">Panel <b>+ Kamera</b>: všechny režimy jako dlaždice, seřazené podle toho, co kamera dělá. Vpravo nahoře je cíl, na který se nový blok naváže.</figcaption>
+</figure>
 <div class="grid">
 <div class="card">
 <svg viewbox="0 0 200 92"><path d="M20 70 C 60 20, 120 80, 180 25" fill="none" stroke="#6cc4d8" stroke-width="2.5"></path><g fill="#f2b33d"><rect height="10" transform="rotate(45 20 70)" width="10" x="15" y="65"></rect><rect height="10" transform="rotate(45 90 52)" width="10" x="85" y="47"></rect><rect height="10" transform="rotate(45 180 25)" width="10" x="175" y="20"></rect></g></svg>
@@ -443,6 +465,10 @@ footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line);
 <section id="akce">
 <h2 data-t="t167">Akce na časové ose</h2>
 <p data-t="t168">Akce jsou krátké značky v lajnách pod vozidlem (<kbd>X</kbd> rozbalí detail se všemi lajnami). Táhnout je jde v čase, s <kbd>Ctrl</kbd> se kopírují. Úchyt na konci určuje, jak dlouho akce trvá, třeba blikání nebo houkání. Menu nabízí jen to, co konkrétní stroj opravdu umí. Akce jde dát celé soupravě nebo jen jednomu článku.</p>
+<figure class="narrow">
+<img alt="" loading="lazy" src="img/menu-actions.jpg">
+<figcaption data-t="t385">Menu <b>+ Akce</b> na řádku vozidla nabízí jen to, co vybrané vozidlo umí, a vloží akci na čas ukazatele.</figcaption>
+</figure>
 <div class="acts">
 <div class="card"><h4 data-t="t169">Světla a signály</h4><ul>
 <li data-t="t170"><b>Světla</b> zapnout, vypnout, bliknout</li>
@@ -530,6 +556,10 @@ footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line);
 <figcaption data-t="t215">Rozjezd ze stání, stálá rychlost a dojezd do zastavení.</figcaption>
 </figure>
 </div>
+<figure>
+<img alt="" loading="lazy" src="img/curves.jpg">
+<figcaption data-t="t386">Panel křivek (<kbd>V</kbd>): vlevo seznam kanálů (zoom, rychlost kamery, body zájmu, rychlost vozidla), vpravo graf vybraného kanálu. Body i táhla se táhnou myší.</figcaption>
+</figure>
 <h3 data-t="t216">Další kanály v panelu V</h3>
 <p data-t="t217">Kromě rychlosti kamery má panel kanály <b>zoom</b> (ohnisko), <b>rychlost vozidla</b> a <b>místo bodu zájmu v obraze</b>. Pro nesený předmět přidá i jeho polohu a náklon. Klik do grafu vloží bod, tažením měníš čas a hodnotu. Pravé tlačítko na bodu přepíná úsečky, skokově a křivku.</p>
 <h3 data-t="t218">Rychlé úpravy kolečkem</h3>
@@ -551,6 +581,10 @@ footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line);
 <div class="card"><h4 data-t="t235">Schránka</h4><p data-t="t236"><kbd>,</kbd> zkopíruje vybrané bloky, K-framy a akce, <kbd>.</kbd> je vloží od ukazatele, klidně do jiného záběru.</p></div>
 <div class="card"><h4 data-t="t237">Čistý náhled</h4><p data-t="t238"><kbd>H</kbd> skryje editor bez přehrávání. <kbd>I</kbd> při přehrávání zapne nebo schová osu. <kbd>L</kbd> pruhy 2,39:1, <kbd>G</kbd> mřížka třetin.</p></div>
 </div>
+<figure class="narrow">
+<img alt="" loading="lazy" src="img/menu-env.jpg">
+<figcaption data-t="t387">Prostředí scény: počasí, roční období a čas, které se nastaví při každém přehrání.</figcaption>
+</figure>
 </section>
 <section id="recepty">
 <h2 data-t="t239">Recepty a inspirace</h2>
