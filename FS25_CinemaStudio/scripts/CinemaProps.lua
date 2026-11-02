@@ -504,14 +504,111 @@ end
 ---------------------------------------------------------------------------------------------------
 -- zapamatování a reset
 
+---------------------------------------------------------------------------------------------------
+-- předmět na vozidle (big bag na vleku, balíky na návěsu, paleta na korbě): když při zapamatování leží na jiném vozidle,
+-- pamatuje si ho (rider, lx, ly, lz, lry) a celý záběr s ním jede napevno, bez fyziky (nesklouzne); reset ho postaví zpátky
+-- na vozidlo. Souprava (víc článků) se nevozí. Předmět, který v záběru nese postava, vozí akce nesení.
+
+local function propObject(p)
+    if p.kind == "vehicle" then
+        local e = p.start ~= nil and p.start.entries[1] or nil
+        local v = e ~= nil and W.find(e.uid) or nil
+        return v ~= nil and v.rootNode or nil, v, nil, e ~= nil and e.uid or nil
+    elseif p.kind == "bale" then
+        local bale = Pr.findBale(p.uid)
+        return bale ~= nil and bale.nodeId or nil, nil, bale, p.uid
+    end
+    return nil
+end
+
+function Pr.captureRider(p)
+    local node, v, bale = propObject(p)
+    local attached = v ~= nil and v.getAttacherVehicle ~= nil and v:getAttacherVehicle() ~= nil
+    if node == nil or attached or (p.kind == "vehicle" and #p.start.entries > 1) then
+        p.rider = nil
+        return
+    end
+    local area
+    if v ~= nil then
+        area = (v.size ~= nil and v.size.width or 1) * (v.size ~= nil and v.size.length or 1)
+    else
+        area = (bale.width or bale.diameter or 1.2) * (bale.length or bale.diameter or 1.2)
+    end
+    W.captureRider(p, v, node, area)
+end
+
+-- předmět → { vehicle | bale }: jede s vozidlem, je vyjmutý z fyziky (vozidlo) nebo kinematický (balík)
+Pr.riding = {}
+
+local function hold(r, on)
+    if r.vehicle ~= nil and not r.vehicle.isDeleted then
+        if on then
+            r.vehicle:removeFromPhysics()
+        else
+            r.vehicle:addToPhysics()
+        end
+    elseif r.bale ~= nil and r.bale.nodeId ~= nil and setRigidBodyType ~= nil and RigidBodyType ~= nil and entityExists(r.bale.nodeId) then
+        setRigidBodyType(r.bale.nodeId, on and RigidBodyType.KINEMATIC or RigidBodyType.DYNAMIC)
+    end
+end
+
+local function release(p)
+    local r = Pr.riding[p]
+    Pr.riding[p] = nil
+    if r ~= nil then
+        hold(r, false)
+    end
+end
+
+-- Každý snímek editoru (po pohybu vozidel): předměty na vozidlech jedou s nimi. skip = uid vozidel, která nese postava.
+function Pr.syncRiders(props, skip)
+    local seen = {}
+    for _, p in ipairs(props) do
+        if p.rider ~= nil then
+            local node, v, bale, uid = propObject(p)
+            local x, y, z, ry = W.ridePose(p)
+            if node ~= nil and x ~= nil and not (skip ~= nil and uid ~= nil and skip[uid]) then
+                seen[p] = true
+                local r = Pr.riding[p]
+                if r == nil then
+                    r = { vehicle = v, bale = bale }
+                    Pr.riding[p] = r
+                    hold(r, true)
+                end
+                if v ~= nil then
+                    local e = p.start.entries[1]
+                    v:setAbsolutePosition(x, y, z, e.rx, ry, e.rz)
+                else
+                    placeBale(bale, { x = x, y = y, z = z, rx = p.rx, ry = ry, rz = p.rz })
+                end
+            end
+        end
+    end
+    for p in pairs(Pr.riding) do
+        if not seen[p] then
+            release(p)
+        end
+    end
+end
+
+-- Editor se zavírá: předměty na vozidlech zase s fyzikou, kde právě jsou.
+function Pr.releaseRiders()
+    for p in pairs(Pr.riding) do
+        release(p)
+    end
+end
+
 function Pr.fromVehicle(v)
     local root = W.rootOf(v)
-    return { kind = "vehicle", name = W.name(root), start = W.captureStart(root) }
+    local p = { kind = "vehicle", name = W.name(root), start = W.captureStart(root) }
+    Pr.captureRider(p)
+    return p
 end
 
 function Pr.fromBale(bale)
     local p = readBale(bale)
     p.kind, p.name = "bale", Pr.baleName(bale)
+    Pr.captureRider(p)
     return p
 end
 
@@ -540,6 +637,7 @@ function Pr.recapture(p)
             return false
         end
         p.start = W.captureStart(root)
+        Pr.captureRider(p)
     elseif p.kind == "bale" then
         local bale = Pr.findBale(p.uid)
         if bale == nil then
@@ -549,6 +647,7 @@ function Pr.recapture(p)
         for k, v in pairs(fresh) do
             p[k] = v
         end
+        Pr.captureRider(p)
     elseif p.kind == "heap" then
         local fillType, amount = Pr.heapAt(p.x, p.z, p.radius or Pr.HEAP_RADIUS)
         if fillType == nil then
@@ -579,6 +678,8 @@ function Pr.reset(p)
     if not isServer() then
         return false, "notServer"
     end
+    -- reset vrátí fyziku; předmět na vozidle ji další snímek zase vypne a postaví ho na vozidlo
+    Pr.riding[p] = nil
     if p.kind == "vehicle" then
         return W.resetStart(p.start)
     elseif p.kind == "bale" then

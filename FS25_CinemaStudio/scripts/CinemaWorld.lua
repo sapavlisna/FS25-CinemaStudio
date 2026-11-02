@@ -31,6 +31,58 @@ local function usable(v)
     return v ~= nil and not v.isDeleted and v.rootNode ~= nil and v.rootNode ~= 0 and entityExists(v.rootNode)
 end
 
+W.RIDE_LIFT = 0.4 -- m; tolik nad terénem musí předmět být, aby neležel na zemi vedle vozidla
+W.RIDE_MARGIN = 0.15 -- m; o kolik smí střed předmětu přesahovat obrys vozidla
+
+-- Vozidlo, na kterém leží předmět se středem x, y, z a půdorysem area (m²): korba pickupu, vlek, návěs. Střed je nad obrysem
+-- vozidla aspoň dvakrát většího a výš nad terénem, než leží věci na zemi vedle něj; z více takových nejmenší. own = vozidlo
+-- předmětu (samo sebe nevozí); nil, když předmět leží na zemi nebo mimo obrys.
+function W.carrierAt(own, x, y, z, area)
+    if y - W.terrainY(x, z) < W.RIDE_LIFT then
+        return nil
+    end
+    local best, bestArea = nil, nil
+    for _, c in ipairs(W.vehicles()) do
+        local size = c ~= own and usable(c) and c.size or nil
+        local a = size ~= nil and (size.width or 0) * (size.length or 0) or 0
+        if a > area * 2 then
+            local lx, _, lz = worldToLocal(c.rootNode, x, y, z)
+            if math.abs(lx - (size.widthOffset or 0)) <= size.width * 0.5 + W.RIDE_MARGIN
+                and math.abs(lz - (size.lengthOffset or 0)) <= size.length * 0.5 + W.RIDE_MARGIN
+                and (bestArea == nil or a < bestArea) then
+                best, bestArea = c, a
+            end
+        end
+    end
+    return best
+end
+
+-- Poloha předmětu na vozidle: x, y, z a otočení kolem svislé osy podle vozidla; nil, když vozidlo ve světě není.
+-- rider = { rider = uid, lx, ly, lz, lry } (souřadnice předmětu ve vozidle a natočení proti němu).
+function W.ridePose(rider)
+    local carrier = rider.rider ~= nil and W.find(rider.rider) or nil
+    if carrier == nil then
+        return nil
+    end
+    local x, y, z = localToWorld(carrier.rootNode, rider.lx or 0, rider.ly or 0, rider.lz or 0)
+    local _, cry = getWorldRotation(carrier.rootNode)
+    return x, y, z, cry + (rider.lry or 0)
+end
+
+-- Zapíše do t vozidlo, na kterém předmět s uzlem node leží (rider, lx, ly, lz, lry), nebo pole smaže.
+function W.captureRider(t, own, node, area)
+    t.rider, t.lx, t.ly, t.lz, t.lry = nil, nil, nil, nil, nil
+    local x, y, z = getWorldTranslation(node)
+    local carrier = W.carrierAt(own, x, y, z, area)
+    if carrier ~= nil then
+        local _, ry = getWorldRotation(node)
+        local _, cry = getWorldRotation(carrier.rootNode)
+        t.rider = W.uid(carrier)
+        t.lx, t.ly, t.lz = worldToLocal(carrier.rootNode, x, y, z)
+        t.lry = ry - cry
+    end
+end
+
 W.cache = {}
 
 function W.find(uid)

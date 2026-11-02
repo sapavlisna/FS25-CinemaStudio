@@ -5,6 +5,17 @@ dřív, než se vydá.
 
 The version matches `<version>` in `modDesc.xml`. A release takes its notes from the section of its version.
 
+## 0.5.2.0 (beta)
+
+- Nahrávání zachytí, co hráč zapojí nebo zapne na strojích kolem (hadice a motor pumpy SprayDrone): po importu jsou to akce
+  objektu i se stavem ze startu záznamu. / Recording captures what the player connects or switches on nearby machines
+  (SprayDrone hoses and pump engine): after import they become object actions, including the state at the start.
+- Předmět na vozidle (big bag na vleku, paleta nebo pumpa na korbě, balíky na návěsu) s ním jede, reset ho vrátí na vozidlo.
+  / An item lying on a vehicle (big bag on a trailer, pallet or pump on a pickup bed, bales) rides along with it, and reset
+  puts it back on the vehicle.
+- Předmět mapy (kýbl, bedna), který postava odnesla, se při resetu vrátí, odkud ho vzala, i po novém spuštění hry.
+  / A map object (bucket, crate) carried away returns to where it was picked up on reset, even after restarting the game.
+
 ## 0.5.1.1 (beta)
 
 - Průvodce má snímky přímo z hry (editor, časová osa, menu bloku, vozidla, akcí a prostředí, panel Přidat, pohled shora,

@@ -134,5 +134,8 @@ function C.hideScene(cam, hide)
         if CinemaPerson ~= nil then
             CinemaPerson.release()
         end
+        if CinemaProps ~= nil then
+            CinemaProps.releaseRiders()
+        end
     end
 end

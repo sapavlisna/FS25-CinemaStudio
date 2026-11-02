@@ -1009,7 +1009,8 @@ local function poseOf(node)
     return x, y, z, rx, ry, rz
 end
 
--- Cíl nesení z vozidla (paleta, kanystr…), nil u velkého stroje.
+-- Cíl nesení z vozidla (paleta, kanystr…), nil u velkého stroje. Leží-li na jiném vozidle (pumpa na pickupu), pamatuje si
+-- ho a svou polohu v jeho souřadnicích (rider, lx, ly, lz, lry): před zvednutím jede s ním.
 function Pe.carryFromVehicle(v)
     local size = v.size or {}
     local r = math.max(size.width or 0, size.length or 0, size.height or 0) * 0.5
@@ -1017,7 +1018,68 @@ function Pe.carryFromVehicle(v)
         return nil
     end
     local x, y, z, rx, ry, rz = poseOf(v.rootNode)
-    return { kind = "vehicle", uid = CinemaWorld.uid(v), name = CinemaWorld.name(v), r = r, x = x, y = y, z = z, rx = rx, ry = ry, rz = rz }
+    local target = { kind = "vehicle", uid = CinemaWorld.uid(v), name = CinemaWorld.name(v), r = r, x = x, y = y, z = z, rx = rx, ry = ry, rz = rz }
+    CinemaWorld.captureRider(target, v, v.rootNode, (size.width or 0) * (size.length or 0))
+    return target
+end
+
+-- Poloha předmětu na vozidle, na kterém ležel: x, y, z, rx, ry, rz; nil, když předmět žádné nemá nebo vozidlo ve světě není.
+function Pe.ridePose(target)
+    local x, y, z, ry = CinemaWorld.ridePose(target)
+    if x == nil then
+        return nil
+    end
+    return x, y, z, target.rx, ry, target.rz
+end
+
+-- uid vozidel, která v záběru nese postava (předměty na vozidlech je pak nevozí, vozí je akce nesení)
+function Pe.carriedUids(actors)
+    local set = {}
+    for _, actor in ipairs(actors) do
+        for _, action in ipairs(Pe.isPerson(actor) and actor.actions or {}) do
+            if action.kind == "carry" and action.carry ~= nil and action.carry.kind == "vehicle" then
+                set[action.carry.uid] = true
+            end
+        end
+    end
+    return set
+end
+
+-- Kde předmět leží před zvednutím: na vozidle, které ho veze, jinak kde ležel.
+local function restPose(target)
+    local x, y, z, rx, ry, rz = Pe.ridePose(target)
+    if x ~= nil then
+        return x, y, z, rx, ry, rz, true
+    end
+    return target.x, target.y, target.z, target.rx, target.ry, target.rz, false
+end
+
+-- Cesta k uzlu od kořene scény jako pořadí dětí ("3.12.5"): předmět mapy se podle ní najde i tam, kam ho hráč odnesl
+-- (paprsek na místě, kde ležel, už nic netrefí). Pořadí v mapě se mezi načteními hry nemění.
+function Pe.nodePath(node)
+    local parts = {}
+    local root = getRootNode()
+    while node ~= nil and node ~= 0 and node ~= root do
+        local parent = getParent(node)
+        if parent == nil or parent == 0 then
+            return nil
+        end
+        table.insert(parts, 1, tostring(getChildIndex(node)))
+        node = parent
+    end
+    return table.concat(parts, ".")
+end
+
+local function nodeAtPath(path)
+    local node = getRootNode()
+    for part in string.gmatch(path, "%d+") do
+        local index = tonumber(part)
+        if index >= getNumOfChildren(node) then
+            return nil
+        end
+        node = getChildAt(node, index)
+    end
+    return node
 end
 
 -- Cíl nesení z tvaru zasaženého paprskem (předmět mapy), nil u velkého objektu.
@@ -1032,7 +1094,7 @@ function Pe.carryFromShape(shape)
     end
     local node = Pe.objectRoot(shape)
     local x, y, z, rx, ry, rz = poseOf(node)
-    local target = { kind = "node", name = getName(node), r = r, x = x, y = y, z = z, rx = rx, ry = ry, rz = rz }
+    local target = { kind = "node", name = getName(node), path = Pe.nodePath(node), r = r, x = x, y = y, z = z, rx = rx, ry = ry, rz = rz }
     Pe.carryNodes[target] = node
     return target
 end
@@ -1046,6 +1108,11 @@ local function carryHandle(target)
     end
     local node = Pe.carryNodes[target]
     if node ~= nil and entityExists(node) then
+        return nil, node
+    end
+    node = target.path ~= nil and nodeAtPath(target.path) or nil
+    if node ~= nil and getName(node) == target.name then
+        Pe.carryNodes[target] = node
         return nil, node
     end
     local shape = CinemaWorld.raycastShape(target.x, target.y + 1, target.z, 0, -1, 0, 2)
@@ -1126,7 +1193,8 @@ function Pe.carryPose(actor, action, t)
     local target = action.carry
     local tl = t - (actor.delay or 0)
     if tl < action.t then
-        return target.x, target.y, target.z, target.rx, target.ry, target.rz, "rest"
+        local x, y, z, rx, ry, rz, riding = restPose(target)
+        return x, y, z, rx, ry, rz, riding and "ride" or "rest"
     end
     if action.dur ~= nil and tl >= action.t + action.dur then
         local x, y, z, rx, ry, rz = Pe.carryDrop(actor, action)
@@ -1145,7 +1213,7 @@ function Pe.carryPose(actor, action, t)
     local lift = action.dur ~= nil and math.min(Pe.CARRY_LIFT, action.dur * 0.5) or Pe.CARRY_LIFT
     local from, u = nil, 1
     if tl < action.t + lift then
-        from, u = { target.x, target.y, target.z, target.rx, target.ry, target.rz }, (tl - action.t) / lift
+        from, u = { restPose(target) }, (tl - action.t) / lift
     elseif action.dur ~= nil and tl > action.t + action.dur - lift then
         from, u = { Pe.carryDrop(actor, action) }, (action.t + action.dur - tl) / lift
     end
@@ -1167,13 +1235,14 @@ local function placeCarry(c, x, y, z, rx, ry, rz, state)
     end
     local v, node = carryHandle(c.target)
     if v ~= nil then
-        if state == "held" or c.state ~= state then
+        local carried = state == "held" or state == "ride"
+        if carried or c.state ~= state then
             if not c.lifted then
                 v:removeFromPhysics()
                 c.lifted = true
             end
             v:setAbsolutePosition(x, y, z, rx, ry, rz)
-            if state ~= "held" then
+            if not carried then
                 v:addToPhysics()
                 c.lifted = false
             end
@@ -1201,8 +1270,8 @@ local function restoreCarry(action)
     local c = Pe.carried[action]
     Pe.carried[action] = nil
     if c ~= nil and c.moved then
-        local t = c.target
-        placeCarry(c, t.x, t.y, t.z, t.rx, t.ry, t.rz, "back")
+        local x, y, z, rx, ry, rz = restPose(c.target)
+        placeCarry(c, x, y, z, rx, ry, rz, "back")
     end
 end
 

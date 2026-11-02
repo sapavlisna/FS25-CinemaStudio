@@ -28,6 +28,110 @@ function Rec.isActive()
     return Rec.state ~= nil
 end
 
+---------------------------------------------------------------------------------------------------
+-- stroje kolem: co hráč během záznamu zapojí nebo zapne (hadice SprayDrone, motor pumpy), se po importu vloží jako akce
+-- objektu. Hlídá se stav, ne vstup, takže nezáleží na tom, jakou klávesou to hráč udělal. U každé věci, která se změnila,
+-- dostane objekt na začátek i stav ze startu záznamu (jinak by po přehrání zůstala zapojená od začátku).
+
+Rec.WATCH_SCAN = 1 -- s; jak často se hledají nové stroje (pumpa vyndaná z vleku je nové vozidlo)
+
+local function hoseLink(v, sub)
+    return CinemaObjects.readHose(v, sub) or false
+end
+
+local function sameLink(a, b)
+    if a == false or b == false then
+        return a == b
+    end
+    return a.source == b.source and a.pond == b.pond and a.port == b.port and a.target == b.target
+end
+
+-- Sledované stavy vozidla: { key, kind, sub, read } (read vrací hodnotu stavu).
+local function watchList(v)
+    local list = {}
+    local spec = CinemaObjects.hoseSpec(v)
+    for i = 1, spec ~= nil and #spec.hoses or 0 do
+        list[#list + 1] = { key = "hose:" .. i, kind = "hose", sub = i, read = function() return hoseLink(v, i) end, same = sameLink }
+    end
+    local pump = CinemaActions.KINDS.pump
+    if pump ~= nil and pump.available(v) then
+        local reader = CinemaActions.READERS.pump
+        list[#list + 1] = { key = "pump", kind = "pump", read = function() return reader.read(v) end }
+    end
+    return list
+end
+
+local function scanWatch(st)
+    for _, v in ipairs(W.vehicles()) do
+        local uid = W.uid(v)
+        if uid ~= nil and st.watch[uid] == nil then
+            local items = {}
+            for _, w in ipairs(watchList(v)) do
+                local ok, value = pcall(w.read)
+                if ok then
+                    w.vehicle, w.first, w.last = v, value, value
+                    items[#items + 1] = w
+                end
+            end
+            st.watch[uid] = items
+        end
+    end
+end
+
+local function same(w, a, b)
+    if w.same ~= nil then
+        return w.same(a, b)
+    end
+    return a == b
+end
+
+local function watchMachines(st)
+    if st.time >= (st.nextScan or 0) then
+        st.nextScan = st.time + Rec.WATCH_SCAN
+        scanWatch(st)
+    end
+    for uid, items in pairs(st.watch) do
+        for _, w in ipairs(items) do
+            if not w.vehicle.isDeleted then
+                local ok, value = pcall(w.read)
+                if ok and not same(w, value, w.last) then
+                    w.last = value
+                    st.machineEvents[#st.machineEvents + 1] = { t = st.time, uid = uid, kind = w.kind, sub = w.sub, value = value }
+                end
+            end
+        end
+    end
+end
+
+-- Akce strojů pro import: { uid = { akce… } }, časy od začátku záznamu; u změněné věci napřed stav ze startu.
+local function machineActions(st)
+    local out, seen = {}, {}
+    local function add(uid, kind, sub, value, t)
+        local action = { t = t, kind = kind, entry = 0, sub = sub }
+        if kind == "hose" then
+            action.value = value ~= false and 1 or 0
+            action.link = value ~= false and value or nil
+        else
+            action.value = value
+        end
+        out[uid] = out[uid] or {}
+        table.insert(out[uid], action)
+    end
+    for _, e in ipairs(st.machineEvents) do
+        local key = e.uid .. ":" .. e.kind .. ":" .. tostring(e.sub)
+        if not seen[key] then
+            seen[key] = true
+            for _, w in ipairs(st.watch[e.uid] or {}) do
+                if w.kind == e.kind and w.sub == e.sub then
+                    add(e.uid, e.kind, e.sub, w.first, 0)
+                end
+            end
+        end
+        add(e.uid, e.kind, e.sub, e.value, e.t)
+    end
+    return next(out) ~= nil and out or nil
+end
+
 -- Uzel, který hráč drží v rukou (HandToolHands), nebo nil.
 local function heldNode(player)
     local spec = player.hands ~= nil and player.hands.spec_hands or nil
@@ -100,7 +204,8 @@ function Rec.start()
             return
         end
     end
-    local st = { parts = {}, part = openPart(root), time = 0, nextSample = 0 }
+    local st = { parts = {}, part = openPart(root), time = 0, nextSample = 0, watch = {}, machineEvents = {} }
+    scanWatch(st)
     if root ~= nil then
         -- záznam začíná ve vozidle: postava (když přijde chůze po výstupu) začíná u jeho dveří
         local ok, x, z, yaw = pcall(Pe.exitPose, root)
@@ -219,6 +324,7 @@ function Rec.stop()
         notify(problem)
         return
     end
+    result.machines = machineActions(st)
     Rec.pending = result
     notify("cine_rec_done", result.name, result.duration)
 end
@@ -265,6 +371,7 @@ function Rec.update(dt)
     if part.kind == "walk" then
         watchWalk(st, part)
     end
+    watchMachines(st)
     if st.time >= st.nextSample then
         take(st)
         st.nextSample = st.time + CinemaRecording.SAMPLE_DT

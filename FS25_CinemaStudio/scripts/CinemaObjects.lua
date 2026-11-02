@@ -252,7 +252,7 @@ function O.applyHose(v, sub, link)
     end
     command(H.CMD_TAKE, nil, link.port, x, y, z, dx, dz)
     command(H.CMD_CONNECT, target, link.pond and H.POND_ARG or (link.target or 0), x, y, z, dx, dz)
-    if link.valve and not h.valveOpen then
+    if link.valve and not h.valveOpen and H.CMD_VALVE ~= nil then
         command(H.CMD_VALVE)
     end
 end

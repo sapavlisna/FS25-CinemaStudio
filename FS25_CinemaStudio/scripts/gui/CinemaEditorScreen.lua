@@ -1727,7 +1727,6 @@ function CinemaEditorScreen:update(dt)
         end
     end
     CinemaPerson.syncHelpers(self.shot ~= nil and self.shot.actors or {}, self.playing and self.playTime or self.playhead, dt, self.playing)
-    CinemaPerson.syncCarry(self.shot ~= nil and self.shot.actors or {}, self.playing and self.playTime or self.playhead)
     if CinemaDev ~= nil then CinemaDev.walk(self.shot ~= nil and self.shot.actors or {}, self.playTime or 0, self.playing) end
     if self.playing then
         self:updatePlayback(dt)
@@ -1737,6 +1736,11 @@ function CinemaEditorScreen:update(dt)
     else
         self:updateHeld()
         self:updateFlight(dt)
+    end
+    -- až po pohybu vozidel: předmět na korbě jede s vozidlem ve stejném snímku
+    CinemaPerson.syncCarry(self.shot ~= nil and self.shot.actors or {}, self.playing and self.playTime or self.playhead)
+    if self.shot ~= nil then
+        CinemaProps.syncRiders(self:props(), CinemaPerson.carriedUids(self.shot.actors))
     end
     self.moveForward, self.moveSide, self.moveUp = 0, 0, 0
 end

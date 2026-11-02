@@ -87,7 +87,8 @@ St.START_FIELDS = { "uid", "x", "y", "z", "rx", "ry", "rz" }
 St.JOINT_FIELDS = { "parent", "child", "joint", "input" }
 St.PROP_FIELDS = { "kind", "name", "uid", "x", "y", "z", "rx", "ry", "rz", "xmlFilename", "fillType", "fillLevel", "variation", "wrap",
     "wrapDiffuse", "wrapNormal", "amount", "radius", "field", "fruit", "growth", "ground", "sprayType", "sprayLevel", "lime", "plow",
-    "roller", "stubble", "weed", "stone", "water", "clear", "windrow", "windrowAmount", "windrowLines", "windrowSource", "windrowSpacing" }
+    "roller", "stubble", "weed", "stone", "water", "clear", "windrow", "windrowAmount", "windrowLines", "windrowSource", "windrowSpacing",
+    "rider", "lx", "ly", "lz", "lry" }
 
 local function toNetwork(path)
     return path ~= nil and NetworkUtil ~= nil and NetworkUtil.convertToNetworkFilename(path) or path
@@ -172,7 +173,7 @@ local function writeAction(xmlFile, k2, action)
 end
 
 St.LINK_FIELDS = { "source", "pond", "port", "target", "x", "y", "z", "dx", "dz", "valve" }
-St.CARRY_FIELDS = { "kind", "uid", "name", "r", "x", "y", "z", "rx", "ry", "rz" }
+St.CARRY_FIELDS = { "kind", "uid", "name", "r", "x", "y", "z", "rx", "ry", "rz", "rider", "lx", "ly", "lz", "lry", "path" }
 
 -- Akce z klíče k2, nebo nil u neznámého druhu.
 local function readAction(xmlFile, k2)

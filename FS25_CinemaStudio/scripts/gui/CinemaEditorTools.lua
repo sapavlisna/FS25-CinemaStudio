@@ -2411,14 +2411,54 @@ function CinemaEditorScreen:importRecording()
     end
     CinemaRecorder.pending = nil
     self:pushUndo()
+    local base = self.playhead
     if rec.session then
         self:importSession(rec)
-        return
-    end
-    if rec.person then
+    elseif rec.person then
         self:importWalk(rec)
-        return
+    else
+        self:importDrive(rec)
     end
+    self:importMachines(rec.machines, base)
+end
+
+-- Co hráč při záznamu zapojil nebo zapnul na strojích kolem (hadice, motor pumpy): akce objektu od playheadu; stroj, který
+-- mezi objekty není, se přidá.
+function CinemaEditorScreen:importMachines(machines, base)
+    local count = 0
+    for uid, actions in pairs(machines or {}) do
+        local v = W.find(uid)
+        if v ~= nil then
+            local obj = CinemaObjects.fromVehicle(v)
+            local k = nil
+            for i, other in ipairs(self:objects()) do
+                if CinemaObjects.same(other, obj) then
+                    k = i
+                end
+            end
+            if k == nil then
+                table.insert(self:objects(), obj)
+                k = #self:objects()
+            end
+            local labels = {}
+            for _, sub in ipairs(CinemaObjects.subs(self:objects()[k], "hose")) do
+                labels[sub.sub] = sub.label
+            end
+            for _, action in ipairs(actions) do
+                action.t = base + action.t
+                action.subLabel = action.sub ~= nil and labels[action.sub] or nil
+                A.add(self:objects()[k], action)
+                count = count + 1
+            end
+        end
+    end
+    if count > 0 then
+        S.touch(self.shot)
+        self:markDirty()
+    end
+end
+
+function CinemaEditorScreen:importDrive(rec)
     local actor = { name = rec.name, speed = E.ACTOR_SPEED_DEFAULT, delay = self.playhead, points = rec.points, start = rec.start,
         curves = rec.curves, actions = {} }
     for _, action in ipairs(rec.actions) do
