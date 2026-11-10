@@ -32,6 +32,15 @@ function P.autoHandles(pts, i)
     for c = 1, 3 do
         m[c] = (p[c] - prev[c]) / d0 - (next[c] - prev[c]) / (d0 + d1) + (next[c] - p[c]) / d1
     end
+    -- výška se nesmí podstřelit: rovný úsek před stoupáním by jinak nejdřív klesl (tečka Catmull-Romu míří nahoru už před
+    -- bodem). Sklon výšky se v bodě vynuluje, když se směr mění nebo na jedné straně není, a jinak omezí (Fritsch-Carlson).
+    local sa, sb = (p[2] - prev[2]) / d0, (next[2] - p[2]) / d1
+    if sa * sb <= 0 then
+        m[2] = 0
+    else
+        local limit = 3 * math.min(math.abs(sa), math.abs(sb))
+        m[2] = math.max(math.min(m[2], limit), -limit)
+    end
     local hin, hout = {}, {}
     for c = 1, 3 do
         hin[c] = -m[c] * d0 / 3

@@ -44,7 +44,7 @@ E.ADD_GROUPS = {
     {
         title = "cine_add_g_keys",
         tiles = {
-            { id = "flight", kbd = "K", run = function(s) s:onActionKeyAdd() end },
+            { id = "flight", kbd = "G", run = function(s) s:onActionKeyAdd() end },
             modeTile("spotlight"),
         },
     },

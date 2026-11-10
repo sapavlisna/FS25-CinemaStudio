@@ -58,6 +58,7 @@
 
         <text name="cine_msg_keyAdded" text="K-frame přidán"/>
         <text name="cine_msg_keyOverwritten" text="K-frame přepsán"/>
+        <text name="cine_msg_keyCut" text="Střih: nový blok začíná v aktuální póze (Shift + G přepíše konec předchozího)"/>
         <text name="cine_msg_flySpeed" text="Rychlost letu %.1f m/s"/>
         <text name="cine_msg_focal" text="Objektiv %.0f mm"/>
         <text name="cine_msg_saved" text="Záběr uložen"/>
@@ -227,7 +228,8 @@
         <text name="cine_menu_focusFrom" text="Od ukazatele (%.1f s) jiný cíl - vybrat ve scéně"/>
         <text name="cine_menu_focusSplit" text="Rozdělit na ukazateli (%.1f s)"/>
         <text name="cine_menu_focusCut" text="Utnout na ukazateli (%.1f s) - dál volný pohled"/>
-        <text name="cine_msg_pickFocus" text="Klikni na vozidlo, na které má kamera mířit."/>
+        <text name="cine_msg_pickFocus" text="Klikni na vozidlo, na které má kamera mířit, nebo na zem, dům, strom či most (bod v prostoru)."/>
+        <text name="cine_point_name" text="Bod %d"/>
         <text name="cine_msg_focusSplitNot" text="Ukazatel musí být uvnitř úseku bodu zájmu (ne na jeho kraji)."/>
         <text name="cine_msg_focusCut" text="Míření utnuto, dál volný pohled."/>
         <text name="cine_focus_label" text="zájem"/>
@@ -270,6 +272,10 @@
         <text name="cine_menu_gait" text="K bodu %d: %s"/>
         <text name="cine_gait_walk" text="chůze"/>
         <text name="cine_gait_run" text="běh"/>
+        <text name="cine_msg_walkSpan" text="Úsek %d-%d: %.1f km/h"/>
+        <text name="cine_msg_spansSpeed" text="Rychlost změněna u %d vybraných úseků"/>
+        <text name="cine_menu_walkSpeed" text="Rychlost od bodu %d (±%s km/h): %.1f"/>
+        <text name="cine_menu_walkFrom" text="Stejná rychlost od bodu %d dál"/>
         <text name="cine_msg_gaitSpan" text="Úsek %d-%d: %s"/>
         <text name="cine_menu_pointForward" text="Úsek k tomuto bodu: jet vpřed (teď couvá)"/>
         <text name="cine_msg_cannotReverse" text="Couvání po trase neumí vozidlo s tažným přívěsem nebo nářadím na kolech"/>
@@ -382,6 +388,9 @@
         <text name="cine_status_env" text="Prostředí: %s"/>
         <text name="cine_msg_nothingToDelete" text="Není co smazat"/>
         <text name="input_CINE_SNAP" text="Cinema Studio: přichytávání na ose (zapnout / vypnout)"/>
+        <text name="input_CINE_CAM_SYNC" text="Cinema Studio: vrátit kameru na pózu časové osy v ukazateli"/>
+        <text name="cine_msg_camManual" text="Kamera je nastavená ručně: posun ukazatele ji nechá, Z ji vrátí na pózu osy."/>
+        <text name="cine_msg_camSynced" text="Kamera na póze časové osy"/>
         <text name="input_CINE_EDIT_MODE" text="Cinema Studio: režim úprav (přepsat / vložit)"/>
         <text name="input_CINE_SPLIT" text="Cinema Studio: rozdělit blok na ukazateli"/>
         <text name="cine_msg_snapOn" text="Přichytávání zapnuto (Shift při tažení ho vypne)"/>
@@ -580,17 +589,17 @@
         <text name="cine_tb_big_h" text="Větší osa: třikrát víc místa pro řádky herců (znovu = zpět)"/>
         <text name="cine_msg_rowsBig" text="Osa zvětšená: víc řádků herců najednou."/>
         <text name="cine_msg_rowsSmall" text="Osa zase malá."/>
-        <text name="cine_tb_advance_off" text="Po K: stát"/>
-        <text name="cine_tb_advance_on" text="Po K: +%s s"/>
-        <text name="cine_tb_advance_h" text="Co udělá K: playhead zůstane, nebo skočí o krok dál a Let se k němu prodlouží (klik = přepnout)"/>
-        <text name="cine_tb_advanceStep_h" text="O kolik sekund skočit po K: předvolby nebo zadat ručně"/>
-        <text name="cine_adv_title" text="Posun po K"/>
-        <text name="cine_adv_on" text="Posouvat po K"/>
+        <text name="cine_tb_advance_off" text="Po G: stát"/>
+        <text name="cine_tb_advance_on" text="Po G: +%s s"/>
+        <text name="cine_tb_advance_h" text="Co udělá G: playhead zůstane, nebo skočí o krok dál a Let se k němu prodlouží (klik = přepnout)"/>
+        <text name="cine_tb_advanceStep_h" text="O kolik sekund skočit po G: předvolby nebo zadat ručně"/>
+        <text name="cine_adv_title" text="Posun po G"/>
+        <text name="cine_adv_on" text="Posouvat po G"/>
         <text name="cine_adv_step" text="O %s s"/>
         <text name="cine_adv_custom" text="Zadat ručně…"/>
-        <text name="cine_adv_prompt" text="O kolik sekund skočit po K (0,1–60)"/>
-        <text name="cine_msg_advanceOn" text="Po K playhead skočí o %s s dál a Let se prodlouží."/>
-        <text name="cine_msg_advanceOff" text="Po K playhead zůstane stát."/>
+        <text name="cine_adv_prompt" text="O kolik sekund skočit po G (0,1–60)"/>
+        <text name="cine_msg_advanceOn" text="Po G playhead skočí o %s s dál a Let se prodlouží."/>
+        <text name="cine_msg_advanceOff" text="Po G playhead zůstane stát."/>
         <text name="cine_msg_advanceBad" text="Krok musí být číslo v sekundách, třeba 2 nebo 1,5."/>
         <text name="cine_lane_gate" text="Brána"/>
         <text name="cine_lane_lamp" text="Světla budovy"/>
@@ -892,14 +901,14 @@
         <text name="cine_shake_1" text="jemný"/>
         <text name="cine_shake_2" text="střední"/>
         <text name="cine_shake_3" text="silný"/>
-        <text name="cine_curve_empty" text="Křivka rychlosti: kamera zatím nemá žádný blok (K založí Let)"/>
+        <text name="cine_curve_empty" text="Křivka rychlosti: kamera zatím nemá žádný blok (G založí Let)"/>
 
         <text name="cine_help_title" text="Ovládání"/>
         <text name="cine_status_keyOf" text="K-frame %d / %d"/>
         <text name="cine_status_blocks" text="bloků %d"/>
         <text name="cine_status_keySpeed" text="K-frame %.1f m/s"/>
         <text name="cine_status_hold" text="kamera stojí (mezera mezi bloky)"/>
-        <text name="cine_msg_needBlock" text="Na přehrání je potřeba aspoň jeden blok (K založí Let)"/>
+        <text name="cine_msg_needBlock" text="Na přehrání je potřeba aspoň jeden blok (G založí Let)"/>
         <text name="cine_msg_noRoom" text="Tady se nový blok nevejde (hned za ním začíná další)"/>
         <text name="cine_msg_modePosition" text="Polohu kamery v tomto bloku určuje režim – kameru bloku změníš tak, že na místo doletíš a dáš K"/>
         <text name="cine_msg_staticMoved" text="Kamera bloku je teď tam, kam míří tvoje kamera: poloha, směr i ohnisko"/>
@@ -1020,6 +1029,44 @@
         <text name="cine_msg_windrowCp" text="Řádky podle kurzu Courseplay: %d úseků (%s)."/>
         <text name="cine_msg_windrowNoCp" text="Pro tohle pole nemá žádný stroj načtený kurz Courseplay: řádky jsou rovnoběžně."/>
         <text name="cine_status_fieldsWait" text="Připravuji pole…"/>
+        <text name="cine_field_zones" text="Zóny sklizně (sklizeno / nesklizeno)…"/>
+        <text name="cine_zone_title" text="Zóny – %s"/>
+        <text name="cine_zone_summary" text="Zóny: sklizeno %d, nesklizeno %d (%d kvádrů)"/>
+        <text name="cine_zone_status" text="zóny: sklizeno %d, nesklizeno %d"/>
+        <text name="cine_zone_course" text="Sklizeno podle kurzu: kliknout na kurz, kam kombajn dojel"/>
+        <text name="cine_zone_courseHere" text="Sklizeno podle kurzu až do polohy kombajnů"/>
+        <text name="cine_zone_rectCut" text="Sklizeno: obdélník ze tří kliknutí"/>
+        <text name="cine_zone_rectStanding" text="Nesklizeno: obdélník ze tří kliknutí"/>
+        <text name="cine_zone_windrows" text="Řádky slámy jen ze sklizené části"/>
+        <text name="cine_zone_lead" text="Sklizeno před střed stroje o: %d m"/>
+        <text name="cine_zone_extra" text="Šířka pruhu podle kurzu: %+.1f m"/>
+        <text name="cine_field_busy" text="Nastavuji pole: %s · %.0f s"/>
+        <text name="cine_field_phaseField" text="celé pole"/>
+        <text name="cine_field_phase_zones" text="zóny %d/%d"/>
+        <text name="cine_field_phase_straw" text="sláma %d/%d"/>
+        <text name="cine_field_fastOn" text="Rychlé nastavení: jen plodina a řádky (půda zůstane): zapnuto"/>
+        <text name="cine_field_fastOff" text="Rychlé nastavení: jen plodina a řádky (půda zůstane): vypnuto"/>
+        <text name="cine_zone_removeLast" text="Smazat poslední zónu"/>
+        <text name="cine_zone_removeAll" text="Smazat všechny zóny"/>
+        <text name="cine_zone_hintCourse" text="sklizeno %.0f m kurzu"/>
+        <text name="cine_field_windrowFromZone" text="%d úseků ze sklizené části"/>
+        <text name="cine_msg_windrowZone" text="Řádky ze sklizené části: %d úseků."/>
+        <text name="cine_msg_zoneNoCourse" text="Žádný stroj nemá pro toto pole načtený kurz Courseplay (načti ho ve stroji)."/>
+        <text name="cine_msg_zoneClickCourse" text="Klikni na kurz Courseplay (zelená čára) tam, kam kombajn dojel; vše před tím bude sklizené. Pravé tlačítko ruší."/>
+        <text name="cine_msg_zoneFar" text="Klikni blíž ke kurzu."/>
+        <text name="cine_msg_zoneEmpty" text="Z toho by v poli nezůstalo nic sklizeného."/>
+        <text name="cine_msg_zoneCourse" text="Sklizeno podle kurzu: %d úseků, %.0f m."/>
+        <text name="cine_msg_zoneVehicles" text="Sklizeno do polohy kombajnů: %d kurzů, %.0f m."/>
+        <text name="cine_msg_zoneRect1" text="Obdélník: klikni na první roh. Pravé tlačítko ruší."/>
+        <text name="cine_msg_zoneRect2" text="Klikni na druhý roh téže strany."/>
+        <text name="cine_msg_zoneRect3" text="Klikni na bok, kam se obdélník rozšíří."/>
+        <text name="cine_msg_zoneRectBad" text="Obdélník je moc úzký, začni znovu."/>
+        <text name="cine_msg_zoneCutAdded" text="Zóna sklizeno přidána."/>
+        <text name="cine_msg_zoneStandingAdded" text="Zóna nesklizeno přidána."/>
+        <text name="cine_msg_zoneCancel" text="Kreslení zóny zrušeno."/>
+        <text name="cine_msg_zoneMax" text="Zón je moc (nejvíc %d kvádrů na pole)."/>
+        <text name="cine_msg_zoneRemoved" text="Poslední zóna smazána."/>
+        <text name="cine_msg_zoneCleared" text="Zóny smazány."/>
         <text name="cine_ground_NONE" text="bez úpravy"/>
         <text name="cine_ground_STUBBLE_TILLAGE" text="podmítnuto"/>
         <text name="cine_ground_CULTIVATED" text="kultivováno"/>

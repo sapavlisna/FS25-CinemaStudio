@@ -103,12 +103,44 @@ local function groundTitle(value)
 end
 E.fieldGroundTitle = groundTitle
 
+-- Kolečko, které se točí, dokud se pole nastavuje: střed cx, cy.
+function E.drawSpinner(cx, cy, color)
+    local px, py = g_pixelSizeScaledX, g_pixelSizeScaledY
+    local n = 10
+    local head = math.floor((g_time or 0) / 80) % n
+    for k = 0, n - 1 do
+        local a = k / n * 2 * math.pi
+        local strength = 1 - ((head - k) % n) / n
+        E.gfx.line(cx + math.sin(a) * 4 * px, cy + math.cos(a) * 4 * py, cx + math.sin(a) * 8 * px, cy + math.cos(a) * 8 * py, 2,
+            { color[1], color[2], color[3], 0.2 + 0.8 * strength })
+    end
+end
+
+-- Text o průběhu nastavování pole p (nil, když se nenastavuje).
+function E.fieldProgressText(p)
+    local info = Pr.fieldProgress(p.field)
+    if info == nil then
+        return nil
+    end
+    local what = info.phase == "field" and t("cine_field_phaseField")
+        or string.format(t("cine_field_phase_" .. info.phase), info.done, info.total)
+    return string.format(t("cine_field_busy"), what, info.seconds)
+end
+
 -- Co o předmětu řádek říká: druh, kde je, co s ním reset udělá.
 function CinemaEditorScreen:propStatus(p)
     if p.kind == "field" then
+        local busy = E.fieldProgressText(p)
+        if busy ~= nil then
+            return busy
+        end
         local ft = Pr.fruitOf(p)
         local text = string.format("%s · %s · %s", ft ~= nil and fruitTitle(ft) or t("cine_field_noFruit"), E.fieldGrowthLabel(p),
             groundTitle(p.ground))
+        if p.zones ~= nil then
+            local cut, standing = CinemaZones.summary(CinemaZones.decode(p.zones))
+            text = text .. " · " .. string.format(t("cine_zone_status"), cut, standing)
+        end
         if p.windrow ~= nil then
             text = text .. " · " .. string.format(t("cine_field_windrowStatus"), #Pr.decodeLines(p.windrowLines))
         end
@@ -133,6 +165,9 @@ function CinemaEditorScreen:drawPropsGroup()
     local gfx, ui = E.gfx, E.UI
     local props = self:props()
     self:drawRowBase(hy, E.ROW_H, false, string.format(t("cine_props_label"), #props), nil)
+    if Pr.anyFieldProgress() then
+        E.drawSpinner(E.TRACK_X0 - 0.012, hy + E.ROW_H * 0.5, E.UI.pickHover)
+    end
     gfx.text(E.ARROW_X0 + 0.002, hy + E.ROW_H * 0.5 - E.TEXT_SIZE * 0.3, E.TEXT_SIZE * 0.75, self:propsCollapsed() and ">" or "v",
         #props > 0 and ui.text or ui.dim, RenderText.ALIGN_LEFT, true)
     gfx.text(E.TRACK_X0 + 0.006, hy + E.ROW_H * 0.5 - E.TEXT_SIZE * 0.28, E.TEXT_SIZE * 0.68,
@@ -144,6 +179,9 @@ function CinemaEditorScreen:drawPropsGroup()
         local ry = self:getPropRowY(k)
         local active = self.activeProp == k
         self:drawRowBase(ry, E.ROW_H, active, "  " .. (p.name or "?"), nil)
+        if p.kind == "field" and Pr.fieldProgress(p.field) ~= nil then
+            E.drawSpinner(E.TRACK_X0 - 0.012, ry + E.ROW_H * 0.5, E.UI.pickHover)
+        end
         local c = Pr.exists(p) and ui.text or ui.cut
         gfx.text(E.TRACK_X0 + 0.006, ry + E.ROW_H * 0.5 - E.TEXT_SIZE * 0.28, E.TEXT_SIZE * 0.68,
             t("cine_prop_kind_" .. p.kind) .. "  ·  " .. self:propStatus(p), c, RenderText.ALIGN_LEFT)
@@ -418,6 +456,9 @@ function CinemaEditorScreen:fieldStateItems(p, change)
         level("stone", "cine_field_stone", mission ~= nil and mission.stoneSystem ~= nil and mission.stoneSystem.maxValue or 0),
         item(t(p.clear ~= 0 and "cine_field_clearOn" or "cine_field_clearOff"),
             function(s) change(s, function() p.clear = p.clear ~= 0 and 0 or 1 end) end, { keepOpen = true }),
+        item(function() return t(p.fast and "cine_field_fastOn" or "cine_field_fastOff") end,
+            function(s) change(s, function() p.fast = not p.fast or nil end) end, { keepOpen = true }),
+        item(t("cine_field_zones"), function(s) s:openZoneMenu(p, change) end, { submenu = true }),
         item(t("cine_field_windrows"), function(s) s:openWindrowMenu(p, change) end, { submenu = true }),
     }
 end
@@ -442,7 +483,8 @@ function CinemaEditorScreen:openWindrowMenu(p, change)
         p.windrow = name ~= "" and name or nil
         p.windrowAmount = p.windrowAmount or Pr.WINDROW_AMOUNT
         if p.windrow ~= nil and p.windrowLines == nil then
-            self:makeWindrowLines(p, "cp", true)
+            local zoned = #CinemaZones.cutLines(CinemaZones.decode(p.zones)) > 0
+            self:makeWindrowLines(p, zoned and "zone" or "cp", true)
         end
     end
     local function count()
@@ -459,7 +501,8 @@ function CinemaEditorScreen:openWindrowMenu(p, change)
                 p.windrowAmount = math.max((p.windrowAmount or Pr.WINDROW_AMOUNT) - Pr.WINDROW_AMOUNT_STEP, Pr.WINDROW_AMOUNT_STEP)
             end) end, { disabled = p.windrow == nil }),
         E.menuItem(function()
-            return string.format(t(p.windrowSource == "cp" and "cine_field_windrowFromCp" or "cine_field_windrowCount"), count())
+            local key = ({ cp = "cine_field_windrowFromCp", zone = "cine_field_windrowFromZone" })[p.windrowSource]
+            return string.format(t(key or "cine_field_windrowCount"), count())
         end, function() end, { disabled = true }),
         E.menuItem(t("cine_field_windrowLoadCp"), function(s) change(s, function() s:makeWindrowLines(p, "cp") end) end,
             { keepOpen = true }),
@@ -482,6 +525,16 @@ function CinemaEditorScreen:makeWindrowLines(p, source, quiet)
     local field = Pr.findField(p.field)
     if field == nil then
         return
+    end
+    if source == "zone" then
+        local lines = CinemaZones.cutLines(CinemaZones.decode(p.zones))
+        if #lines > 0 then
+            p.windrowLines, p.windrowSource = Pr.encodeLines(lines), "zone"
+            if not quiet then
+                self:showMessage(string.format(t("cine_msg_windrowZone"), #lines))
+            end
+            return
+        end
     end
     if source == "cp" then
         local lines, name, width = Pr.courseLines(field)

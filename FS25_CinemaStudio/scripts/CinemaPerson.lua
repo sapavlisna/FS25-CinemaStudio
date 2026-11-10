@@ -12,13 +12,12 @@ Pe.HELPER = "helper"
 local LEGACY_PLAYER = "player"
 -- Postava jde pomalu, jde, nebo běží; stát = pauza v bodě trasy. Chůze a běh jsou stejně rychlé jako u hráče ve hře
 -- (PlayerStateWalk.MAXIMUM_WALK_SPEED 4 m/s / MAXIMUM_RUN_SPEED 7 m/s, přečteno ve hře), takže nahraná chůze trvá stejně.
--- Model pomocníka ale hraje animaci podle absSpeed a při 4 m/s už běží (při 1,5 m/s ve hře viditelně šel): chůzi proto
--- dostane animaci zpomalenou na Pe.NPC_WALK_ANIM_MPS (Pe.npcAnimSpeed).
+-- Model pomocníka hraje animaci podle absSpeed a při 4 m/s už běží (při 1,5 m/s šel). Kroky ale musí odpovídat
+-- skutečné rychlosti, jinak postava klouže po zemi, proto se absSpeed rovná skutečné rychlosti (Pe.npcAnimSpeed).
 Pe.GAME_WALK_MPS = 4
 Pe.SLOW_MPS = 1.5
 Pe.WALK_MPS = Pe.GAME_WALK_MPS
 Pe.RUN_MPS = 7
-Pe.NPC_WALK_ANIM_MPS = 1.5
 Pe.SLOW_KMH = Pe.SLOW_MPS * 3.6
 Pe.WALK_KMH = Pe.WALK_MPS * 3.6
 Pe.RUN_KMH = Pe.RUN_MPS * 3.6
@@ -387,6 +386,31 @@ end
 
 function Pe.gaitTitle(kmh)
     return g_i18n:getText("cine_gait_" .. Pe.GAITS[Pe.gaitIndex(kmh)].name)
+end
+
+-- Rychlost úseku je libovolná (p[3], km/h), pomalá chůze, chůze a běh jsou jen předvolby; chůze (výchozí) se neukládá.
+Pe.MIN_KMH = 0.5
+Pe.MAX_KMH = 36
+
+function Pe.speedOf(p)
+    return p[3] or Pe.WALK_KMH
+end
+
+function Pe.setSpeed(p, kmh)
+    kmh = math.max(math.min(kmh, Pe.MAX_KMH), Pe.MIN_KMH)
+    if math.abs(kmh - Pe.WALK_KMH) < 0.05 then
+        p[3] = nil
+    else
+        p[3] = kmh
+    end
+end
+
+-- Všechny úseky za úsekem z bodu j dostanou jeho rychlost (poslední bod žádný úsek nezačíná).
+function Pe.speedFrom(actor, j)
+    local kmh = Pe.speedOf(actor.points[j])
+    for k = j + 1, #actor.points - 1 do
+        Pe.setSpeed(actor.points[k], kmh)
+    end
 end
 
 -- Rychlosti postavy přichytí na pomalou chůzi, chůzi a běh (vždy od bodu do dalšího) a zahodí křivky rychlosti.
@@ -892,14 +916,9 @@ local function deleteNpc(npc)
     end
 end
 
--- Rychlost animace pomocníka pro skutečnou rychlost speed (m/s): do chůze zpomalená, aby model šel a neběžel, mezi
--- chůzí a během plynule až do skutečné rychlosti běhu.
+-- Rychlost animace pomocníka pro skutečnou rychlost speed (m/s): stejná, aby tempo kroků sedělo na pohyb po zemi.
 function Pe.npcAnimSpeed(speed)
-    if speed <= Pe.WALK_MPS then
-        return speed * Pe.NPC_WALK_ANIM_MPS / Pe.WALK_MPS
-    end
-    local u = math.min((speed - Pe.WALK_MPS) / (Pe.RUN_MPS - Pe.WALK_MPS), 1)
-    return Pe.NPC_WALK_ANIM_MPS + (Pe.RUN_MPS - Pe.NPC_WALK_ANIM_MPS) * u
+    return speed
 end
 
 local function poseNpc(npc, x, y, z, yaw, speed, turn, dt)

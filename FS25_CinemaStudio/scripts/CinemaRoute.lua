@@ -9,6 +9,7 @@ local M = CinemaMath
 R.SPACING = 1.0
 R.CURVE_LOOK = 14 -- m; jak daleko dopředu se hledá zatáčka
 R.MIN_KMH = 3
+R.WALK_MIN_KMH = 0.5 -- postava smí jít pomaleji než vozidlo jet
 R.DECEL = 1.2 -- m/s²; brzdění před koncem trasy
 R.ACCEL = 1.5 -- m/s²; rozjezd ze startu a z pauzy
 R.ARRIVE = 1.5 -- m
@@ -305,7 +306,7 @@ local CURVE_LIMIT = 7200 -- s; pojistka proti nekonečné smyčce
 
 -- Rychlost (km/h) podle bodů trasy v místě s, bez pauz.
 function R.baseSpeed(route, s)
-    return math.max(R.targetSpeed(route, s, R.cruiseAt(route, s), nil), R.MIN_KMH)
+    return math.max(R.targetSpeed(route, s, R.cruiseAt(route, s), nil), route.walk and R.WALK_MIN_KMH or R.MIN_KMH)
 end
 
 -- Křivka končí nulou a čas t (od startu jízdy) je za jejím koncem: vozidlo stojí.
@@ -480,7 +481,7 @@ function R.plan(actor)
         local t = 0
         for i = 1, #route.xs - 1 do
             local mid = (route.ss[i] + route.ss[i + 1]) * 0.5
-            local kmh = math.max(R.targetSpeed(route, mid, R.cruiseAt(route, mid), R.nextStopS(route, mid)), R.MIN_KMH)
+            local kmh = math.max(R.targetSpeed(route, mid, R.cruiseAt(route, mid), R.nextStopS(route, mid)), route.walk and R.WALK_MIN_KMH or R.MIN_KMH)
             t = t + (route.ss[i + 1] - route.ss[i]) / (kmh / 3.6) * (route.walk and 1 or R.TIME_FACTOR)
             times[i + 1] = t
         end

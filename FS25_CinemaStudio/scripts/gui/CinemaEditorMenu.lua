@@ -941,7 +941,8 @@ function CinemaEditorScreen:openPointMenu(actorIndex, pointIndex, x, y)
     local items
     if person then
         -- postava jde pomalu, jde, nebo běží vždy od bodu do dalšího, stojí pauzou v bodě; necouvá
-        items = { E.gaitItem(actor, pointIndex, change), wait }
+        items = E.walkItems(actor, pointIndex, change)
+        items[#items + 1] = wait
     else
         items = {
             stepItem(function() return string.format(t("cine_menu_pointFaster"), E.speedStepOf(), kmh()) end,
@@ -1063,6 +1064,7 @@ function CinemaEditorScreen:openFocusMenu(i, x, y)
         nudge(0.05, 0), nudge(-0.05, 0))
     framing[#framing + 1] = stepItem(function() return string.format(t("cine_menu_frameUp"), f.ox or 0, f.oy or 0) end,
         nudge(0, 0.05), nudge(0, -0.05))
+    local onPoint = S.pointOfTarget(self.shot, f.target) ~= nil
     local items = {
         groupItem(t("cine_menu_focusList"), title, targets, x, y),
         item(t("cine_menu_focusChange"), function(s) pick(s, nil) end),
@@ -1070,9 +1072,13 @@ function CinemaEditorScreen:openFocusMenu(i, x, y)
         stepItem(function() return string.format(t("cine_menu_blendUp"), f.blend or S.FOCUS_BLEND) end,
             function(s) change(s, function() f.blend = (f.blend or S.FOCUS_BLEND) + 0.5 end) end,
             function(s) change(s, function() f.blend = math.max((f.blend or S.FOCUS_BLEND) - 0.5, 0) end) end),
-        stepItem(function() return string.format(t("cine_menu_focusHigher"), f.height or S.FOCUS_HEIGHT) end,
+        stepItem(function()
+                local height = f.height or S.FOCUS_HEIGHT
+                return string.format(t("cine_menu_focusHigher"), onPoint and height - S.FOCUS_HEIGHT or height)
+            end,
             function(s) change(s, function() f.height = (f.height or S.FOCUS_HEIGHT) + 0.5 end) end,
-            function(s) change(s, function() f.height = (f.height or S.FOCUS_HEIGHT) - 0.5 end) end, { disabled = f.target == nil }),
+            function(s) change(s, function() f.height = (f.height or S.FOCUS_HEIGHT) - 0.5 end) end,
+            { disabled = f.target == nil }),
         separator(),
         item(string.format(t("cine_menu_focusFrom"), self.playhead), function(s) pick(s, s.playhead) end, { disabled = not inside }),
         item(string.format(t("cine_menu_focusSplit"), self.playhead), function(s) s:splitFocusHere(nil) end, { disabled = not inside }),
@@ -1153,6 +1159,20 @@ function CinemaEditorScreen:routeSpanAtTime(i, t)
     return nil
 end
 
+-- Rychlost úseku postavy od bodu j: předvolby chůze, jemné ladění o krok rychlosti a stejná rychlost až do konce trasy.
+function E.walkItems(actor, j, change)
+    local p = actor.points[j]
+    return {
+        E.gaitItem(actor, j, change),
+        stepItem(function() return string.format(t("cine_menu_walkSpeed"), j + 1, E.speedStepOf(), CinemaPerson.speedOf(p)) end,
+            function(s) change(s, function() CinemaPerson.setSpeed(p, CinemaPerson.speedOf(p) + s.speedStep) end) end,
+            function(s) change(s, function() CinemaPerson.setSpeed(p, CinemaPerson.speedOf(p) - s.speedStep) end) end,
+            { disabled = j >= #actor.points }),
+        item(string.format(t("cine_menu_walkFrom"), j + 1), function(s) change(s, function() CinemaPerson.speedFrom(actor, j) end) end,
+            { disabled = j >= #actor.points - 1 }),
+    }
+end
+
 -- Chůze postavy v úseku od bodu j do dalšího: klik další, pravé tlačítko předchozí.
 function E.gaitItem(actor, j, change)
     local p = actor.points[j]
@@ -1169,10 +1189,10 @@ local function routeSpanItems(self, i, j)
         return {}
     end
     if CinemaPerson.isPerson(actor) then
-        return { E.gaitItem(actor, j, function(s, fn)
+        return E.walkItems(actor, j, function(s, fn)
             edit(s, function() s:keepOnRoute(actor, fn) end)
             s.actorRt = {}
-        end) }
+        end)
     end
     local function kmh(p)
         return p[3] or actor.speed or E.ACTOR_SPEED_DEFAULT

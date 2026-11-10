@@ -58,6 +58,7 @@
 
         <text name="cine_msg_keyAdded" text="K-frame added"/>
         <text name="cine_msg_keyOverwritten" text="K-frame overwritten"/>
+        <text name="cine_msg_keyCut" text="Cut: a new block starts at the current pose (Shift + G overwrites the end of the previous one)"/>
         <text name="cine_msg_flySpeed" text="Flight speed %.1f m/s"/>
         <text name="cine_msg_focal" text="Lens %.0f mm"/>
         <text name="cine_msg_saved" text="Shot saved"/>
@@ -227,7 +228,8 @@
         <text name="cine_menu_focusFrom" text="From the playhead (%.1f s) another target - pick in the scene"/>
         <text name="cine_menu_focusSplit" text="Split at the playhead (%.1f s)"/>
         <text name="cine_menu_focusCut" text="Cut at the playhead (%.1f s) - free view after"/>
-        <text name="cine_msg_pickFocus" text="Click the vehicle the camera should aim at."/>
+        <text name="cine_msg_pickFocus" text="Click the vehicle the camera should aim at, or the ground, a house, tree or bridge (a point in space)."/>
+        <text name="cine_point_name" text="Point %d"/>
         <text name="cine_msg_focusSplitNot" text="The playhead must be inside the point of interest section (not at its edge)."/>
         <text name="cine_msg_focusCut" text="Aiming cut, free view from here."/>
         <text name="cine_focus_label" text="focus"/>
@@ -270,6 +272,10 @@
         <text name="cine_menu_gait" text="To point %d: %s"/>
         <text name="cine_gait_walk" text="walk"/>
         <text name="cine_gait_run" text="run"/>
+        <text name="cine_msg_walkSpan" text="Span %d-%d: %.1f km/h"/>
+        <text name="cine_msg_spansSpeed" text="Speed changed on %d selected spans"/>
+        <text name="cine_menu_walkSpeed" text="Speed from point %d (±%s km/h): %.1f"/>
+        <text name="cine_menu_walkFrom" text="Same speed from point %d onward"/>
         <text name="cine_msg_gaitSpan" text="Span %d-%d: %s"/>
         <text name="cine_menu_pointForward" text="Leg to this point: drive forward (now reversing)"/>
         <text name="cine_msg_cannotReverse" text="A vehicle with a towed trailer or wheeled implement cannot reverse along a route"/>
@@ -382,6 +388,9 @@
         <text name="cine_status_env" text="Environment: %s"/>
         <text name="cine_msg_nothingToDelete" text="Nothing to delete"/>
         <text name="input_CINE_SNAP" text="Cinema Studio: timeline snapping (on / off)"/>
+        <text name="input_CINE_CAM_SYNC" text="Cinema Studio: return the camera to the timeline pose at the playhead"/>
+        <text name="cine_msg_camManual" text="Camera set by hand: moving the playhead leaves it, Z returns it to the timeline pose."/>
+        <text name="cine_msg_camSynced" text="Camera on the timeline pose"/>
         <text name="input_CINE_EDIT_MODE" text="Cinema Studio: edit mode (overwrite / insert)"/>
         <text name="input_CINE_SPLIT" text="Cinema Studio: split the block at the playhead"/>
         <text name="cine_msg_snapOn" text="Snapping on (hold Shift while dragging to turn it off)"/>
@@ -580,17 +589,17 @@
         <text name="cine_tb_big_h" text="Bigger timeline: three times more room for actor rows (again = back)"/>
         <text name="cine_msg_rowsBig" text="Timeline enlarged: more actor rows at once."/>
         <text name="cine_msg_rowsSmall" text="Timeline small again."/>
-        <text name="cine_tb_advance_off" text="After K: stay"/>
-        <text name="cine_tb_advance_on" text="After K: +%s s"/>
-        <text name="cine_tb_advance_h" text="What K does: playhead stays, or jumps one step ahead and the flight extends to it (click = toggle)"/>
-        <text name="cine_tb_advanceStep_h" text="How many seconds to jump after K: presets or enter your own"/>
-        <text name="cine_adv_title" text="Advance after K"/>
-        <text name="cine_adv_on" text="Advance after K"/>
+        <text name="cine_tb_advance_off" text="After G: stay"/>
+        <text name="cine_tb_advance_on" text="After G: +%s s"/>
+        <text name="cine_tb_advance_h" text="What G does: playhead stays, or jumps one step ahead and the flight extends to it (click = toggle)"/>
+        <text name="cine_tb_advanceStep_h" text="How many seconds to jump after G: presets or enter your own"/>
+        <text name="cine_adv_title" text="Advance after G"/>
+        <text name="cine_adv_on" text="Advance after G"/>
         <text name="cine_adv_step" text="By %s s"/>
         <text name="cine_adv_custom" text="Enter value…"/>
-        <text name="cine_adv_prompt" text="Seconds to jump after K (0.1–60)"/>
-        <text name="cine_msg_advanceOn" text="After K the playhead jumps %s s ahead and the flight extends."/>
-        <text name="cine_msg_advanceOff" text="After K the playhead stays put."/>
+        <text name="cine_adv_prompt" text="Seconds to jump after G (0.1–60)"/>
+        <text name="cine_msg_advanceOn" text="After G the playhead jumps %s s ahead and the flight extends."/>
+        <text name="cine_msg_advanceOff" text="After G the playhead stays put."/>
         <text name="cine_msg_advanceBad" text="The step must be a number of seconds, e.g. 2 or 1.5."/>
         <text name="cine_lane_gate" text="Gate"/>
         <text name="cine_lane_lamp" text="Building lights"/>
@@ -892,14 +901,14 @@
         <text name="cine_shake_1" text="subtle"/>
         <text name="cine_shake_2" text="medium"/>
         <text name="cine_shake_3" text="strong"/>
-        <text name="cine_curve_empty" text="Speed curve: the camera has no block yet (K creates a flight)"/>
+        <text name="cine_curve_empty" text="Speed curve: the camera has no block yet (G creates a flight)"/>
 
         <text name="cine_help_title" text="Controls"/>
         <text name="cine_status_keyOf" text="K-frame %d / %d"/>
         <text name="cine_status_blocks" text="blocks %d"/>
         <text name="cine_status_keySpeed" text="K-frame %.1f m/s"/>
         <text name="cine_status_hold" text="camera holds (gap between blocks)"/>
-        <text name="cine_msg_needBlock" text="Playback needs at least one block (K creates a flight)"/>
+        <text name="cine_msg_needBlock" text="Playback needs at least one block (G creates a flight)"/>
         <text name="cine_msg_noRoom" text="A new block does not fit here (the next one starts right after)"/>
         <text name="cine_msg_modePosition" text="The mode sets the camera position in this block – to change the block camera, fly to the spot and press K"/>
         <text name="cine_msg_staticMoved" text="The block camera now matches your camera: position, direction and focal length"/>
@@ -1020,6 +1029,44 @@
         <text name="cine_msg_windrowCp" text="Windrows from the Courseplay course: %d segments (%s)."/>
         <text name="cine_msg_windrowNoCp" text="No vehicle has a Courseplay course loaded for this field: windrows are parallel."/>
         <text name="cine_status_fieldsWait" text="Preparing fields…"/>
+        <text name="cine_field_zones" text="Harvest zones (harvested / standing)…"/>
+        <text name="cine_zone_title" text="Zones – %s"/>
+        <text name="cine_zone_summary" text="Zones: harvested %d, standing %d (%d blocks)"/>
+        <text name="cine_zone_status" text="zones: %d harvested, %d standing"/>
+        <text name="cine_zone_course" text="Harvested along the course: click where the combine got to"/>
+        <text name="cine_zone_courseHere" text="Harvested along the course up to the combines' position"/>
+        <text name="cine_zone_rectCut" text="Harvested: rectangle from three clicks"/>
+        <text name="cine_zone_rectStanding" text="Standing: rectangle from three clicks"/>
+        <text name="cine_zone_windrows" text="Straw rows only on the harvested part"/>
+        <text name="cine_zone_lead" text="Harvested ahead of the machine centre by: %d m"/>
+        <text name="cine_zone_extra" text="Course strip width: %+.1f m"/>
+        <text name="cine_field_busy" text="Setting the field: %s · %.0f s"/>
+        <text name="cine_field_phaseField" text="whole field"/>
+        <text name="cine_field_phase_zones" text="zones %d/%d"/>
+        <text name="cine_field_phase_straw" text="straw %d/%d"/>
+        <text name="cine_field_fastOn" text="Fast reset: crop and rows only (soil stays): on"/>
+        <text name="cine_field_fastOff" text="Fast reset: crop and rows only (soil stays): off"/>
+        <text name="cine_zone_removeLast" text="Delete last zone"/>
+        <text name="cine_zone_removeAll" text="Delete all zones"/>
+        <text name="cine_zone_hintCourse" text="%.0f m of course harvested"/>
+        <text name="cine_field_windrowFromZone" text="%d segments from the harvested part"/>
+        <text name="cine_msg_windrowZone" text="Rows from the harvested part: %d segments."/>
+        <text name="cine_msg_zoneNoCourse" text="No machine has a Courseplay course loaded for this field (load it in the machine)."/>
+        <text name="cine_msg_zoneClickCourse" text="Click the Courseplay course (green line) where the combine got to; everything before it becomes harvested. Right button cancels."/>
+        <text name="cine_msg_zoneFar" text="Click closer to the course."/>
+        <text name="cine_msg_zoneEmpty" text="Nothing harvested would be left inside the field."/>
+        <text name="cine_msg_zoneCourse" text="Harvested along the course: %d segments, %.0f m."/>
+        <text name="cine_msg_zoneVehicles" text="Harvested up to the combines' position: %d courses, %.0f m."/>
+        <text name="cine_msg_zoneRect1" text="Rectangle: click the first corner. Right button cancels."/>
+        <text name="cine_msg_zoneRect2" text="Click the second corner of the same side."/>
+        <text name="cine_msg_zoneRect3" text="Click the side the rectangle extends to."/>
+        <text name="cine_msg_zoneRectBad" text="The rectangle is too narrow, start again."/>
+        <text name="cine_msg_zoneCutAdded" text="Harvested zone added."/>
+        <text name="cine_msg_zoneStandingAdded" text="Standing zone added."/>
+        <text name="cine_msg_zoneCancel" text="Zone drawing cancelled."/>
+        <text name="cine_msg_zoneMax" text="Too many zones (at most %d blocks per field)."/>
+        <text name="cine_msg_zoneRemoved" text="Last zone deleted."/>
+        <text name="cine_msg_zoneCleared" text="Zones deleted."/>
         <text name="cine_ground_NONE" text="untreated"/>
         <text name="cine_ground_STUBBLE_TILLAGE" text="stubble tilled"/>
         <text name="cine_ground_CULTIVATED" text="cultivated"/>

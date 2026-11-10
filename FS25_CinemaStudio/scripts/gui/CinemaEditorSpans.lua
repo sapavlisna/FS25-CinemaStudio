@@ -216,7 +216,7 @@ function E:moveSpanStart(i, j, target)
     touched(self)
 end
 
--- Délka úseku j: postava nejbližší chůzí (pomalá / chůze / běh), vozidlo rychlostí obou krajních bodů (od rychlostí kmh0
+-- Délka úseku j: postava rychlostí chůze podle délky, vozidlo rychlostí obou krajních bodů (od rychlostí kmh0
 -- na začátku tažení a délky dur0); s křivkou rychlosti nejde. Akce za úsekem se posunou o změnu příjezdu.
 function E:setSpanDuration(i, j, dur, base)
     local actor = self.shot.actors[i]
@@ -230,15 +230,7 @@ function E:setSpanDuration(i, j, dur, base)
     local before = self:routePointTime(i, j + 1)
     local p1, p2 = actor.points[j], actor.points[j + 1]
     if Pe.isPerson(actor) then
-        local cur = base.dur0 * base.kmh0[1]
-        local best, bestDiff = nil, math.huge
-        for _, gait in ipairs(Pe.GAITS) do
-            local diff = math.abs(cur / gait.kmh - dur)
-            if diff < bestDiff then
-                best, bestDiff = gait, diff
-            end
-        end
-        p1[3] = best.name ~= "walk" and best.kmh or nil
+        Pe.setSpeed(p1, base.dur0 * base.kmh0[1] / math.max(dur, E.SPAN_MIN))
     else
         -- rychlost se mezi body mění plynule, takže rychlost bodu j by změnila i předchozí úsek (a posunula začátek tohoto):
         -- nejdřív jen rychlost koncového bodu, a teprve když nestačí, obou. Rozjezd a brzdění se se rychlostí nemění

@@ -156,7 +156,8 @@ function CinemaEditorScreen:hitPanels(x, y)
     end
     -- pravítko dole (i štítek s časem): tažením se posouvá playhead, aktivní řádek se nemění; vlevo přepínač, kde playhead reaguje
     if y < E.TRACK_Y - 0.012 then
-        return { kind = x < E.TRACK_X0 and "playheadMode" or "ruler" }
+        local mode = self:getBottomButtons().mode
+        return { kind = x < mode[1] + mode[3] and "playheadMode" or "ruler" }
     end
     return { kind = "panel" }
 end
@@ -267,6 +268,25 @@ function CinemaEditorScreen:keyInGap(t, key)
     return seg, 1
 end
 
+-- Čas střihu, když je playhead na konci K-framového bloku a kamera stojí jinde než jeho poslední K-frame: nová póza je
+-- začátek dalšího bloku, ne přepis konce toho předchozího. Jinak nil (K přepíše K-frame; Shift to vynutí).
+function CinemaEditorScreen:cutStartAt(seg, t, key)
+    if not S.KEYED[seg.track.mode] or t < S.segmentEnd(seg) - S.KEY_SNAP then
+        return nil
+    end
+    local last = seg.track.keys[S.flightKeyAt(seg.track, seg.track.duration) or 0]
+    if last == nil or CinemaEditorScreen.samePose(last, key) then
+        return nil
+    end
+    return S.segmentEnd(seg)
+end
+
+function CinemaEditorScreen.samePose(a, b)
+    local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
+    local dot = math.abs(a.q[1] * b.q[1] + a.q[2] * b.q[2] + a.q[3] * b.q[3] + a.q[4] * b.q[4])
+    return dx * dx + dy * dy + dz * dz < 0.0004 and dot > 0.99999 and math.abs((a.focal or 0) - (b.focal or 0)) < 0.01
+end
+
 -- K: K-frame do bloku pod playheadem a nikdy blok nerozdělí. V Letu póza a ohnisko kamery (přepíše K-frame ve stejném čase),
 -- v režimu jen ohnisko (polohu určuje režim), ve statické kameře póza celého bloku a ohnisko, v mezeře viz keyInGap.
 function CinemaEditorScreen:addKeyHere()
@@ -290,6 +310,28 @@ function CinemaEditorScreen:addKeyHere()
     self:pushUndo()
     local key = S.newKey(0, cam.x, cam.y, cam.z, M.quatFromYawPitchRoll(cam.yaw, cam.pitch, cam.roll), self.targetFocal)
     local index, existed
+    local cutAt = seg ~= nil and not E.isShift() and self:cutStartAt(seg, t, key) or nil
+    if cutAt ~= nil then
+        local nextSeg = S.blockAfter(shot, cutAt - 1e-9)
+        if nextSeg ~= nil and nextSeg ~= seg and nextSeg.t < cutAt + S.KEY_SNAP then
+            seg, t = nextSeg, nextSeg.t
+        else
+            local room = nextSeg ~= nil and nextSeg.t - S.MIN_GAP - cutAt or math.huge
+            if room < S.MIN_GAP then
+                table.remove(self.undoStack)
+                self:showMessage(g_i18n:getText("cine_msg_noRoom"))
+                return
+            end
+            seg = { id = S.nextSegmentId(shot), t = cutAt, track = S.newFlight(key, math.min(S.MIN_SEGMENT, room)) }
+            S.addSegment(shot, seg)
+            self:setSelectedKey(seg, 1)
+            self:setPlayhead(cutAt, false)
+            self:advanceAfterKey(seg)
+            self:markDirty()
+            self:showMessage(g_i18n:getText("cine_msg_keyCut"))
+            return
+        end
+    end
     if seg ~= nil then
         key.t = t - seg.t
         existed = S.flightKeyAt(seg.track, key.t) ~= nil
@@ -307,7 +349,7 @@ function CinemaEditorScreen:addKeyHere()
         local k = seg.track.keys[index]
         local st = self:targetState(seg.track.target, seg.t + k.t)
         if st ~= nil then
-            local yaw, pitch = M.yawPitchFromDirection(st.x - k.x, st.y + (seg.track.lookHeight or Mo.LOOK_HEIGHT) - k.y, st.z - k.z)
+            local yaw, pitch = M.yawPitchFromDirection(st.x - k.x, st.y + E.aimOffset(st, seg.track.lookHeight or Mo.LOOK_HEIGHT, Mo.LOOK_HEIGHT) - k.y, st.z - k.z)
             k.aimYaw, k.aimPitch = M.angleDiff(yaw, cam.yaw), cam.pitch - pitch
         end
     end
@@ -454,7 +496,13 @@ end
 
 -- Playhead z pravítka; přichytí se ke krajům a K-framům jako tažené věci.
 function CinemaEditorScreen:scrubTo(x)
-    self:setPlayhead(self:snapTime(self:timeAtX(x), self:snapTargets(nil, true)), self.topdown == nil)
+    local drag = self.drag
+    if drag ~= nil and drag.kind == "scrub" and drag.stash == nil and self:isCamManual() then
+        local cam = self.cam
+        drag.stash = { x = cam.x, y = cam.y, z = cam.z, yaw = cam.yaw, pitch = cam.pitch, roll = cam.roll,
+                       focal = self.targetFocal, synced = self.syncedPose }
+    end
+    self:setPlayhead(self:snapTime(self:timeAtX(x), self:snapTargets(nil, true)), self.topdown == nil, true)
 end
 
 function CinemaEditorScreen:isOverPanels(x, y)
@@ -992,6 +1040,25 @@ function CinemaEditorScreen:pickAt(x, y)
         self:pickPerson(c, pending, x, y)
         return
     end
+    if c == nil and pending ~= nil and (pending.focus or pending.focusTarget ~= nil) then
+        local px, py, pz = W.pickGround(self.cam, x, y)
+        if px ~= nil then
+            self.pendingAction = nil
+            self.picking = false
+            self:pushUndo()
+            local depth = #self.undoStack
+            local target = S.pointTarget(S.addPoint(self.shot, px, py, pz, g_i18n:getText("cine_point_name")))
+            if pending.focus then
+                self:setFocusHere(target)
+            else
+                self:changeFocusTarget(pending.focusTarget, pending.from, nil, target)
+            end
+            if #self.undoStack > depth then
+                table.remove(self.undoStack, depth + 1)
+            end
+            return
+        end
+    end
     if c == nil then
         self.picking = false
         self.pendingAction = nil
@@ -1286,6 +1353,10 @@ end
 
 -- Stav cíle v čase t: při přehrávání skutečný vyhlazený, jinak plánovaný.
 function CinemaEditorScreen:targetState(uid, t, dt)
+    local point = S.pointOfTarget(self.shot, uid)
+    if point ~= nil then
+        return { x = point.x, y = point.y, z = point.z, heading = 0, exact = true }
+    end
     local _, droneNode = W.droneOf(uid)
     if droneNode ~= nil then
         -- dron létá podle svého skriptu, plán nemá: vždy tam, kde je
@@ -1476,6 +1547,10 @@ end
 
 -- Název cíle bodu zájmu: vozidlo, postava herce, nebo nil (chybí).
 function CinemaEditorScreen:targetName(target)
+    local point = S.pointOfTarget(self.shot, target)
+    if point ~= nil then
+        return point.name
+    end
     local droneVehicle, _, k = W.droneOf(target)
     if droneVehicle ~= nil then
         return string.format(g_i18n:getText("cine_target_drone"), W.name(droneVehicle), k)
@@ -1491,6 +1566,9 @@ end
 -- Cíle bodu zájmu ze seznamu řádků osy: vozidla herců (i zapřažená) a postavy. { target, label }.
 function CinemaEditorScreen:focusCandidates()
     local list, seen = {}, {}
+    for _, p in ipairs(self.shot.points) do
+        list[#list + 1] = { target = S.pointTarget(p), label = self:targetName(S.pointTarget(p)) }
+    end
     for _, a in ipairs(self.shot.actors) do
         if CinemaPerson.isPerson(a) then
             list[#list + 1] = { target = S.personTarget(self.shot, a), label = a.name or "?" }
@@ -2867,32 +2945,27 @@ function CinemaEditorScreen:setPointWait(i, j, wait)
 end
 
 -- Rychlost úseku trasy vozidla i v čase t změní o delta km/h (oba krajní body); vrací číslo úseku, nebo nil bez úseku.
-function CinemaEditorScreen:changeRouteSpan(i, t, delta)
+function CinemaEditorScreen:changeRouteSpan(i, t, delta, spanIndex)
     local result
-    self:keepOnRoute(self.shot.actors[i], function() result = self:changeRouteSpanNow(i, t, delta) end)
+    self:keepOnRoute(self.shot.actors[i], function() result = self:changeRouteSpanNow(i, t, delta, spanIndex) end)
     return result
 end
 
-function CinemaEditorScreen:changeRouteSpanNow(i, t, delta)
+function CinemaEditorScreen:changeRouteSpanNow(i, t, delta, spanIndex)
     local actor = self.shot.actors[i]
-    local span = actor ~= nil and self:routeSpanAtTime(i, t) or nil
+    local span = spanIndex or (actor ~= nil and self:routeSpanAtTime(i, t) or nil)
     if span == nil then
         return nil
     end
     local p1, p2 = actor.points[span], actor.points[span + 1]
     if CinemaPerson.isPerson(actor) then
-        -- postava: + rychlejší chůze úseku, − pomalejší (bez přetočení dokola)
-        local index = CinemaPerson.gaitIndex(p1[3])
-        if (delta > 0 and index == #CinemaPerson.GAITS) or (delta < 0 and index == 1) then
-            return span
-        end
+        -- postava: + rychlejší chůze úseku, − pomalejší, o delta km/h
         self:pushUndo()
-        CinemaPerson.stepGait(p1, delta > 0 and 1 or -1)
+        CinemaPerson.setSpeed(p1, CinemaPerson.speedOf(p1) + delta)
         self.actorRt = {}
         S.touch(self.shot)
         self:markDirty()
-        self:showMessage(string.format(g_i18n:getText("cine_msg_gaitSpan"), span, span + 1,
-            CinemaPerson.gaitTitle(p1[3])))
+        self:showMessage(string.format(g_i18n:getText("cine_msg_walkSpan"), span, span + 1, CinemaPerson.speedOf(p1)))
         return span
     end
     local from, to = self:routePointTime(i, span), self:routePointTime(i, span + 1)
@@ -3018,7 +3091,27 @@ function CinemaEditorScreen:wheelSpeed(steps)
         self:pushUndo()
         self:showMessage(string.format(g_i18n:getText("cine_msg_blockLength"), S.scaleSegment(shot, seg, E.BLOCK_SPEED_STEP ^ steps)))
     else
-        if self:changeRouteSpan(target.index, target.t, steps * self.speedStep) == nil then
+        local picked = {}
+        for _, entry in ipairs(self:selectedSpans()) do
+            if entry.i == target.index and entry.e.kind == "span" then
+                picked[#picked + 1] = entry.e.j
+            end
+        end
+        local hover = self:routeSpanAtTime(target.index, target.t)
+        local inSelection = false
+        for _, j in ipairs(picked) do
+            inSelection = inSelection or j == hover
+        end
+        if #picked > 0 and (inSelection or hover == nil or #picked > 1) then
+            local depth = #self.undoStack
+            for _, j in ipairs(picked) do
+                self:changeRouteSpan(target.index, target.t, steps * self.speedStep, j)
+            end
+            for _ = depth + 2, #self.undoStack do
+                table.remove(self.undoStack, depth + 2)
+            end
+            self:showMessage(string.format(g_i18n:getText("cine_msg_spansSpeed"), #picked))
+        elseif self:changeRouteSpan(target.index, target.t, steps * self.speedStep) == nil then
             self:showMessage(g_i18n:getText("cine_msg_noBlockAtPlayhead"))
             return
         end

@@ -5,6 +5,14 @@ dřív, než se vydá.
 
 The version matches `<version>` in `modDesc.xml`. A release takes its notes from the section of its version.
 
+## 0.5.3.0 (beta)
+
+- Pole lze nastavit jen částečně: menu pole → Zóny sklizně. Sklizeno podle kurzu Courseplay až do bodu, kam kombajn dojel (klik
+  na kurz nebo poloha kombajnu), a obdélníky sklizeno / nesklizeno ze tří kliknutí. Reset vrátí pole do stejného stavu, sláma
+  se sype jen na projeté řádky. / A field can be set only partly: field menu → Harvest zones. Harvested along the Courseplay
+  course up to where the combine got to (click on the course or the combine's position) and harvested / standing rectangles
+  from three clicks. Reset restores the same state; straw is dropped only on the rows already driven.
+
 ## 0.5.2.0 (beta)
 
 - Nahrávání zachytí, co hráč zapojí nebo zapne na strojích kolem (hadice a motor pumpy SprayDrone): po importu jsou to akce

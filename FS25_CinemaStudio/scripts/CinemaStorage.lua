@@ -88,7 +88,7 @@ St.JOINT_FIELDS = { "parent", "child", "joint", "input" }
 St.PROP_FIELDS = { "kind", "name", "uid", "x", "y", "z", "rx", "ry", "rz", "xmlFilename", "fillType", "fillLevel", "variation", "wrap",
     "wrapDiffuse", "wrapNormal", "amount", "radius", "field", "fruit", "growth", "ground", "sprayType", "sprayLevel", "lime", "plow",
     "roller", "stubble", "weed", "stone", "water", "clear", "windrow", "windrowAmount", "windrowLines", "windrowSource", "windrowSpacing",
-    "rider", "lx", "ly", "lz", "lry" }
+    "zones", "zoneLead", "zoneExtra", "fast", "rider", "lx", "ly", "lz", "lry" }
 
 local function toNetwork(path)
     return path ~= nil and NetworkUtil ~= nil and NetworkUtil.convertToNetworkFilename(path) or path
@@ -212,6 +212,7 @@ local function readAction(xmlFile, k2)
 end
 
 St.OBJECT_FIELDS = { "id", "type", "name", "uid", "saveId", "x", "z" }
+St.POINT_FIELDS = { "id", "name", "x", "y", "z" }
 
 local function numbers(text, count)
     if text == nil then
@@ -544,6 +545,13 @@ local function writeShot(xmlFile, root, shot)
             writeAction(xmlFile, string.format("%s.action(%d)", key, j - 1), action)
         end
     end
+    for i, point in ipairs(shot.points or {}) do
+        local flat = {}
+        for _, name in ipairs(St.POINT_FIELDS) do
+            flat[name] = point[name]
+        end
+        writeFlat(xmlFile, string.format("%s.point(%d)", root, i - 1), flat)
+    end
     if shot.objectsRow then
         xmlFile:setBool(root .. "#objectsRow", true)
     end
@@ -873,6 +881,15 @@ local function readShot(xmlFile, root, file)
             shot.objects[#shot.objects + 1] = obj
         else
             problem("object %s: missing type", key)
+        end
+    end)
+    xmlFile:iterate(root .. ".point", function(_, key)
+        local point = readFlat(xmlFile, key, St.POINT_FIELDS)
+        if type(point.id) == "number" and type(point.x) == "number" and type(point.y) == "number" and type(point.z) == "number" then
+            point.name = tostring(point.name or point.id)
+            shot.points[#shot.points + 1] = point
+        else
+            problem("point %s: missing id or position", key)
         end
     end)
     shot.objectsRow = xmlFile:getBool(root .. "#objectsRow", false) or nil

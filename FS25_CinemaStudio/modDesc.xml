@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="104">
     <author>sapavlisna</author>
-    <version>0.5.2.0</version>
+    <version>0.5.3.0</version>
     <title>
         <en>Cinema Studio (Beta)</en>
         <cz>Cinema Studio (Beta)</cz>
@@ -49,6 +49,7 @@ Jen pro hru jednoho hráče.]]></cz>
         <sourceFile filename="scripts/CinemaEnvironment.lua"/>
         <sourceFile filename="scripts/CinemaActions.lua"/>
         <sourceFile filename="scripts/CinemaPerson.lua"/>
+        <sourceFile filename="scripts/CinemaZones.lua"/>
         <sourceFile filename="scripts/CinemaProps.lua"/>
         <sourceFile filename="scripts/CinemaObjects.lua"/>
         <sourceFile filename="scripts/CinemaBox.lua"/>
@@ -68,6 +69,7 @@ Jen pro hru jednoho hráče.]]></cz>
         <sourceFile filename="scripts/gui/CinemaEditorSpans.lua"/>
         <sourceFile filename="scripts/gui/CinemaEditorHistory.lua"/>
         <sourceFile filename="scripts/gui/CinemaEditorProps.lua"/>
+        <sourceFile filename="scripts/gui/CinemaEditorZones.lua"/>
         <sourceFile filename="scripts/gui/CinemaEditorObjects.lua"/>
         <sourceFile filename="scripts/gui/CinemaEditorBox.lua"/>
         <sourceFile filename="scripts/CinemaApi.lua"/>
@@ -114,6 +116,7 @@ Jen pro hru jednoho hráče.]]></cz>
         <action name="CINE_CURSOR" category="SYSTEM"/>
         <action name="CINE_DOCK" category="SYSTEM"/>
         <action name="CINE_SNAP" category="SYSTEM"/>
+        <action name="CINE_CAM_SYNC" category="SYSTEM"/>
         <action name="CINE_EDIT_MODE" category="SYSTEM"/>
         <action name="CINE_SPLIT" category="SYSTEM"/>
         <action name="CINE_KEY_PASS" category="SYSTEM"/>
@@ -141,7 +144,7 @@ Jen pro hru jednoho hráče.]]></cz>
             <binding device="KB_MOUSE_DEFAULT" input="KEY_q" axisComponent="-" inputComponent="+" index="1"/>
         </actionBinding>
         <actionBinding action="CINE_KEY_ADD">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_k"/>
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_g"/>
         </actionBinding>
         <actionBinding action="CINE_KEY_DELETE">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_delete"/>
@@ -234,13 +237,16 @@ Jen pro hru jednoho hráče.]]></cz>
             <binding device="KB_MOUSE_DEFAULT" input="KEY_l"/>
         </actionBinding>
         <actionBinding action="CINE_GRID">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_g"/>
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_k"/>
         </actionBinding>
         <actionBinding action="CINE_CURSOR">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_f"/>
         </actionBinding>
         <actionBinding action="CINE_DOCK">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_p"/>
+        </actionBinding>
+        <actionBinding action="CINE_CAM_SYNC">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_z"/>
         </actionBinding>
         <actionBinding action="CINE_SNAP">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_j"/>

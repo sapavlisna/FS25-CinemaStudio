@@ -151,7 +151,7 @@ end
 function Api.missingVehicles(shot, find)
     local warnings, seen = {}, {}
     local function check(uid, where)
-        if uid ~= nil and not seen[uid .. where] and find(uid) == nil and S.personOfTarget(shot, uid) == nil then
+        if uid ~= nil and not seen[uid .. where] and find(uid) == nil and S.personOfTarget(shot, uid) == nil and S.pointOfTarget(shot, uid) == nil then
             seen[uid .. where] = true
             warnings[#warnings + 1] = string.format("vehicle %s (%s) is not in the game", tostring(uid), where)
         end

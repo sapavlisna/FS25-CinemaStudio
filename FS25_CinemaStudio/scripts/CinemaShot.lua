@@ -34,7 +34,7 @@ local CAMERA_FIELDS = { "segments", "focus", "camColor", "camHidden", "curves" }
 
 function S.new(name)
     local shot = { name = name or "shot", preroll = S.DEFAULT_PREROLL, version = 0, actors = {}, focus = {}, segments = {}, shake = 0, bank = 0,
-        props = {}, objects = {} }
+        props = {}, objects = {}, points = {} }
     shot.cameras = { { segments = shot.segments, focus = shot.focus } }
     shot.camIndex = 1
     return shot
@@ -126,6 +126,7 @@ function S.clone(shot)
     c.props, c.propsRow, c.propsCollapsed, c.fieldsOn = copyTable(shot.props) or {}, shot.propsRow, shot.propsCollapsed, shot.fieldsOn
     c.objects, c.objectsRow, c.objectsCollapsed = copyTable(shot.objects) or {}, shot.objectsRow, shot.objectsCollapsed
     c.env = copyTable(shot.env)
+    c.points = copyTable(shot.points) or {}
     c.cameras = {}
     for i, cam in ipairs(shot.cameras) do
         c.cameras[i] = { name = cam.name, camColor = cam.camColor, camHidden = cam.camHidden,
@@ -145,6 +146,7 @@ function S.restore(shot, snapshot, keepActors)
     shot.props, shot.propsRow, shot.propsCollapsed, shot.fieldsOn = c.props, c.propsRow, c.propsCollapsed, c.fieldsOn
     shot.objects, shot.objectsRow, shot.objectsCollapsed = c.objects, c.objectsRow, c.objectsCollapsed
     shot.env = c.env
+    shot.points = c.points
     shot.cameras = c.cameras
     if not keepActors then
         shot.actors = c.actors
@@ -1370,6 +1372,38 @@ S.PERSON_TARGET = "person:"
 
 function S.personTarget(shot, actor)
     return S.PERSON_TARGET .. S.actorId(shot, actor)
+end
+
+-- Pevný bod v prostoru (dům, strom, most) jako cíl bodu zájmu nebo sledování: shot.points = { id, name, x, y, z }.
+S.POINT_TARGET = "point:"
+
+function S.pointTarget(point)
+    return S.POINT_TARGET .. point.id
+end
+
+function S.pointOfTarget(shot, target)
+    local id = type(target) == "string" and tonumber(target:match("^" .. S.POINT_TARGET .. "(%d+)$")) or nil
+    if id == nil then
+        return nil
+    end
+    for _, p in ipairs(shot.points or {}) do
+        if p.id == id then
+            return p
+        end
+    end
+    return nil
+end
+
+function S.addPoint(shot, x, y, z, name)
+    local id = 0
+    for _, p in ipairs(shot.points) do
+        id = math.max(id, p.id)
+    end
+    id = id + 1
+    local point = { id = id, name = string.format(name or "%d", id), x = x, y = y, z = z }
+    shot.points[#shot.points + 1] = point
+    touch(shot)
+    return point
 end
 
 function S.personOfTarget(shot, target)

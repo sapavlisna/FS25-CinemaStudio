@@ -29,7 +29,7 @@ CinemaEditorScreen.LOOK_MOUSE = 0.001 * 16.666 -- rad na jednotku osy myši, ste
 CinemaEditorScreen.LOOK_STICK = 0.001 -- rad na jednotku osy a ms (páčka)
 CinemaEditorScreen.LOOK_FOCAL_REF = 35 -- pro delší ohnisko se rozhlížení zpomalí, aby šlo mířit jemně
 CinemaEditorScreen.PITCH_LIMIT = math.rad(89)
-CinemaEditorScreen.SPEED_STEPS = { 1, 5, 10 } -- km/h; globální krok všech úprav rychlosti (menu, kolečko na úseku)
+CinemaEditorScreen.SPEED_STEPS = { 0.5, 1, 5, 10 } -- km/h; globální krok všech úprav rychlosti (menu, kolečko na úseku)
 CinemaEditorScreen.BANK_STEPS = { 0, 5, 10, 15, 20, 30 } -- ° náklonu do zatáčky; 0 = vypnuto (horizont zůstává rovný)
 CinemaEditorScreen.BANK_FULL_RATE = math.rad(20) -- rad/s otáčení, při kterém je náklon plný
 CinemaEditorScreen.BANK_SMOOTH = 0.6 -- s; vyhlazení náklonu
@@ -134,6 +134,7 @@ function CinemaEditorScreen:onOpen()
     self.targetFocal = self.cam.focal
     self.vel = { 0, 0, 0 }
     self.playing, self.clean, self.drag, self.menu, self.picking, self.topdown = false, false, nil, nil, false, nil
+    self.zoneDraw = nil
     self.curves = false
     self.freeLook, self.autoCursor, self.cursorShown = true, false, nil
     self.altDown = nil
@@ -350,6 +351,7 @@ function CinemaEditorScreen:registerActions()
     addAction(self, A.CINE_GRID, self.onActionGrid, false, true, false)
     addAction(self, A.CINE_DOCK, self.onActionDock, false, true, false)
     addAction(self, A.CINE_SNAP, self.onActionSnap, false, true, false)
+    addAction(self, A.CINE_CAM_SYNC, self.onActionCamSync, false, true, false)
     addAction(self, A.CINE_EDIT_MODE, self.onActionEditMode, false, true, false)
     addAction(self, A.CINE_SPLIT, self.onActionSplit, false, true, false)
     addAction(self, A.CINE_KEY_PASS, self.onActionKeyPass, false, true, false)
@@ -403,6 +405,8 @@ function CinemaEditorScreen:onActionBack()
         self.palette = nil
     elseif self.showHelp then
         self.showHelp = false
+    elseif self.zoneDraw ~= nil then
+        self.zoneDraw = nil
     elseif self.boxPlacing ~= nil then
         self.boxPlacing = nil
     elseif self.picking then
@@ -440,6 +444,7 @@ function CinemaEditorScreen:onActionKeyAdd()
         return
     end
     self:addKeyHere()
+    self:markCamSynced()
 end
 
 -- Delete smaže vybrané a zavře mezeru po bloku, Backspace ji nechá (kamera v ní stojí), jako ve střihovém programu.
@@ -988,6 +993,9 @@ function CinemaEditorScreen:mouseEvent(posX, posY, isDown, isUp, button, eventUs
     if self:dockMouseEvent(posX, posY, isDown, button) then
         return true
     end
+    if self:zoneMouseEvent(posX, posY, isDown, button) then
+        return true
+    end
     if self:boxMouseEvent(posX, posY, isDown, button) then
         return true
     end
@@ -1343,8 +1351,43 @@ function CinemaEditorScreen:jumpToKey(seg, index)
     self:applyShotPose(self.playhead)
 end
 
-function CinemaEditorScreen:setPlayhead(t, moveCamera)
+-- Kamera, kterou hráč ručně posunul od poslední pózy z osy: posun ukazatele ji nesmí přepsat (jinak se úhel ztratí dřív,
+-- než ho K uloží). Z ji vrátí na pózu osy.
+function CinemaEditorScreen:isCamManual()
+    local p, cam = self.syncedPose, self.cam
+    if p == nil then
+        return false
+    end
+    return math.abs(cam.x - p[1]) > 0.01 or math.abs(cam.y - p[2]) > 0.01 or math.abs(cam.z - p[3]) > 0.01
+        or math.abs(M.angleDiff(cam.yaw, p[4])) > 0.002 or math.abs(cam.pitch - p[5]) > 0.002
+        or math.abs((self.targetFocal or 0) - p[6]) > 0.01
+end
+
+function CinemaEditorScreen:markCamSynced()
+    local cam = self.cam
+    self.syncedPose = { cam.x, cam.y, cam.z, cam.yaw, cam.pitch, self.targetFocal or 0 }
+end
+
+function CinemaEditorScreen:onActionCamSync()
+    if self:isBusy() or self.playing then
+        return
+    end
+    if isCtrl() then
+        return
+    end
+    self:applyShotPose(self.playhead)
+    self:showMessage(g_i18n:getText("cine_msg_camSynced"))
+end
+
+function CinemaEditorScreen:setPlayhead(t, moveCamera, preview)
     self.playhead = math.max(0, t)
+    if moveCamera and not preview and not self.playing and self:isCamManual() then
+        moveCamera = false
+        if not self.manualHinted then
+            self.manualHinted = true
+            self:showMessage(g_i18n:getText("cine_msg_camManual"))
+        end
+    end
     if moveCamera then
         self:applyShotPose(self.playhead)
     end
@@ -1397,7 +1440,7 @@ function CinemaEditorScreen:aimAtTarget(track, t, dt, x, y, z, q, focal, rel)
     if st == nil then
         return x, y, z, q, focal
     end
-    local ly = st.y + (track.lookHeight or Mo.LOOK_HEIGHT)
+    local ly = st.y + E.aimOffset(st, track.lookHeight or Mo.LOOK_HEIGHT, Mo.LOOK_HEIGHT)
     local yaw, pitch = M.yawPitchFromDirection(st.x - x, ly - y, st.z - z)
     local distance = math.sqrt((st.x - x) ^ 2 + (st.y - y) ^ 2 + (st.z - z) ^ 2)
     if dt ~= nil and self.targetFilters[track.target] ~= nil then
@@ -1515,6 +1558,11 @@ function CinemaEditorScreen:focusFraming(f, t)
     return M.clamp(ox, -1, 1), M.clamp(oy, -1, 1)
 end
 
+-- Výška míření nad cílem: u pevného bodu v prostoru je výchozí výška (default) přesně on, úpravy se počítají od ní.
+function CinemaEditorScreen.aimOffset(st, height, default)
+    return st.exact and height - default or height
+end
+
 -- Natočení podle bodů zájmu: kamera míří na aktuální objekt (na jeho místo v obraze), při přepnutí se plynule přetočí
 -- z předchozího. Bez bodu zájmu (nebo s volným) platí natočení z K-framů.
 function CinemaEditorScreen:applyFocus(t, dt, x, y, z, keyQ, focal)
@@ -1536,7 +1584,7 @@ function CinemaEditorScreen:applyFocus(t, dt, x, y, z, keyQ, focal)
             return keyQ
         end
         local ox, oy = self:focusFraming(f, t)
-        local yaw, pitch = M.yawPitchFraming(st.x - x, st.y + (f.height or S.FOCUS_HEIGHT) - y, st.z - z, ox, oy,
+        local yaw, pitch = M.yawPitchFraming(st.x - x, st.y + E.aimOffset(st, f.height or S.FOCUS_HEIGHT, S.FOCUS_HEIGHT) - y, st.z - z, ox, oy,
             M.focalToFov(lensFocal), g_screenAspectRatio)
         return M.quatFromYawPitchRoll(yaw, pitch, 0)
     end
@@ -1582,6 +1630,8 @@ function CinemaEditorScreen:applyShotPose(t)
     self.vel = { 0, 0, 0 }
     self.targetFocal = focal
     Cam.setPose(self.cam, x, y, z, q, focal)
+    self.manualHinted = nil
+    self:markCamSynced()
 end
 
 function CinemaEditorScreen:canPlay()

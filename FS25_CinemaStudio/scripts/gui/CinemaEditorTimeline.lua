@@ -9,6 +9,7 @@ local M = CinemaMath
 local Mo = CinemaModes
 local A = CinemaActions
 local W = CinemaWorld
+local Cam = CinemaCamera
 
 E.SNAP_PX = 8 -- jak blízko (v pixelech) se čas přichytí k okraji jiné věci
 E.DRAG_SLOP_PX = 4 -- o kolik se musí kurzor pohnout, aby se z kliknutí stalo tažení
@@ -255,6 +256,11 @@ function CinemaEditorScreen:finishDrag()
             self:selClear()
         end
         self:followPlayhead(drag.t0)
+    elseif drag.kind == "scrub" and drag.stash ~= nil then
+        local st = drag.stash
+        self.targetFocal = st.focal
+        Cam.setPose(self.cam, st.x, st.y, st.z, M.quatFromYawPitchRoll(st.yaw, st.pitch, st.roll), st.focal)
+        self.syncedPose = st.synced
     end
     self.drag = nil
 end

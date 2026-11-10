@@ -458,7 +458,8 @@ function CinemaEditorScreen:getBottomButtons()
         out[name] = { x, by, bw, bh }
         x = x + bw + gap
     end
-    out.mode = { x, by, E.TRACK_X0 - 0.008 - x, bh }
+    -- končí před ikonou playheadu na nule, ať se na ni z nuly nechytá tlačítko
+    out.mode = { x, by, E.TRACK_X0 - 0.026 - x, bh }
     return out
 end
 
@@ -1086,6 +1087,7 @@ function CinemaEditorScreen:drawEditor()
     end
     self:drawPath()
     self:drawRoutes()
+    self:drawZones()
     if self.boxPlacing ~= nil then
         self:drawBoxPlace()
     elseif self.picking and self.pendingAction ~= nil and self.pendingAction.box then

@@ -7,7 +7,11 @@
 --          plow, roller, stubble, weed, stone, water (hodnoty FieldState), clear (1 = smazat řádky a slámu); reset pole
 --          nastaví úlohou hry (FieldUpdateTask), která běží několik snímků, a jen když má záběr zapnuté fieldsOn;
 --          windrow (druh materiálu řádků), windrowAmount (l/m), windrowLines ("x z x z;…" úseky), windrowSource
---          ("cp" kurz Courseplay | "parallel"), windrowSpacing (m): po doběhnutí úlohy se řádky nasypou po dávkách.
+--          ("cp" kurz Courseplay | "zone" sklizená část | "parallel"), windrowSpacing (m): po doběhnutí úlohy se řádky
+--          nasypou po dávkách;
+--          fast (true) = reset jen plodiny a řádků (kratší úloha), jinak celý stav pole;
+--          zones (zápis CinemaZones): kusy pole, které se po nastavení celého pole přepíšou na sklizeno / nesklizeno;
+--          zóna je rovnoběžník, jedna úloha hry (setArea + setFruit), řádky slámy čekají na doběhnutí i těchto úloh.
 -- Ve hře mění svět jen server (v MP host), jako jízda herců.
 
 CinemaProps = CinemaProps or {}
@@ -188,6 +192,8 @@ end
 -- pole
 
 Pr.FIELD_WAIT_MAX = 30000 -- ms; déle se na úlohu pole nečeká (přehrání by jinak viselo)
+Pr.ZONE_PER_FRAME = 8 -- úloh zón zadaných za snímek (nesklizeno)
+Pr.ZONE_CUT_PER_FRAME = 150 -- sklizených kvádrů za snímek (hra je řeže hned)
 Pr.fieldTasks = {}
 
 -- prop klíč → položka FieldState
@@ -403,22 +409,32 @@ local function courseSegments(course, points)
     return lines, course.getName ~= nil and course:getName() or nil, course.getWorkWidth ~= nil and course:getWorkWidth() or nil
 end
 
--- Řádky z kurzu Courseplay, který má některý stroj ve hře načtený pro toto pole (jen úseky uvnitř pole): lines, jméno
--- kurzu, pracovní šířka; nil bez kurzu. Volání Courseplay jsou v pcall (jiná verze nesmí shodit editor).
-function Pr.courseLines(field)
+-- Kurzy Courseplay, které mají stroje ve hře načtené pro toto pole (jen úseky uvnitř pole, v pořadí jízdy): seznam
+-- { lines, name, width, vehicle }, nejdelší kurz první. Volání Courseplay jsou v pcall (jiná verze nesmí shodit editor).
+function Pr.courses(field)
     local points = Pr.fieldPolygon(field)
-    local best, bestCount, bestName, bestWidth = nil, 0, nil, nil
+    local list = {}
     for _, v in ipairs(W.vehicles()) do
         local okCourse, course = pcall(function() return v.getFieldWorkCourse ~= nil and v:getFieldWorkCourse() or nil end)
         local ok, lines, name, width = false, nil, nil, nil
         if okCourse and type(course) == "table" then
             ok, lines, name, width = pcall(courseSegments, course, points)
         end
-        if ok and lines ~= nil and #lines > bestCount then
-            best, bestCount, bestName, bestWidth = lines, #lines, name, width
+        if ok and lines ~= nil and #lines > 0 then
+            list[#list + 1] = { lines = lines, name = name, width = width, vehicle = v }
         end
     end
-    return best, bestName, bestWidth
+    table.sort(list, function(a, b) return #a.lines > #b.lines end)
+    return list
+end
+
+-- Nejdelší kurz Courseplay pro pole: lines, jméno, pracovní šířka a stroj s kurzem; nil bez kurzu.
+function Pr.courseLines(field)
+    local best = Pr.courses(field)[1]
+    if best == nil then
+        return nil
+    end
+    return best.lines, best.name, best.width, best.vehicle
 end
 
 -- Úseky řádků rozdělené na krátká sypnutí: { { sx, sz, ex, ez, liters }, … }.
@@ -448,22 +464,30 @@ local function applyField(p)
     if field == nil then
         return false, "propMissing"
     end
-    local fs = FieldState.new()
-    fs.isValid = true
     local ft = Pr.fruitOf(p)
-    fs.fruitTypeIndex = ft ~= nil and ft.index or FruitType.UNKNOWN
-    for key, name in pairs(Pr.FIELD_STATE) do
-        if p[key] ~= nil then
-            fs[name] = p[key]
+    local task
+    if p.fast then
+        -- rychlé nastavení: jen plodina a řádky (sklizeň mění tohle), ostatní vrstvy se nepřepisují; úloha je kratší
+        task = FieldUpdateTask.new()
+        task:setField(field)
+        task:setFruit(ft ~= nil and ft.index or nil, p.growth or 0)
+    else
+        local fs = FieldState.new()
+        fs.isValid = true
+        fs.fruitTypeIndex = ft ~= nil and ft.index or FruitType.UNKNOWN
+        for key, name in pairs(Pr.FIELD_STATE) do
+            if p[key] ~= nil then
+                fs[name] = p[key]
+            end
         end
+        task = fs:createFieldUpdateTask()
+        task:setField(field)
     end
-    local task = fs:createFieldUpdateTask()
-    task:setField(field)
     if p.clear ~= 0 then
         task:clearHeight()
     end
     g_fieldManager:addFieldUpdateTask(task)
-    local entry = { task = task, since = g_time }
+    local entry = { task = task, since = g_time, field = p.field, areas = Pr.zoneAreas(p), areaNext = 1, live = {} }
     local fillType = p.windrow ~= nil and g_fillTypeManager:getFillTypeIndexByName(p.windrow) or nil
     if fillType ~= nil and DensityMapHeightUtil ~= nil then
         entry.fillType, entry.chunks, entry.next = fillType, windrowChunks(p), 1
@@ -472,33 +496,189 @@ local function applyField(p)
     return true
 end
 
--- Krok nastavování polí (každý snímek editoru): po doběhnutí úlohy pole nasype po dávkách jeho řádky.
+-- Zóny pole jako seznam { plodina, růst, kvádr } v pořadí zón (pozdější přepíše dřívější). Sklizeno = stav pole po žni,
+-- nesklizeno = zralé: zapamatovaný růst, když je zralý, jinak první zralý stav plodiny. Bez plodiny nic.
+function Pr.zoneAreas(p)
+    local ft = Pr.fruitOf(p)
+    local list = {}
+    if ft == nil then
+        return list
+    end
+    local ripe = p.growth
+    if ripe == nil or ripe < (ft.minHarvestingGrowthState or 99) or ripe > (ft.maxHarvestingGrowthState or -1) then
+        ripe = ft.minHarvestingGrowthState
+    end
+    for _, zone in ipairs(CinemaZones.decode(p.zones)) do
+        local growth = zone.mode == "cut" and ft.cutState or ripe
+        if growth ~= nil then
+            for _, q in ipairs(zone.quads) do
+                list[#list + 1] = { fruit = ft.index, growth = growth, quad = q, cut = zone.mode == "cut" }
+            end
+        end
+    end
+    return list
+end
+
+-- Úloha hry na jednu zónu; její tři rohy jsou dočasné uzly, smažou se po doběhnutí úlohy.
+local function areaTask(item)
+    local q = item.quad
+    local nodes = {}
+    for k = 0, 2 do
+        local node = createTransformGroup("cinemaZone")
+        local x, z = q[k * 2 + 1], q[k * 2 + 2]
+        setWorldTranslation(node, x, W.terrainY(x, z), z)
+        nodes[#nodes + 1] = node
+    end
+    local task = FieldUpdateTask.new()
+    task:setArea(DensityMapParallelogram.createFromNodes(nodes[1], nodes[2], nodes[3]))
+    task:setFruit(item.fruit, item.growth)
+    g_fieldManager:addFieldUpdateTask(task)
+    return { task = task, nodes = nodes }
+end
+
+local function releaseNodes(live)
+    for _, a in ipairs(live.nodes) do
+        delete(a)
+    end
+end
+
+-- Sklizeno: stejná funkce hry jako u žacího stolu kombajnu (FSDensityMapUtil.cutFruitArea), hned a jen v poli. Úloha pole
+-- na každý kvádr trvá ~50 ms bez ohledu na plochu, tohle jen zlomek.
+function Pr.cutAvailable()
+    return FSDensityMapUtil ~= nil and FSDensityMapUtil.cutFruitArea ~= nil
+end
+
+local function cutArea(item)
+    local q = item.quad
+    local desc = g_fruitTypeManager:getFruitTypeByIndex(item.fruit)
+    local system = g_currentMission ~= nil and g_currentMission.fieldGroundSystem or nil
+    local excluded = nil
+    if system ~= nil and system.getChopperTypeValue ~= nil and desc ~= nil and desc.chopperType ~= nil then
+        excluded = system:getChopperTypeValue(desc.chopperType)
+    end
+    FSDensityMapUtil.cutFruitArea(item.fruit, q[1], q[2], q[3], q[4], q[5], q[6], true, false, excluded, nil, true)
+end
+
+-- Zóny hotové: všechny zadané a všechny jejich úlohy doběhly.
+local function zonesDone(entry)
+    return entry.areaNext > #entry.areas and #entry.live == 0
+end
+
+-- Kolik je hotovo u pole id (poslední nastavování): { phase = "field" | "zones" | "straw", done, total, seconds }, nebo nil,
+-- když se pole nenastavuje. Pro kolečko na řádku pole.
+function Pr.fieldProgress(id)
+    for i = #Pr.fieldTasks, 1, -1 do
+        local entry = Pr.fieldTasks[i]
+        if entry.field == id then
+            local seconds = (g_time - entry.since) / 1000
+            if not entry.task:getIsFinished() then
+                return { phase = "field", done = 0, total = 1, seconds = seconds }
+            elseif not zonesDone(entry) then
+                return { phase = "zones", done = entry.areaNext - 1 - #entry.live, total = #entry.areas, seconds = seconds }
+            elseif entry.chunks ~= nil and entry.next <= #entry.chunks then
+                return { phase = "straw", done = entry.next - 1, total = #entry.chunks, seconds = seconds }
+            end
+            return nil
+        end
+    end
+    return nil
+end
+
+-- Je něco z polí právě v nastavování?
+function Pr.anyFieldProgress()
+    for _, entry in ipairs(Pr.fieldTasks) do
+        if entry.field ~= nil and Pr.fieldProgress(entry.field) ~= nil then
+            return true
+        end
+    end
+    return false
+end
+
+-- Do logu, kolik trvalo které nastavování pole (z toho se pozná, co ho zdržuje).
+local function logFieldDone(entry)
+    entry.logged = true
+    local now = g_time
+    Logging.info("CinemaStudio: field %s set in %.1f s (whole field %.1f s, %d zone tasks %.1f s, straw %d chunks %.1f s)",
+        tostring(entry.field), (now - entry.since) / 1000, ((entry.tBase or now) - entry.since) / 1000, #entry.areas,
+        ((entry.tZones or now) - (entry.tBase or now)) / 1000, entry.chunks ~= nil and #entry.chunks or 0, (now - (entry.tZones or now)) / 1000)
+end
+
+-- Krok nastavování polí (každý snímek editoru): po úloze celého pole se zadávají úlohy zón (po dávkách, v pořadí) a po
+-- doběhnutí všeho se nasypou po dávkách řádky.
 function Pr.updateFields()
     for _, entry in ipairs(Pr.fieldTasks) do
-        if entry.chunks ~= nil and entry.next <= #entry.chunks and entry.task:getIsFinished() then
+        if entry.task:getIsFinished() then
+            entry.tBase = entry.tBase or g_time
+            local running = {}
+            for _, live in ipairs(entry.live) do
+                if live.task:getIsFinished() then
+                    releaseNodes(live)
+                else
+                    running[#running + 1] = live
+                end
+            end
+            entry.live = running
+            -- zóny v pořadí: sklizeno se řeže hned (až když doběhly dřívější úlohy), nesklizeno jde úlohou
+            local cuts, queued = 0, 0
+            while entry.areaNext <= #entry.areas do
+                local item = entry.areas[entry.areaNext]
+                if item.cut and Pr.cutAvailable() and not item.cutFailed then
+                    if #entry.live > 0 or cuts >= Pr.ZONE_CUT_PER_FRAME then
+                        break
+                    end
+                    local ok, err = pcall(cutArea, item)
+                    if ok then
+                        entry.areaNext, cuts = entry.areaNext + 1, cuts + 1
+                    else
+                        item.cutFailed = true
+                        Logging.warning("CinemaStudio: cutting a field zone failed, using a field task: %s", tostring(err))
+                    end
+                else
+                    if queued >= Pr.ZONE_PER_FRAME then
+                        break
+                    end
+                    local ok, live = pcall(areaTask, item)
+                    if ok then
+                        entry.live[#entry.live + 1] = live
+                    else
+                        Logging.warning("CinemaStudio: setting a field zone failed: %s", tostring(live))
+                    end
+                    entry.areaNext, queued = entry.areaNext + 1, queued + 1
+                end
+            end
+            if zonesDone(entry) then
+                entry.tZones = entry.tZones or g_time
+            end
+        end
+        if entry.chunks ~= nil and entry.next <= #entry.chunks and entry.task:getIsFinished() and zonesDone(entry) then
             local last = math.min(entry.next + Pr.WINDROW_PER_FRAME - 1, #entry.chunks)
             for k = entry.next, last do
                 tipChunk(entry.fillType, entry.chunks[k])
             end
             entry.next = last + 1
         end
+        if not entry.logged and entry.task:getIsFinished() and zonesDone(entry) and (entry.chunks == nil or entry.next > #entry.chunks) then
+            logFieldDone(entry)
+        end
     end
 end
 
 -- Běží ještě úloha, která nastavuje pole? Přehrávání na ni počká (nejvýš FIELD_WAIT_MAX).
 function Pr.fieldsBusy()
-    local keep = {}
+    local keep, busy = {}, false
     for _, entry in ipairs(Pr.fieldTasks) do
-        if not entry.task:getIsFinished() or (entry.chunks ~= nil and entry.next <= #entry.chunks) then
+        if not entry.task:getIsFinished() or not zonesDone(entry) or (entry.chunks ~= nil and entry.next <= #entry.chunks) then
+            keep[#keep + 1] = entry
             if g_time - entry.since < Pr.FIELD_WAIT_MAX then
-                keep[#keep + 1] = entry
-            else
+                busy = true
+            elseif not entry.warned then
+                entry.warned = true
                 Logging.warning("CinemaStudio: setting the field takes longer than %d s, playback does not wait", Pr.FIELD_WAIT_MAX / 1000)
             end
         end
     end
     Pr.fieldTasks = keep
-    return #keep > 0
+    return busy
 end
 
 ---------------------------------------------------------------------------------------------------
