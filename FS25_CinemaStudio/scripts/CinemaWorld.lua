@@ -470,6 +470,28 @@ function W.captureStart(rootVehicle)
     return start
 end
 
+-- Přesune uložený start tak, aby první článek (tahač) stál v póze pose { x, y, z, rx, ry, rz }. Ostatní články zůstanou
+-- vůči němu na svém místě: jejich posun od tahače se otočí o rozdíl směru (kolem svislé osy) a natočení se o něj změní.
+-- Výměna vozidla herce takhle postaví jiné vozidlo (i s jeho vlekem) na místo původního startu.
+function W.rebaseStart(start, pose)
+    local root = start.entries[1]
+    if root == nil then
+        return
+    end
+    local ox, oy, oz, orx, ory, orz = root.x, root.y, root.z, root.rx, root.ry, root.rz
+    local dyaw = pose.ry - ory
+    local c, s = math.cos(dyaw), math.sin(dyaw)
+    for k, e in ipairs(start.entries) do
+        if k == 1 then
+            e.x, e.y, e.z, e.rx, e.ry, e.rz = pose.x, pose.y, pose.z, pose.rx, pose.ry, pose.rz
+        else
+            local dx, dz = e.x - ox, e.z - oz
+            e.x, e.y, e.z = pose.x + dx * c + dz * s, pose.y + (e.y - oy), pose.z - dx * s + dz * c
+            e.rx, e.ry, e.rz = e.rx + (pose.rx - orx), e.ry + dyaw, e.rz + (pose.rz - orz)
+        end
+    end
+end
+
 -- Vrátí soupravu na uložený start, nebo na pózu, kterou pro každý článek vrátí placement(entry) → x, y, z, rx, ry, rz.
 -- Vrací true, nebo false a důvod.
 function W.resetStart(start, placement)

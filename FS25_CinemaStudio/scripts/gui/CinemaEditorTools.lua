@@ -10,6 +10,7 @@ local Mo = CinemaModes
 local Cam = CinemaCamera
 local A = CinemaActions
 local Pe = CinemaPerson
+local function trace(...) if CinemaDev ~= nil then CinemaDev.trace(...) end end -- zápis do logu profileru, jen ve vývoji
 
 E.TOPDOWN_PITCH = math.rad(89.5)
 E.TOPDOWN_FOCAL = 28
@@ -1074,6 +1075,8 @@ function CinemaEditorScreen:pickAt(x, y)
         self.picking = false
         if pending.actor then
             self:addActor(c.vehicle)
+        elseif pending.swap ~= nil then
+            self:swapActorVehicle(pending.swap, c.vehicle)
         elseif pending.target then
             self:openAddPanel()
         elseif pending.retarget ~= nil then
@@ -1821,6 +1824,12 @@ function CinemaEditorScreen:topdownMouseEvent(posX, posY, isDown, isUp, button)
             self:finishDrag()
         end
         self.drag = nil
+        if CinemaDev ~= nil and drag ~= nil and (drag.kind == "point" or drag.kind == "startPoint") then
+            local a = self.shot.actors[self.activeTarget]
+            local q = a ~= nil and a.points[drag.index] or nil
+            trace("tažení: puštěno (%s, bod %s, posunuto=%s), bod je %s, dirty=%s", tostring(drag.kind), tostring(drag.index),
+                tostring(drag.moved == true), q ~= nil and string.format("%.2f, %.2f", q[1], q[2]) or "?", tostring(self.dirty))
+        end
         -- klik na bod bez tažení otevře jeho menu
         if drag ~= nil and not drag.moved and not drag.inserted then
             if drag.kind == "point" or drag.kind == "startPoint" then
@@ -1990,6 +1999,10 @@ function CinemaEditorScreen:topdownGrab(hit, x, y)
         local ox, oz = self:grabOffset(x, y, p[1], p[2])
         local fixed = hit.index == 1 or (p[7] and not p[8])
         self.drag = { kind = fixed and "startPoint" or "point", index = hit.index, x = x, y = y, ox = ox, oz = oz }
+        if CinemaDev ~= nil then
+            trace("tažení: chycen bod %d herce %s (%s), pozice %.2f, %.2f%s", hit.index, tostring(self.shot.actors[self.activeTarget].name),
+                fixed and "pevný – jen výběr, netáhne se" or "tažitelný", p[1], p[2], p[7] and ", výstup z vozidla" or "")
+        end
     elseif hit.kind == "stand" then
         -- stanoviště stojící kamery (statická, sledování z bodu): tažením se přesune po terénu ve stejné výšce nad ním
         local track = hit.seg.track
@@ -2028,6 +2041,9 @@ function CinemaEditorScreen:topdownMove(x, y)
     if not drag.moved then
         self:pushUndo()
         drag.moved = true
+        if CinemaDev ~= nil then
+            trace("tažení: první posun (%s, bod %s) na %.2f, %.2f", tostring(drag.kind), tostring(drag.index), px, pz)
+        end
     end
     if drag.kind == "point" then
         local actor = self.shot.actors[self.activeTarget]
@@ -2059,6 +2075,13 @@ function CinemaEditorScreen:topdownMove(x, y)
         S.touch(self.shot)
     end
     self:markDirty()
+    if CinemaDev ~= nil and drag.kind == "point" and (drag.traceAt or 0) < g_time then
+        drag.traceAt = g_time + 300
+        local a = self.shot.actors[self.activeTarget]
+        local q = a ~= nil and a.points[drag.index] or nil
+        trace("tažení: bod %s je teď %s, dirty=%s", tostring(drag.index), q ~= nil and string.format("%.2f, %.2f", q[1], q[2]) or "?",
+            tostring(self.dirty))
+    end
 end
 
 -- K / pravé tlačítko shora: vloží bod do dráhy v čase playheadu, tedy tam, kde se právě ukazuje tečka kamery
@@ -2629,6 +2652,86 @@ function CinemaEditorScreen:pickActorVehicle()
     self.picking = true
     self:needCursor()
     self:showMessage(g_i18n:getText("cine_msg_pickActor"))
+end
+
+-- Výměna vozidla herce i: klik na jiné vozidlo ve scéně.
+function CinemaEditorScreen:pickSwapVehicle(i)
+    self.pendingAction = { swap = i }
+    self.picking = true
+    self:needCursor()
+    self:showMessage(g_i18n:getText("cine_msg_pickSwap"))
+end
+
+-- Vozidlo herce i se vymění za vozidlo (celou soupravu): trasa, zpoždění, rychlosti a akce zůstanou, start se vezme z nového
+-- vozidla a při resetu (R) ho postaví na místo původního startu. Odkazy na původní vozidlo (cíle bloků kamery a bodů zájmu,
+-- akce ostatních herců) se přepíšou na nové; články soupravy se přiřadí podle pořadí. Původní vozidlo zůstane, kde je.
+function CinemaEditorScreen:swapActorVehicle(i, vehicle)
+    local actor = self.shot.actors[i]
+    local oldStart = actor ~= nil and actor.start or nil
+    local oldRoot = oldStart ~= nil and oldStart.entries[1] or nil
+    if oldRoot == nil or Pe.isPerson(actor) then
+        self:showMessage(g_i18n:getText("cine_msg_swapNoStart"))
+        return
+    end
+    local root = W.rootOf(vehicle)
+    if W.uid(root) == oldRoot.uid then
+        self:showMessage(g_i18n:getText("cine_msg_swapSame"))
+        return
+    end
+    if self:findActor(root) ~= nil then
+        self:showMessage(g_i18n:getText("cine_msg_swapIsActor"))
+        return
+    end
+    self:pushUndo()
+    local oldVehicle = W.find(oldRoot.uid)
+    local start = W.captureStart(root)
+    W.rebaseStart(start, oldRoot)
+    local map = {}
+    for k, e in ipairs(oldStart.entries) do
+        if start.entries[k] ~= nil then
+            map[e.uid] = start.entries[k].uid
+        end
+    end
+    local function remap(uid)
+        return uid ~= nil and map[uid] or uid
+    end
+    local cameras = W.vehicleCameras(root)
+    for _, seg in ipairs(self.shot.segments) do
+        local track = seg.track
+        if track.target ~= nil and map[track.target] ~= nil then
+            track.target = map[track.target]
+            -- kamera vozidla s číslem, které nové vozidlo nemá: zůstane jen místo podle uzlu
+            if track.camIndex ~= nil and cameras[track.camIndex] == nil then
+                track.camIndex = nil
+            end
+        end
+        track.target2 = remap(track.target2)
+    end
+    for _, f in ipairs(self.shot.focus) do
+        f.target = remap(f.target)
+    end
+    for _, other in ipairs(self.shot.actors) do
+        for _, action in ipairs(other.actions or {}) do
+            action.vehicle = remap(action.vehicle)
+        end
+    end
+    local wasDefaultName = oldVehicle ~= nil and actor.name == W.name(oldVehicle)
+    actor.start = start
+    if wasDefaultName then
+        actor.name = W.name(root)
+    end
+    if not W.hasDriverSeat(root) then
+        actor.driver = nil
+    elseif actor.driver == nil then
+        local helper = W.helperList()[1]
+        actor.driver = helper ~= nil and helper.name or nil
+    end
+    S.touch(self.shot)
+    self:syncDrivers()
+    self.actorRt = {}
+    self:markDirty()
+    local fewer = #start.entries < #oldStart.entries
+    self:showMessage(string.format(g_i18n:getText(fewer and "cine_msg_swapFewer" or "cine_msg_swapDone"), actor.name))
 end
 
 -- Nabídka tlačítka + Herec nad řádky osy.

@@ -83,6 +83,7 @@ end
 
 -- set: co se položí (bez něj obsah krabice).
 function E:startBoxPlace(set)
+    local fromBox = set == nil
     set = set or B.collect()
     if B.isEmpty(set) then
         self:showMessage(t("cine_msg_boxEmpty"))
@@ -91,7 +92,7 @@ function E:startBoxPlace(set)
     local cx, cz = B.center(set)
     self.picking = false
     self.pendingAction = nil
-    self.boxPlacing = { set = set, rot = 0, cx = cx, cz = cz, outlines = B.outlines(set) }
+    self.boxPlacing = { set = set, fromBox = fromBox, rot = 0, cx = cx, cz = cz, outlines = B.outlines(set) }
     self:needCursor()
     self:showMessage(t("cine_msg_pickTeleport"))
 end
@@ -122,6 +123,10 @@ function E:placeBoxAt(tx, tz)
     local moved, why = B.place(placing.set, tx, tz, placing.rot)
     if moved == nil then
         self:showMessage(t(why == "notServer" and "cine_msg_actorNotServer" or "cine_msg_actorMissing"))
+    elseif placing.fromBox and moved > 0 then
+        -- věci z krabice jsou vybalené: krabice je prázdná (kdyby se nic nepřeneslo, zůstane, jak byla)
+        B.clear()
+        self:showMessage(string.format(t("cine_msg_boxPlacedEmpty"), moved))
     else
         self:showMessage(string.format(t("cine_msg_boxPlaced"), moved))
     end

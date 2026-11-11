@@ -1585,6 +1585,7 @@ function CinemaEditorScreen:actorMenuItems(i, x, y, span)
         helperOnly(item(t("cine_look_reset"), function(s) edit(s, function() actor.look = nil end) end,
             { disabled = actor.look == nil })),
         item(t("cine_menu_rename"), function(s) s:openRenameActor(i) end),
+        vehicleOnly(item(t("cine_menu_swapVehicle"), function(s) s:pickSwapVehicle(i) end)),
         separator(),
         groupItem(t("cine_menu_more"), title, more, x, y),
         separator(),

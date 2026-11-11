@@ -859,6 +859,7 @@
         <text name="cine_msg_boxOut" text="Out of the box: %s (things: %d)"/>
         <text name="cine_msg_boxEmpty" text="The box is empty or its things are not in the world."/>
         <text name="cine_msg_boxPlaced" text="Moved: %d. They will drop to the ground."/>
+        <text name="cine_msg_boxPlacedEmpty" text="Unpacked: %d, the box is empty. The items drop to the ground."/>
         <text name="cine_msg_dropped" text="Vehicle moved and dropping."/>
         <text name="cine_hk_drop" text="T → vehicle: restart / move"/>
         <text name="cine_hd_drop" text="moves the vehicle or the set to a clicked place or restarts it in place; physics then lets it drop"/>
@@ -1103,6 +1104,13 @@
         <text name="cine_msg_helperPlaced" text="Helper moved to the new spot. Further clicks draw the walking route."/>
         <text name="cine_msg_routePointAdded" text="Route point %d added (right click in the scene; select the Camera row for camera keys)"/>
         <text name="cine_menu_rename" text="Rename"/>
+        <text name="cine_menu_swapVehicle" text="Swap vehicle…"/>
+        <text name="cine_msg_pickSwap" text="Click the vehicle that should drive this route instead of the current one."/>
+        <text name="cine_msg_swapDone" text="%s: the new vehicle drives. R puts it on the start (move the old vehicle away first so they do not overlap)."/>
+        <text name="cine_msg_swapFewer" text="%s: the new vehicle drives, but it has fewer parts than the old combination, so implement actions may be skipped. R puts it on the start."/>
+        <text name="cine_msg_swapSame" text="That vehicle already drives here."/>
+        <text name="cine_msg_swapIsActor" text="This vehicle is already an actor in the shot."/>
+        <text name="cine_msg_swapNoStart" text="Only an actor with a vehicle and a start can swap its vehicle."/>
         <text name="cine_rename_prompt" text="Timeline row name (empty = default)"/>
         <text name="cine_menu_helperLook" text="Look: %s"/>
         <text name="cine_menu_wardrobe" text="Dress in the game wardrobe"/>

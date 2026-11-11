@@ -5,6 +5,19 @@ dřív, než se vydá.
 
 The version matches `<version>` in `modDesc.xml`. A release takes its notes from the section of its version.
 
+## 0.5.4.0 (beta)
+
+- Vozidlo herce jde vyměnit: menu herce → Vyměnit vozidlo…, klik na jiné vozidlo. Trasa, rychlosti a akce zůstanou, nové vozidlo
+  (i s vlekem) se při resetu postaví na původní start a odkazy kamer, bodů zájmu a akcí ostatních herců se přepíšou na něj.
+  / An actor's vehicle can be swapped: actor menu → Swap vehicle…, then click another vehicle. The route, speeds and actions
+  stay, the new vehicle (with its trailer) is put on the old start on reset, and camera, focus point and other actors' action
+  references are repointed to it.
+- Po vybalení z krabice je krabice prázdná, věci se při dalším vybalení znovu nepřenášejí. / After unpacking, the box is empty;
+  its items are not moved again on the next unpack.
+- Editor je při dlouhé trase mnohem plynulejší: plán trasy se nepřepočítává při každém dotazu a kreslení osy, tras a dráhy
+  kamery si pamatuje výsledky. / The editor is much smoother with a long route: the route plan is no longer recomputed on every
+  query, and drawing the timeline, routes and camera path caches its results.
+
 ## 0.5.3.0 (beta)
 
 - Pole lze nastavit jen částečně: menu pole → Zóny sklizně. Sklizeno podle kurzu Courseplay až do bodu, kam kombajn dojel (klik

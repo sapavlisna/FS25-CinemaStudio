@@ -49,6 +49,7 @@ local W = CinemaWorld
 local Mo = CinemaModes
 local Env = CinemaEnvironment
 local E = CinemaEditorScreen
+local function trace(...) if CinemaDev ~= nil then CinemaDev.trace(...) end end -- zápis do logu profileru, jen ve vývoji
 
 local CinemaEditorScreen_mt = Class(CinemaEditorScreen, ScreenElement)
 
@@ -180,6 +181,9 @@ function CinemaEditorScreen:openShot(i)
     local file = self.index.files[i]
     self.shot = CinemaStorage.load(file) or S.new(file)
     self.shot.file = file
+    if CinemaDev ~= nil then
+        trace("načten záběr %s: %s", tostring(file), CinemaDev ~= nil and CinemaDev.describeActors(self.shot) or "")
+    end
     self.shot.name = string.format(g_i18n:getText("cine_shotName"), i)
     self.playhead = 0
     self:selClear()
@@ -197,6 +201,9 @@ function CinemaEditorScreen:openShot(i)
 end
 
 function CinemaEditorScreen:saveAll()
+    if CinemaDev ~= nil and self.shot ~= nil then
+        trace("ukládání záběru %s: dirty=%s, %s", tostring(self.shot.file), tostring(self.dirty), CinemaDev ~= nil and CinemaDev.describeActors(self.shot) or "")
+    end
     if self.shot ~= nil and self.dirty then
         self:save(true)
     end
@@ -1762,6 +1769,7 @@ function CinemaEditorScreen:update(dt)
     if not self.cam.active then
         return
     end
+    CinemaRoute.frozen = false
     CinemaProps.updateFields()
     Env.hold(self.envSaved)
     if self.messageTimer > 0 then
@@ -1901,6 +1909,17 @@ function CinemaEditorScreen:draw()
     -- během kreslení se rozvržení řádků nemění: spočítá se jednou
     self.layoutFrozen = nil
     self.layoutFrozen = self:rowLayout()
-    self:drawEditor()
+    -- plány se při kreslení nekontrolují proti úpravám bodů (R.frozen), proto se tady jednou ověří, že odpovídají
+    -- aktuálním bodům; jinak by snímek po úpravě kreslil i skládal seznamy pro klikání ze starého plánu
+    CinemaRoute.frozen = false
+    for _, a in ipairs(self.shot ~= nil and self.shot.actors or {}) do
+        CinemaRoute.plan(a)
+    end
+    CinemaRoute.frozen = true
+    local ok, err = pcall(self.drawEditor, self)
+    CinemaRoute.frozen = false
+    if not ok then
+        error(err, 0)
+    end
     self.layoutFrozen = nil
 end

@@ -17,6 +17,7 @@
 CinemaProps = CinemaProps or {}
 local Pr = CinemaProps
 local W = CinemaWorld
+local function trace(...) if CinemaDev ~= nil then CinemaDev.trace(...) end end -- zápis do logu profileru, jen ve vývoji
 
 Pr.HEAP_RADIUS = 5 -- m; okruh, ve kterém se hromada měří, maže a sype
 Pr.HEAP_RADIUS_MIN = 1
@@ -493,6 +494,11 @@ local function applyField(p)
         entry.fillType, entry.chunks, entry.next = fillType, windrowChunks(p), 1
     end
     Pr.fieldTasks[#Pr.fieldTasks + 1] = entry
+    if CinemaDev ~= nil then
+        trace("pole %s zadáno: rychlé=%s, plodina=%s, zón %d, sypnutí slámy %d, čekající úlohy polí %d", tostring(p.field),
+            tostring(p.fast == true), ft ~= nil and ft.name or "-", #entry.areas, entry.chunks ~= nil and #entry.chunks or 0,
+            #Pr.fieldTasks - 1)
+    end
     return true
 end
 
@@ -597,6 +603,10 @@ end
 -- Do logu, kolik trvalo které nastavování pole (z toho se pozná, co ho zdržuje).
 local function logFieldDone(entry)
     entry.logged = true
+    if CinemaDev ~= nil then
+        trace("pole %s: sláma hotová (%d sypnutí), celkem %.1f s", tostring(entry.field), entry.chunks ~= nil and #entry.chunks or 0,
+            (g_time - entry.since) / 1000)
+    end
     local now = g_time
     Logging.info("CinemaStudio: field %s set in %.1f s (whole field %.1f s, %d zone tasks %.1f s, straw %d chunks %.1f s)",
         tostring(entry.field), (now - entry.since) / 1000, ((entry.tBase or now) - entry.since) / 1000, #entry.areas,
@@ -608,7 +618,12 @@ end
 function Pr.updateFields()
     for _, entry in ipairs(Pr.fieldTasks) do
         if entry.task:getIsFinished() then
-            entry.tBase = entry.tBase or g_time
+            if entry.tBase == nil then
+                entry.tBase = g_time
+                if CinemaDev ~= nil then
+                    trace("pole %s: úloha celého pole doběhla za %.1f s", tostring(entry.field), (g_time - entry.since) / 1000)
+                end
+            end
             local running = {}
             for _, live in ipairs(entry.live) do
                 if live.task:getIsFinished() then
@@ -646,8 +661,12 @@ function Pr.updateFields()
                     entry.areaNext, queued = entry.areaNext + 1, queued + 1
                 end
             end
-            if zonesDone(entry) then
-                entry.tZones = entry.tZones or g_time
+            if zonesDone(entry) and entry.tZones == nil then
+                entry.tZones = g_time
+                if CinemaDev ~= nil then
+                    trace("pole %s: zóny hotové za %.1f s od úlohy pole (%d zón)", tostring(entry.field),
+                        (g_time - entry.tBase) / 1000, #entry.areas)
+                end
             end
         end
         if entry.chunks ~= nil and entry.next <= #entry.chunks and entry.task:getIsFinished() and zonesDone(entry) then

@@ -95,6 +95,7 @@ E.KEY_PX = 9 -- velikost značky keyframu na ose
 E.KEY_HIT_PX = 9 -- polovina šířky zásahu keyframu
 E.TEXT_SIZE = 0.016
 E.PATH_STEP = 0.5
+E.PATH_CACHE_MS = 150 -- ms; jak dlouho platí vzorkovaná dráha kamery v živém režimu (cíl se čte živě)
 E.DOT_PX = 12
 E.ROUTE_KEY_PX = 7 -- šířka zásahu značky bodu trasy na ose
 E.ACTION_HIT_PX = 8 -- polovina šířky zásahu značky akce vozidla
@@ -1249,19 +1250,28 @@ function CinemaEditorScreen:drawPath()
             end
         else
             -- blok v živém režimu: dráha podle plánované polohy cíle
-            local pts = {}
+            -- ~80 vzorků modePose na blok je drahých: dráha platí do změny záběru nebo bloku, nejdéle E.PATH_CACHE_MS
+            -- (stav cíle se čte živě, takže bez vypršení by zastarala)
             local duration = track.duration or 0
-            local step = math.max(duration / 80, 0.1)
-            local t = seg.t
-            while t < seg.t + duration + step * 0.5 do
-                local px, py, pz = self:modePose(seg, math.min(t, seg.t + duration), nil)
-                if px == nil then
-                    break
+            local cache = self.livePaths ~= nil and self.livePaths[seg] or nil
+            if cache == nil or cache.version ~= self.shot.version or cache.t ~= seg.t or cache.duration ~= duration
+                or g_time - cache.time > E.PATH_CACHE_MS then
+                local pts = {}
+                local step = math.max(duration / 80, 0.1)
+                local t = seg.t
+                while t < seg.t + duration + step * 0.5 do
+                    local px, py, pz = self:modePose(seg, math.min(t, seg.t + duration), nil)
+                    if px == nil then
+                        break
+                    end
+                    pts[#pts + 1] = { px, py, pz }
+                    t = t + step
                 end
-                pts[#pts + 1] = { px, py, pz }
-                t = t + step
+                cache = { pts = pts, version = self.shot.version, t = seg.t, duration = duration, time = g_time }
+                self.livePaths = self.livePaths or setmetatable({}, { __mode = "k" })
+                self.livePaths[seg] = cache
             end
-            drawWorldPolyline(cam, pts, pathWidth, pathColor)
+            drawWorldPolyline(cam, cache.pts, pathWidth, pathColor)
         end
     end
     -- táhla dráhy vybraného K-framu (shora)
@@ -1307,28 +1317,37 @@ function CinemaEditorScreen:drawRoutes()
             local n = #route.xs
             local lineColor = part.dim and { c[1], c[2], c[3], c[4] * 0.35 } or c
             local reverseColor = { 1, 0.6, 0.25, lineColor[4] }
-            local pts, reverse = {}, route.revTo[2] == true
-            local function flush()
-                drawWorldPolyline(cam, pts, active and 3 or 2, reverse and reverseColor or lineColor)
-            end
-            local function heightAt(k)
-                local x, z = route.xs[k], route.zs[k]
-                return part.points ~= nil and CinemaPerson.floorY(part.points, route, route.ss[k], x, z) or W.terrainY(x, z)
-            end
-            for k = 1, n, 2 do
-                local x, z = route.xs[k], route.zs[k]
-                local point = { x, heightAt(k) + 0.3, z }
-                local rev = route.revTo[math.min(k + 1, n)] == true
-                if rev ~= reverse then
-                    pts[#pts + 1] = point
-                    flush()
-                    pts, reverse = { point }, rev
-                else
-                    pts[#pts + 1] = point
+            -- světové body trasy s výškami terénu se počítají jednou: objekt trasy se při změně bodů nahradí novým
+            local runs = route.drawRuns
+            if runs == nil then
+                runs = {}
+                local pts, reverse = {}, route.revTo[2] == true
+                local function flush()
+                    runs[#runs + 1] = { pts = pts, reverse = reverse }
                 end
+                local function heightAt(k)
+                    local x, z = route.xs[k], route.zs[k]
+                    return part.points ~= nil and CinemaPerson.floorY(part.points, route, route.ss[k], x, z) or W.terrainY(x, z)
+                end
+                for k = 1, n, 2 do
+                    local x, z = route.xs[k], route.zs[k]
+                    local point = { x, heightAt(k) + 0.3, z }
+                    local rev = route.revTo[math.min(k + 1, n)] == true
+                    if rev ~= reverse then
+                        pts[#pts + 1] = point
+                        flush()
+                        pts, reverse = { point }, rev
+                    else
+                        pts[#pts + 1] = point
+                    end
+                end
+                pts[#pts + 1] = { route.xs[n], heightAt(n) + 0.3, route.zs[n] }
+                flush()
+                route.drawRuns = runs
             end
-            pts[#pts + 1] = { route.xs[n], heightAt(n) + 0.3, route.zs[n] }
-            flush()
+            for _, run in ipairs(runs) do
+                drawWorldPolyline(cam, run.pts, active and 3 or 2, run.reverse and reverseColor or lineColor)
+            end
         end
         local picked = self.topdown ~= nil and self.topdown.point or nil
         for k, p in ipairs(routeShown and a.points or {}) do
@@ -1744,12 +1763,44 @@ function CinemaEditorScreen:drawBlockLabelAt(x, y, label, size, maxWidth)
 end
 
 -- Rychlost vozidla i (km/h) po sloupcích úseku [t0, t1] (čas záběru) a největší z nich.
+local PROFILE_CACHE_MAX = 256
+
+-- Profil rychlosti vozidla se pamatuje u jeho plánu podle (t0, t1, sloupce): závisí jen na plánu a zpoždění, ne na snímku.
+-- Plán se při změně bodů nebo rychlosti nahradí novým, takže stará čísla zmizí s ním; zpoždění je v klíči u celé cache.
 function CinemaEditorScreen:actorProfile(i, t0, t1, columns)
+    local a = self.shot.actors[i]
+    local plan = a ~= nil and not CinemaPerson.isPerson(a) and R.plan(a) or nil
+    local byStart
+    if plan ~= nil then
+        local cache = plan.profileCache
+        if cache == nil or cache.delay ~= (a.delay or 0) or cache.count >= PROFILE_CACHE_MAX then
+            cache = { delay = a.delay or 0, count = 0, items = {} }
+            plan.profileCache = cache
+        end
+        local byEnd = cache.items[t0]
+        if byEnd == nil then
+            byEnd = {}
+            cache.items[t0] = byEnd
+        end
+        byStart = byEnd[t1]
+        if byStart == nil then
+            byStart = {}
+            byEnd[t1] = byStart
+        end
+        local hit = byStart[columns]
+        if hit ~= nil then
+            return hit.list, hit.top
+        end
+        cache.count = cache.count + 1
+    end
     local list, top = {}, 0
     for k = 1, columns do
         local v = self:actorSpeedAt(i, t0 + (t1 - t0) * (k - 0.5) / columns) or 0
         list[k] = v
         top = math.max(top, v)
+    end
+    if byStart ~= nil then
+        byStart[columns] = { list = list, top = top }
     end
     return list, top
 end
@@ -1771,6 +1822,11 @@ function CinemaEditorScreen:drawActorBlock(i, a)
     if self:selHas("drive", a) then
         outline(bx0, by, bx1, by + bh, 1, ui.keySelected)
     end
+    -- časy bodů trasy jednou za blok (dřív se pro každý bod počítaly třikrát)
+    local pointTimes = {}
+    for j = 1, #(a.points or {}) do
+        pointTimes[j] = self:routePointTime(i, j) or false
+    end
     if plan == nil and #(a.points or {}) < 2 then
         rect(bx0, ry + E.ROW_H * 0.44, bx1 - bx0, E.ROW_H * 0.12, c)
     else
@@ -1781,7 +1837,7 @@ function CinemaEditorScreen:drawActorBlock(i, a)
             if a.points[j + 1][7] then
                 wait = math.huge
             end
-            local from, to = self:routePointTime(i, j), self:routePointTime(i, j + 1)
+            local from, to = pointTimes[j] or nil, pointTimes[j + 1] or nil
             if from ~= nil and to ~= nil then
                 local t0, t1 = from + wait, to
                 local x0, x1 = self:xAtTime(t0), self:xAtTime(t1)
@@ -1824,7 +1880,7 @@ function CinemaEditorScreen:drawActorBlock(i, a)
     end
     local picked = self.topdown ~= nil and self.topdown.point or nil
     for j = 1, #(a.points or {}) do
-        local pt = self:routePointTime(i, j)
+        local pt = pointTimes[j] or nil
         if pt ~= nil then
             local isPicked = picked ~= nil and picked.actor == i and picked.index == j
             local wait = a.points[j][4]

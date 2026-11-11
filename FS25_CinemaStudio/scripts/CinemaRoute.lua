@@ -280,19 +280,54 @@ end
 
 local plans = setmetatable({}, { __mode = "k" })
 
+-- Otisk vstupů plánu: ploché pole čísel a příznaků. Plán se ptá několik set krát za snímek (dráha kamery na vozidle ho
+-- vzorkuje po bodech), proto se otisk jen porovnává s uloženým (signatureMatches), nestaví se z textu.
 local function signature(actor)
-    local parts = { tostring(actor.speed or R.DEFAULT_KMH) }
+    local sig = { actor.speed or R.DEFAULT_KMH }
+    local n = 1
     local curve = actor.curves ~= nil and actor.curves.speed or nil
     if CinemaChannels.hasPoints(curve) then
         for _, p in ipairs(curve.points) do
-            parts[#parts + 1] = string.format("c%.2f,%.2f,%s", p.t, p.v, p.mode or "linear")
+            sig[n + 1], sig[n + 2], sig[n + 3] = p.t, p.v, p.mode or "linear"
+            n = n + 3
         end
     end
-    for i, p in ipairs(actor.points or {}) do
-        parts[#parts + 1] = string.format("%.2f,%.2f,%s,%s,%s%s", p[1], p[2], p[3] ~= nil and string.format("%.1f", p[3]) or "-",
-            p[4] ~= nil and string.format("%.1f", p[4]) or "-", p[5] and "r" or "-", p[7] and "x" or "")
+    sig[n + 1] = "|"
+    n = n + 1
+    for _, p in ipairs(actor.points or {}) do
+        sig[n + 1], sig[n + 2], sig[n + 3], sig[n + 4], sig[n + 5], sig[n + 6] = p[1], p[2], p[3] or false, p[4] or false, p[5] and true or false,
+            p[7] and true or false
+        n = n + 6
     end
-    return table.concat(parts, ";")
+    return sig
+end
+
+local function signatureMatches(actor, sig)
+    if sig[1] ~= (actor.speed or R.DEFAULT_KMH) then
+        return false
+    end
+    local n = 1
+    local curve = actor.curves ~= nil and actor.curves.speed or nil
+    if CinemaChannels.hasPoints(curve) then
+        for _, p in ipairs(curve.points) do
+            if sig[n + 1] ~= p.t or sig[n + 2] ~= p.v or sig[n + 3] ~= (p.mode or "linear") then
+                return false
+            end
+            n = n + 3
+        end
+    end
+    if sig[n + 1] ~= "|" then
+        return false
+    end
+    n = n + 1
+    for _, p in ipairs(actor.points or {}) do
+        if sig[n + 1] ~= p[1] or sig[n + 2] ~= p[2] or sig[n + 3] ~= (p[3] or false) or sig[n + 4] ~= (p[4] or false)
+            or sig[n + 5] ~= (p[5] and true or false) or sig[n + 6] ~= (p[7] and true or false) then
+            return false
+        end
+        n = n + 6
+    end
+    return sig[n + 1] == nil
 end
 
 -- Trasa herce s časovou tabulkou: times[i] = za jak dlouho od startu jízdy (bez pauz) vozidlo dojede do i-tého vrcholu
@@ -452,10 +487,12 @@ function R.fitCurveEnd(route, curve)
     last.t = math.ceil(hi * 100) / 100
 end
 
+-- Při kreslení editoru (R.frozen) se body herců nemění, takže plán se nekontroluje proti otisku při každém z tisíců dotazů.
+R.frozen = false
+
 function R.plan(actor)
-    local sig = signature(actor)
     local cached = plans[actor]
-    if cached ~= nil and cached.sig == sig then
+    if cached ~= nil and (R.frozen or signatureMatches(actor, cached.sig)) then
         return cached.plan
     end
     -- bod s p[7] (výstup postavy z vozidla) začíná další část trasy; plán herce je jen první část
@@ -474,7 +511,6 @@ function R.plan(actor)
     local curve = actor.curves ~= nil and actor.curves.speed or nil
     if route ~= nil and CinemaChannels.hasPoints(curve) then
         R.fitCurveEnd(route, curve)
-        sig = signature(actor)
         plan = planFromCurve(route, curve)
     elseif route ~= nil then
         local times = { 0 }
@@ -494,7 +530,7 @@ function R.plan(actor)
         end
         plan = { route = route, times = times, pauses = pauses, holds = route.cusps, total = t }
     end
-    plans[actor] = { sig = sig, plan = plan }
+    plans[actor] = { sig = signature(actor), plan = plan }
     return plan
 end
 
@@ -532,7 +568,27 @@ local function standingArrival(plan, s)
 end
 
 -- Za jak dlouho od startu jízdy vozidlo dojede do místa ve vzdálenosti s po trase (do bodu s pauzou dojede před ní).
+local TIME_CACHE_MAX = 512
+
+-- Výsledek se pamatuje u plánu (ten se při změně bodů nebo rychlosti nahradí novým): osa ptá na čas stejných bodů trasy
+-- několik tisíckrát za sekundu.
 function R.timeAtS(plan, s)
+    local cache = plan.timeCache
+    if cache == nil or plan.timeCacheN >= TIME_CACHE_MAX then
+        cache, plan.timeCache, plan.timeCacheN = {}, {}, 0
+        cache = plan.timeCache
+    end
+    local known = cache[s]
+    if known ~= nil then
+        return known
+    end
+    local t = R.computeTimeAtS(plan, s)
+    cache[s] = t
+    plan.timeCacheN = plan.timeCacheN + 1
+    return t
+end
+
+function R.computeTimeAtS(plan, s)
     local route = plan.route
     if s <= 0 then
         return 0

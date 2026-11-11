@@ -859,6 +859,7 @@
         <text name="cine_msg_boxOut" text="Vyndáno z krabice: %s (věcí: %d)"/>
         <text name="cine_msg_boxEmpty" text="Krabice je prázdná nebo věci z ní ve světě nejsou."/>
         <text name="cine_msg_boxPlaced" text="Přeneseno: %d. Dopadnou na zem."/>
+        <text name="cine_msg_boxPlacedEmpty" text="Vybaleno: %d, krabice je prázdná. Věci dopadnou na zem."/>
         <text name="cine_msg_dropped" text="Vozidlo je přenesené a dopadne."/>
         <text name="cine_hk_drop" text="T → vozidlo: restart / přenesení"/>
         <text name="cine_hd_drop" text="vozidlo nebo soupravu přenese na místo klikem nebo restartuje na místě; obojí pustí fyziku, ať dopadne"/>
@@ -1103,6 +1104,13 @@
         <text name="cine_msg_helperPlaced" text="Pomocník stojí na novém místě. Další klik kreslí trasu chůze."/>
         <text name="cine_msg_routePointAdded" text="Bod trasy %d přidán (pravé tlačítko ve scéně, kamera je vybraná řádkem Kamera)"/>
         <text name="cine_menu_rename" text="Přejmenovat"/>
+        <text name="cine_menu_swapVehicle" text="Vyměnit vozidlo…"/>
+        <text name="cine_msg_pickSwap" text="Klikni na vozidlo, které pojede po této trase místo současného."/>
+        <text name="cine_msg_swapDone" text="%s: jede nové vozidlo. R ho postaví na start (původní vozidlo nejdřív odvez, ať se nepřekrývají)."/>
+        <text name="cine_msg_swapFewer" text="%s: jede nové vozidlo, ale má méně článků než původní souprava, akce nářadí se můžou přeskočit. R ho postaví na start."/>
+        <text name="cine_msg_swapSame" text="To je vozidlo, které tu už jede."/>
+        <text name="cine_msg_swapIsActor" text="Toto vozidlo už je v záběru hercem."/>
+        <text name="cine_msg_swapNoStart" text="Vozidlo jde vyměnit jen u herce s vozidlem a startem."/>
         <text name="cine_rename_prompt" text="Název řádku na ose (prázdný = výchozí)"/>
         <text name="cine_menu_helperLook" text="Vzhled: %s"/>
         <text name="cine_menu_wardrobe" text="Obléct v šatníku hry"/>
